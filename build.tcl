@@ -694,6 +694,7 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  regenerate_bd_layout -routing
   save_bd_design
   close_bd_design $design_name 
 }
@@ -914,7 +915,5 @@ if { $obj != "" } {
 }
 # set the current impl run
 current_run -implementation [get_runs impl_1]
-
-regenerate_bd_layout -routing
 
 puts "INFO: Project created:$project_name"
