@@ -12,16 +12,21 @@
 
 class Game
 {
-	Arena arena;
-	Bomberman player1;
-	Keyboard keyboard;
-
-	u8 pressed_key;
-
 public:
 	Game();
 	void Init();
 	void Loop();
+
+private:
+	Arena arena;
+	Bomberman player1;
+	Bomberman player2;
+	Keyboard keyboard;
+	u8 pressed_key;
+
+	void HandleKeyboard();
+	void HandleCollisions();
+	void UpdateScreen();
 };
 
 #endif /* SRC_GAME_H_ */

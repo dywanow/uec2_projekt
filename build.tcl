@@ -4,8 +4,8 @@ set origin_dir [file dirname [info script]]
 # Set the project name
 set project_name "bomberman_project"
 
-variable script_filed
-set script_file "build.tcl"
+variable script_file
+set script_file "build2.tcl"
 
 # Create project
 create_project ${project_name} ./vivado/${project_name} -part xc7a35tcpg236-1 -force
@@ -39,14 +39,14 @@ update_ip_catalog -rebuild
 set obj [get_filesets sources_1]
 set files [list \
  "[file normalize "$origin_dir/src/hdl/delay.v"]"\
- "[file normalize "$origin_dir/src/hdl/player_draw.v"]"\
  "[file normalize "$origin_dir/src/hdl/map_draw.v"]"\
+ "[file normalize "$origin_dir/src/hdl/player_draw.v"]"\
  "[file normalize "$origin_dir/src/hdl/vga_timing.v"]"\
+ "[file normalize "$origin_dir/src/hdl/bombs_draw.v"]"\
  "[file normalize "$origin_dir/IPI-BDs/design_1/hdl/design_1_wrapper.v"]"\
  "[file normalize "$origin_dir/src/coe/gordon.coe"]"\
 ]
 add_files -norecurse -fileset $obj $files
-
 
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
@@ -89,7 +89,7 @@ set_property -name "top" -value "player_draw" -objects $obj
 proc cr_bd_design_1 { parentCell } {
 # The design that will be created by this Tcl proc contains the following 
 # module references:
-# map_draw, player_draw, vga_timing
+# bombs_draw, map_draw, player_draw, player_draw, vga_timing
 
 
 
@@ -112,6 +112,7 @@ proc cr_bd_design_1 { parentCell } {
   xilinx.com:ip:clk_wiz:5.4\
   xilinx.com:ip:mdm:3.2\
   xilinx.com:ip:microblaze:10.0\
+  xilinx.com:ip:xlconstant:1.1\
   xilinx.com:ip:proc_sys_reset:5.0\
   xilinx.com:ip:lmb_bram_if_cntlr:4.0\
   xilinx.com:ip:lmb_v10:3.0\
@@ -142,7 +143,9 @@ proc cr_bd_design_1 { parentCell } {
   set bCheckModules 1
   if { $bCheckModules == 1 } {
      set list_check_mods "\ 
+  bombs_draw\
   map_draw\
+  player_draw\
   player_draw\
   vga_timing\
   "
@@ -209,11 +212,13 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   create_bd_pin -dir O -from 3 -to 0 b
   create_bd_pin -dir O -from 3 -to 0 g
   create_bd_pin -dir O hs
+  create_bd_pin -dir I -from 0 -to 0 i_bombs_data
   create_bd_pin -dir I -from 3 -to 0 i_map_data
   create_bd_pin -dir I i_pclk
   create_bd_pin -dir I -from 19 -to 0 i_player0_data
-  create_bd_pin -dir O -from 7 -to 0 o_addr
-  create_bd_pin -dir O o_index
+  create_bd_pin -dir I -from 19 -to 0 i_player1_data
+  create_bd_pin -dir O -from 7 -to 0 o_bombs_addr
+  create_bd_pin -dir O -from 7 -to 0 o_map_addr
   create_bd_pin -dir O -from 3 -to 0 r
   create_bd_pin -dir I -type rst reset
   create_bd_pin -dir O vs
@@ -227,6 +232,17 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
    CONFIG.DOUT_WIDTH {4} \
  ] $blue_value
 
+  # Create instance: bombs_draw, and set properties
+  set block_name bombs_draw
+  set block_cell_name bombs_draw
+  if { [catch {set bombs_draw [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $bombs_draw eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: green_value, and set properties
   set green_value [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 green_value ]
   set_property -dict [ list \
@@ -236,24 +252,33 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
    CONFIG.DOUT_WIDTH {4} \
  ] $green_value
 
-  # Create instance: map_draw_0, and set properties
+  # Create instance: map_draw, and set properties
   set block_name map_draw
-  set block_cell_name map_draw_0
-  if { [catch {set map_draw_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name map_draw
+  if { [catch {set map_draw [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $map_draw_0 eq "" } {
+   } elseif { $map_draw eq "" } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
   
-  set origin_dir [file normalize .]
+  # Create instance: player1_draw, and set properties
+  set block_name player_draw
+  set block_cell_name player1_draw
+  if { [catch {set player1_draw [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $player1_draw eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
   
-  # Create instance: player0, and set properties
-  set player0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 player0 ]
+  # Create instance: player1_sprite, and set properties
+  set player1_sprite [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 player1_sprite ]
   set_property -dict [ list \
    CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File "${origin_dir}/src/coe/gordon.coe" \
+   CONFIG.Coe_File {../../../../../../../../src/coe/gordon.coe} \
    CONFIG.EN_SAFETY_CKT {false} \
    CONFIG.Enable_32bit_Address {false} \
    CONFIG.Enable_A {Always_Enabled} \
@@ -269,19 +294,41 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
    CONFIG.Write_Width_A {12} \
    CONFIG.Write_Width_B {12} \
    CONFIG.use_bram_block {Stand_Alone} \
- ] $player0
+ ] $player1_sprite
 
-  # Create instance: player0_draw, and set properties
+  # Create instance: player2_draw, and set properties
   set block_name player_draw
-  set block_cell_name player0_draw
-  if { [catch {set player0_draw [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name player2_draw
+  if { [catch {set player2_draw [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $player0_draw eq "" } {
+   } elseif { $player2_draw eq "" } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
   
+  # Create instance: player2_sprite, and set properties
+  set player2_sprite [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 player2_sprite ]
+  set_property -dict [ list \
+   CONFIG.Byte_Size {9} \
+   CONFIG.Coe_File {../../../../../../../../src/coe/gordon.coe} \
+   CONFIG.EN_SAFETY_CKT {false} \
+   CONFIG.Enable_32bit_Address {false} \
+   CONFIG.Enable_A {Always_Enabled} \
+   CONFIG.Load_Init_File {true} \
+   CONFIG.Memory_Type {Single_Port_ROM} \
+   CONFIG.Port_A_Write_Rate {0} \
+   CONFIG.Read_Width_A {12} \
+   CONFIG.Read_Width_B {12} \
+   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
+   CONFIG.Use_Byte_Write_Enable {false} \
+   CONFIG.Use_RSTA_Pin {false} \
+   CONFIG.Write_Depth_A {4096} \
+   CONFIG.Write_Width_A {12} \
+   CONFIG.Write_Width_B {12} \
+   CONFIG.use_bram_block {Stand_Alone} \
+ ] $player2_sprite
+
   # Create instance: red_value, and set properties
   set red_value [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 red_value ]
   set_property -dict [ list \
@@ -291,42 +338,60 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
    CONFIG.DOUT_WIDTH {4} \
  ] $red_value
 
-  # Create instance: vga_timing_0, and set properties
+  # Create instance: vga_timing, and set properties
   set block_name vga_timing
-  set block_cell_name vga_timing_0
-  if { [catch {set vga_timing_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name vga_timing
+  if { [catch {set vga_timing [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $vga_timing_0 eq "" } {
+   } elseif { $vga_timing eq "" } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
   
   # Create port connections
-  connect_bd_net -net i_data1_1 [get_bd_pins i_player0_data] [get_bd_pins player0_draw/i_data]
-  connect_bd_net -net i_data_1 [get_bd_pins i_map_data] [get_bd_pins map_draw_0/i_data]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins map_draw_0/i_pclk] [get_bd_pins player0/clka] [get_bd_pins player0_draw/i_pclk] [get_bd_pins vga_timing_0/pclk]
-  connect_bd_net -net map_draw_0_o_addr [get_bd_pins o_addr] [get_bd_pins map_draw_0/o_addr]
-  connect_bd_net -net map_draw_0_o_hblnk [get_bd_pins map_draw_0/o_hblnk] [get_bd_pins player0_draw/i_hblnk]
-  connect_bd_net -net map_draw_0_o_hcount [get_bd_pins map_draw_0/o_hcount] [get_bd_pins player0_draw/i_hcount]
-  connect_bd_net -net map_draw_0_o_hsync [get_bd_pins map_draw_0/o_hsync] [get_bd_pins player0_draw/i_hsync]
-  connect_bd_net -net map_draw_0_o_rgb [get_bd_pins map_draw_0/o_rgb] [get_bd_pins player0_draw/i_rgb]
-  connect_bd_net -net map_draw_0_o_vblnk [get_bd_pins map_draw_0/o_vblnk] [get_bd_pins player0_draw/i_vblnk]
-  connect_bd_net -net map_draw_0_o_vcount [get_bd_pins map_draw_0/o_vcount] [get_bd_pins player0_draw/i_vcount]
-  connect_bd_net -net map_draw_0_o_vsync [get_bd_pins map_draw_0/o_vsync] [get_bd_pins player0_draw/i_vsync]
-  connect_bd_net -net player0_douta [get_bd_pins player0/douta] [get_bd_pins player0_draw/i_rom_rgb]
-  connect_bd_net -net player0_draw_o_hsync [get_bd_pins hs] [get_bd_pins player0_draw/o_hsync]
-  connect_bd_net -net player0_draw_o_index [get_bd_pins o_index] [get_bd_pins player0_draw/o_index]
-  connect_bd_net -net player0_draw_o_vsync [get_bd_pins vs] [get_bd_pins player0_draw/o_vsync]
-  connect_bd_net -net player_draw_0_o_rgb [get_bd_pins blue_value/Din] [get_bd_pins green_value/Din] [get_bd_pins player0_draw/o_rgb] [get_bd_pins red_value/Din]
-  connect_bd_net -net player_draw_0_o_rom_addr [get_bd_pins player0/addra] [get_bd_pins player0_draw/o_rom_addr]
-  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins map_draw_0/i_rst] [get_bd_pins player0_draw/i_rst] [get_bd_pins vga_timing_0/rst]
-  connect_bd_net -net vga_timing_0_hblnk [get_bd_pins map_draw_0/i_hblnk] [get_bd_pins vga_timing_0/hblnk]
-  connect_bd_net -net vga_timing_0_hcount [get_bd_pins map_draw_0/i_hcount] [get_bd_pins vga_timing_0/hcount]
-  connect_bd_net -net vga_timing_0_hsync [get_bd_pins map_draw_0/i_hsync] [get_bd_pins vga_timing_0/hsync]
-  connect_bd_net -net vga_timing_0_vblnk [get_bd_pins map_draw_0/i_vblnk] [get_bd_pins vga_timing_0/vblnk]
-  connect_bd_net -net vga_timing_0_vcount [get_bd_pins map_draw_0/i_vcount] [get_bd_pins vga_timing_0/vcount]
-  connect_bd_net -net vga_timing_0_vsync [get_bd_pins map_draw_0/i_vsync] [get_bd_pins vga_timing_0/vsync]
+  connect_bd_net -net bombs_draw_o_addr [get_bd_pins o_bombs_addr] [get_bd_pins bombs_draw/o_addr]
+  connect_bd_net -net bombs_draw_o_hblnk [get_bd_pins bombs_draw/o_hblnk] [get_bd_pins player1_draw/i_hblnk]
+  connect_bd_net -net bombs_draw_o_hcount [get_bd_pins bombs_draw/o_hcount] [get_bd_pins player1_draw/i_hcount]
+  connect_bd_net -net bombs_draw_o_hsync [get_bd_pins bombs_draw/o_hsync] [get_bd_pins player1_draw/i_hsync]
+  connect_bd_net -net bombs_draw_o_rgb [get_bd_pins bombs_draw/o_rgb] [get_bd_pins player1_draw/i_rgb]
+  connect_bd_net -net bombs_draw_o_vblnk [get_bd_pins bombs_draw/o_vblnk] [get_bd_pins player1_draw/i_vblnk]
+  connect_bd_net -net bombs_draw_o_vcount [get_bd_pins bombs_draw/o_vcount] [get_bd_pins player1_draw/i_vcount]
+  connect_bd_net -net bombs_draw_o_vsync [get_bd_pins bombs_draw/o_vsync] [get_bd_pins player1_draw/i_vsync]
+  connect_bd_net -net i_data1_1 [get_bd_pins i_player0_data] [get_bd_pins player1_draw/i_data]
+  connect_bd_net -net i_data_1 [get_bd_pins i_map_data] [get_bd_pins map_draw/i_data]
+  connect_bd_net -net i_data_2 [get_bd_pins i_player1_data] [get_bd_pins player2_draw/i_data]
+  connect_bd_net -net i_data_3 [get_bd_pins i_bombs_data] [get_bd_pins bombs_draw/i_data]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bombs_draw/i_pclk] [get_bd_pins map_draw/i_pclk] [get_bd_pins player1_draw/i_pclk] [get_bd_pins player1_sprite/clka] [get_bd_pins player2_draw/i_pclk] [get_bd_pins player2_sprite/clka] [get_bd_pins vga_timing/pclk]
+  connect_bd_net -net map_draw_0_o_addr [get_bd_pins o_map_addr] [get_bd_pins map_draw/o_addr]
+  connect_bd_net -net map_draw_o_hblnk [get_bd_pins bombs_draw/i_hblnk] [get_bd_pins map_draw/o_hblnk]
+  connect_bd_net -net map_draw_o_hcount [get_bd_pins bombs_draw/i_hcount] [get_bd_pins map_draw/o_hcount]
+  connect_bd_net -net map_draw_o_hsync [get_bd_pins bombs_draw/i_hsync] [get_bd_pins map_draw/o_hsync]
+  connect_bd_net -net map_draw_o_rgb [get_bd_pins bombs_draw/i_rgb] [get_bd_pins map_draw/o_rgb]
+  connect_bd_net -net map_draw_o_vblnk [get_bd_pins bombs_draw/i_vblnk] [get_bd_pins map_draw/o_vblnk]
+  connect_bd_net -net map_draw_o_vcount [get_bd_pins bombs_draw/i_vcount] [get_bd_pins map_draw/o_vcount]
+  connect_bd_net -net map_draw_o_vsync [get_bd_pins bombs_draw/i_vsync] [get_bd_pins map_draw/o_vsync]
+  connect_bd_net -net player0_douta [get_bd_pins player1_draw/i_rom_rgb] [get_bd_pins player1_sprite/douta]
+  connect_bd_net -net player0_draw_o_hblnk [get_bd_pins player1_draw/o_hblnk] [get_bd_pins player2_draw/i_hblnk]
+  connect_bd_net -net player0_draw_o_hcount [get_bd_pins player1_draw/o_hcount] [get_bd_pins player2_draw/i_hcount]
+  connect_bd_net -net player0_draw_o_hsync [get_bd_pins player1_draw/o_hsync] [get_bd_pins player2_draw/i_hsync]
+  connect_bd_net -net player0_draw_o_rgb [get_bd_pins player1_draw/o_rgb] [get_bd_pins player2_draw/i_rgb]
+  connect_bd_net -net player0_draw_o_vblnk [get_bd_pins player1_draw/o_vblnk] [get_bd_pins player2_draw/i_vblnk]
+  connect_bd_net -net player0_draw_o_vcount [get_bd_pins player1_draw/o_vcount] [get_bd_pins player2_draw/i_vcount]
+  connect_bd_net -net player0_draw_o_vsync [get_bd_pins player1_draw/o_vsync] [get_bd_pins player2_draw/i_vsync]
+  connect_bd_net -net player1_douta [get_bd_pins player2_draw/i_rom_rgb] [get_bd_pins player2_sprite/douta]
+  connect_bd_net -net player1_draw_o_hsync [get_bd_pins hs] [get_bd_pins player2_draw/o_hsync]
+  connect_bd_net -net player1_draw_o_rgb [get_bd_pins blue_value/Din] [get_bd_pins green_value/Din] [get_bd_pins player2_draw/o_rgb] [get_bd_pins red_value/Din]
+  connect_bd_net -net player1_draw_o_rom_addr [get_bd_pins player2_draw/o_rom_addr] [get_bd_pins player2_sprite/addra]
+  connect_bd_net -net player1_draw_o_vsync [get_bd_pins vs] [get_bd_pins player2_draw/o_vsync]
+  connect_bd_net -net player_draw_0_o_rom_addr [get_bd_pins player1_draw/o_rom_addr] [get_bd_pins player1_sprite/addra]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins bombs_draw/i_rst] [get_bd_pins map_draw/i_rst] [get_bd_pins player1_draw/i_rst] [get_bd_pins player2_draw/i_rst] [get_bd_pins vga_timing/rst]
+  connect_bd_net -net vga_timing_0_hblnk [get_bd_pins map_draw/i_hblnk] [get_bd_pins vga_timing/hblnk]
+  connect_bd_net -net vga_timing_0_hcount [get_bd_pins map_draw/i_hcount] [get_bd_pins vga_timing/hcount]
+  connect_bd_net -net vga_timing_0_hsync [get_bd_pins map_draw/i_hsync] [get_bd_pins vga_timing/hsync]
+  connect_bd_net -net vga_timing_0_vblnk [get_bd_pins map_draw/i_vblnk] [get_bd_pins vga_timing/vblnk]
+  connect_bd_net -net vga_timing_0_vcount [get_bd_pins map_draw/i_vcount] [get_bd_pins vga_timing/vcount]
+  connect_bd_net -net vga_timing_0_vsync [get_bd_pins map_draw/i_vsync] [get_bd_pins vga_timing/vsync]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins b] [get_bd_pins blue_value/Dout]
   connect_bd_net -net xlslice_1_Dout [get_bd_pins r] [get_bd_pins red_value/Dout]
   connect_bd_net -net xlslice_2_Dout [get_bd_pins g] [get_bd_pins green_value/Dout]
@@ -463,6 +528,14 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
  ] $sys_clock
   set vs [ create_bd_port -dir O vs ]
 
+  # Create instance: axi_bombs, and set properties
+  set axi_bombs [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_bombs ]
+  set_property -dict [ list \
+   CONFIG.ADDR_WIDTH {8} \
+   CONFIG.DATA_WIDTH {1} \
+   CONFIG.MEMORY_WIDTH {256} \
+ ] $axi_bombs
+
   # Create instance: axi_map, and set properties
   set axi_map [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_map ]
   set_property -dict [ list \
@@ -471,8 +544,17 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
    CONFIG.MEMORY_WIDTH {256} \
  ] $axi_map
 
-  # Create instance: axi_player, and set properties
-  set axi_player [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_player ]
+  # Create instance: axi_player1, and set properties
+  set axi_player1 [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_player1 ]
+  set_property -dict [ list \
+   CONFIG.MEMORY_WIDTH {1} \
+ ] $axi_player1
+
+  # Create instance: axi_player2, and set properties
+  set axi_player2 [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_player2 ]
+  set_property -dict [ list \
+   CONFIG.MEMORY_WIDTH {1} \
+ ] $axi_player2
 
   # Create instance: axi_uartlite_0, and set properties
   set axi_uartlite_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_0 ]
@@ -525,11 +607,17 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   # Create instance: microblaze_0_axi_periph, and set properties
   set microblaze_0_axi_periph [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 microblaze_0_axi_periph ]
   set_property -dict [ list \
-   CONFIG.NUM_MI {3} \
+   CONFIG.NUM_MI {5} \
  ] $microblaze_0_axi_periph
 
   # Create instance: microblaze_0_local_memory
   create_hier_cell_microblaze_0_local_memory [current_bd_instance .] microblaze_0_local_memory
+
+  # Create instance: player_addr_constant, and set properties
+  set player_addr_constant [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 player_addr_constant ]
+  set_property -dict [ list \
+   CONFIG.CONST_VAL {0} \
+ ] $player_addr_constant
 
   # Create instance: rst_clk_wiz_0_100M, and set properties
   set rst_clk_wiz_0_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_clk_wiz_0_100M ]
@@ -545,36 +633,43 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
   connect_bd_intf_net -intf_net microblaze_0_M_AXI_DP [get_bd_intf_pins microblaze_0/M_AXI_DP] [get_bd_intf_pins microblaze_0_axi_periph/S00_AXI]
   connect_bd_intf_net -intf_net microblaze_0_axi_periph_M00_AXI [get_bd_intf_pins axi_map/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M00_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M01_AXI [get_bd_intf_pins axi_player/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M01_AXI]
+  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M01_AXI [get_bd_intf_pins axi_player1/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M01_AXI]
   connect_bd_intf_net -intf_net microblaze_0_axi_periph_M02_AXI [get_bd_intf_pins axi_uartlite_0/S_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M02_AXI]
+  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M03_AXI [get_bd_intf_pins axi_player2/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M03_AXI]
+  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M04_AXI [get_bd_intf_pins axi_bombs/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M04_AXI]
   connect_bd_intf_net -intf_net microblaze_0_debug [get_bd_intf_pins mdm_1/MBDEBUG_0] [get_bd_intf_pins microblaze_0/DEBUG]
   connect_bd_intf_net -intf_net microblaze_0_dlmb_1 [get_bd_intf_pins microblaze_0/DLMB] [get_bd_intf_pins microblaze_0_local_memory/DLMB]
   connect_bd_intf_net -intf_net microblaze_0_ilmb_1 [get_bd_intf_pins microblaze_0/ILMB] [get_bd_intf_pins microblaze_0_local_memory/ILMB]
 
   # Create port connections
+  connect_bd_net -net axi_bombs_data [get_bd_pins axi_bombs/data] [get_bd_pins vga_drawer/i_bombs_data]
   connect_bd_net -net axi_map_data [get_bd_pins axi_map/data] [get_bd_pins vga_drawer/i_map_data]
-  connect_bd_net -net axi_player_data [get_bd_pins axi_player/data] [get_bd_pins vga_drawer/i_player0_data]
+  connect_bd_net -net axi_player1_data [get_bd_pins axi_player2/data] [get_bd_pins vga_drawer/i_player1_data]
+  connect_bd_net -net axi_player_data [get_bd_pins axi_player1/data] [get_bd_pins vga_drawer/i_player0_data]
   connect_bd_net -net clk_wiz_0_locked [get_bd_pins clk_wiz_0/locked] [get_bd_pins rst_clk_wiz_0_100M/dcm_locked]
-  connect_bd_net -net clk_wiz_0_pclk [get_bd_pins axi_map/pclk] [get_bd_pins axi_player/pclk] [get_bd_pins clk_wiz_0/pclk] [get_bd_pins vga_drawer/i_pclk]
+  connect_bd_net -net clk_wiz_0_pclk [get_bd_pins axi_bombs/pclk] [get_bd_pins axi_map/pclk] [get_bd_pins axi_player1/pclk] [get_bd_pins axi_player2/pclk] [get_bd_pins clk_wiz_0/pclk] [get_bd_pins vga_drawer/i_pclk]
   connect_bd_net -net mdm_1_debug_sys_rst [get_bd_pins mdm_1/Debug_SYS_Rst] [get_bd_pins rst_clk_wiz_0_100M/mb_debug_sys_rst]
-  connect_bd_net -net microblaze_0_Clk [get_bd_pins axi_map/s00_axi_aclk] [get_bd_pins axi_player/s00_axi_aclk] [get_bd_pins axi_uartlite_0/s_axi_aclk] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins microblaze_0/Clk] [get_bd_pins microblaze_0_axi_periph/ACLK] [get_bd_pins microblaze_0_axi_periph/M00_ACLK] [get_bd_pins microblaze_0_axi_periph/M01_ACLK] [get_bd_pins microblaze_0_axi_periph/M02_ACLK] [get_bd_pins microblaze_0_axi_periph/S00_ACLK] [get_bd_pins microblaze_0_local_memory/LMB_Clk] [get_bd_pins rst_clk_wiz_0_100M/slowest_sync_clk]
+  connect_bd_net -net microblaze_0_Clk [get_bd_pins axi_bombs/s00_axi_aclk] [get_bd_pins axi_map/s00_axi_aclk] [get_bd_pins axi_player1/s00_axi_aclk] [get_bd_pins axi_player2/s00_axi_aclk] [get_bd_pins axi_uartlite_0/s_axi_aclk] [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins microblaze_0/Clk] [get_bd_pins microblaze_0_axi_periph/ACLK] [get_bd_pins microblaze_0_axi_periph/M00_ACLK] [get_bd_pins microblaze_0_axi_periph/M01_ACLK] [get_bd_pins microblaze_0_axi_periph/M02_ACLK] [get_bd_pins microblaze_0_axi_periph/M03_ACLK] [get_bd_pins microblaze_0_axi_periph/M04_ACLK] [get_bd_pins microblaze_0_axi_periph/S00_ACLK] [get_bd_pins microblaze_0_local_memory/LMB_Clk] [get_bd_pins rst_clk_wiz_0_100M/slowest_sync_clk]
+  connect_bd_net -net player_addr_constant_dout [get_bd_pins axi_player1/addr] [get_bd_pins axi_player2/addr] [get_bd_pins player_addr_constant/dout]
   connect_bd_net -net reset_1 [get_bd_ports reset] [get_bd_pins clk_wiz_0/reset] [get_bd_pins rst_clk_wiz_0_100M/ext_reset_in] [get_bd_pins vga_drawer/reset]
   connect_bd_net -net rst_clk_wiz_0_100M_bus_struct_reset [get_bd_pins microblaze_0_local_memory/SYS_Rst] [get_bd_pins rst_clk_wiz_0_100M/bus_struct_reset]
   connect_bd_net -net rst_clk_wiz_0_100M_interconnect_aresetn [get_bd_pins microblaze_0_axi_periph/ARESETN] [get_bd_pins rst_clk_wiz_0_100M/interconnect_aresetn]
   connect_bd_net -net rst_clk_wiz_0_100M_mb_reset [get_bd_pins microblaze_0/Reset] [get_bd_pins rst_clk_wiz_0_100M/mb_reset]
-  connect_bd_net -net rst_clk_wiz_0_100M_peripheral_aresetn [get_bd_pins axi_map/s00_axi_aresetn] [get_bd_pins axi_player/s00_axi_aresetn] [get_bd_pins axi_uartlite_0/s_axi_aresetn] [get_bd_pins microblaze_0_axi_periph/M00_ARESETN] [get_bd_pins microblaze_0_axi_periph/M01_ARESETN] [get_bd_pins microblaze_0_axi_periph/M02_ARESETN] [get_bd_pins microblaze_0_axi_periph/S00_ARESETN] [get_bd_pins rst_clk_wiz_0_100M/peripheral_aresetn]
+  connect_bd_net -net rst_clk_wiz_0_100M_peripheral_aresetn [get_bd_pins axi_bombs/s00_axi_aresetn] [get_bd_pins axi_map/s00_axi_aresetn] [get_bd_pins axi_player1/s00_axi_aresetn] [get_bd_pins axi_player2/s00_axi_aresetn] [get_bd_pins axi_uartlite_0/s_axi_aresetn] [get_bd_pins microblaze_0_axi_periph/M00_ARESETN] [get_bd_pins microblaze_0_axi_periph/M01_ARESETN] [get_bd_pins microblaze_0_axi_periph/M02_ARESETN] [get_bd_pins microblaze_0_axi_periph/M03_ARESETN] [get_bd_pins microblaze_0_axi_periph/M04_ARESETN] [get_bd_pins microblaze_0_axi_periph/S00_ARESETN] [get_bd_pins rst_clk_wiz_0_100M/peripheral_aresetn]
   connect_bd_net -net sys_clock_1 [get_bd_ports sys_clock] [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net vga_drawer_b [get_bd_ports b] [get_bd_pins vga_drawer/b]
   connect_bd_net -net vga_drawer_g [get_bd_ports g] [get_bd_pins vga_drawer/g]
   connect_bd_net -net vga_drawer_hs [get_bd_ports hs] [get_bd_pins vga_drawer/hs]
-  connect_bd_net -net vga_drawer_o_addr [get_bd_pins axi_map/addr] [get_bd_pins vga_drawer/o_addr]
-  connect_bd_net -net vga_drawer_o_index [get_bd_pins axi_player/addr] [get_bd_pins vga_drawer/o_index]
+  connect_bd_net -net vga_drawer_o_addr [get_bd_pins axi_map/addr] [get_bd_pins vga_drawer/o_map_addr]
+  connect_bd_net -net vga_drawer_o_addr1 [get_bd_pins axi_bombs/addr] [get_bd_pins vga_drawer/o_bombs_addr]
   connect_bd_net -net vga_drawer_r [get_bd_ports r] [get_bd_pins vga_drawer/r]
   connect_bd_net -net vga_drawer_vs [get_bd_ports vs] [get_bd_pins vga_drawer/vs]
 
   # Create address segments
   create_bd_addr_seg -range 0x00010000 -offset 0x44A00000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_map/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_0_S00_AXI_reg
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_player/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_1_S00_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A20000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_player2/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_0_S00_AXI_reg1
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A30000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_bombs/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_0_S00_AXI_reg2
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_player1/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_1_S00_AXI_reg
   create_bd_addr_seg -range 0x00010000 -offset 0x40600000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] SEG_axi_uartlite_0_Reg
   create_bd_addr_seg -range 0x00020000 -offset 0x00000000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs microblaze_0_local_memory/dlmb_bram_if_cntlr/SLMB/Mem] SEG_dlmb_bram_if_cntlr_Mem
   create_bd_addr_seg -range 0x00020000 -offset 0x00000000 [get_bd_addr_spaces microblaze_0/Instruction] [get_bd_addr_segs microblaze_0_local_memory/ilmb_bram_if_cntlr/SLMB/Mem] SEG_ilmb_bram_if_cntlr_Mem
@@ -583,8 +678,9 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  regenerate_bd_layout -routing
   save_bd_design
+common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
+
   close_bd_design $design_name 
 }
 # End of cr_bd_design_1()

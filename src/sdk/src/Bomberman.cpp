@@ -1,76 +1,82 @@
 #include "Bomberman.h"
 
 
-Bomberman::Bomberman(float x, float y, u32 baseaddr) : drawer((u32 *)baseaddr), position({x, y}), position_aux({x, y}), velocity({0, 0}) {}
-
-void Bomberman::SetPosition(u16 x, u16 y)
+Bomberman::Bomberman(uint8_t x, uint8_t y, uint32_t baseaddr, uint32_t bombs_baseaddr) : Element(x, y),
+																			drawer((uint32_t *)baseaddr),
+																		    movement_direction(MovementDirection::NONE),
+																			bomb_set(this, bombs_baseaddr)
 {
-	position.x = x;
-	position.y = y;
+
 }
+
+
 
 void Bomberman::Draw()
 {
-	*drawer = ((u16)position.y << 11) + ((u16)position.x << 1);
+	*drawer = (pixel_position.GetY() << 11) + (pixel_position.GetX() << 1);
 }
 void Bomberman::GoLeft()
 {
-	if (velocity.x >= 0)
-	{
-		velocity.x -= 0.03;
-	}
+	movement_direction = MovementDirection::LEFT;
 }
 void Bomberman::GoRight()
 {
-	if (velocity.x <= 0)
-	{
-		velocity.x += 0.03;
-	}
+	movement_direction = MovementDirection::RIGHT;
 }
 void Bomberman::GoUp()
 {
-	if (velocity.y >= 0)
-	{
-		velocity.y -= 0.03;
-	}
+	movement_direction = MovementDirection::UP;
 }
 void Bomberman::GoDown()
 {
-	if (velocity.y <= 0)
-	{
-		velocity.y += 0.03;
-	}
+	movement_direction = MovementDirection::DOWN;
 }
 
 void Bomberman::Stop()
 {
-	velocity.x = 0;
-	velocity.y = 0;
+	movement_direction = MovementDirection::NONE;
 }
 
-void Bomberman::StopX()
-{
-	velocity.x = 0;
-}
-
-void Bomberman::StopY()
-{
-	velocity.y = 0;
-}
 
 void Bomberman::Update()
 {
-//	xil_printf("a");
-	position.x += velocity.x;
-	position.y += velocity.y;
+	switch (movement_direction)
+	{
+	case MovementDirection::LEFT:
+		SetIndexPosition(index_position.GetX() - 1, index_position.GetY());
+		break;
+	case MovementDirection::RIGHT:
+		SetIndexPosition(index_position.GetX() + 1, index_position.GetY());
+		break;
+	case MovementDirection::UP:
+		SetIndexPosition(index_position.GetX(), index_position.GetY() - 1);
+		break;
+	case MovementDirection::DOWN:
+		SetIndexPosition(index_position.GetX(), index_position.GetY() + 1);
+		break;
+	default:
+		break;
+	}
+	Stop();
+
+	bomb_set.Update();
 }
 
-Vector<float> Bomberman::GetPosition() const
+void Bomberman::PlaceBomb()
 {
-	return position;
+	if (bomb_set.GetActiveBombsNumber() < BombSet::MAX_BOMBS_NUMBER)
+	{
+		bomb_set.ActivateBomb();
+	}
 }
 
-Vector<float> Bomberman::GetVelocity() const
+
+Bomberman::MovementDirection Bomberman::GetMovementDirection() const
 {
-	return velocity;
+	return movement_direction;
+}
+
+BombSet Bomberman::GetBombSet() const
+{
+	return bomb_set;
 }

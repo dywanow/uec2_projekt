@@ -20,7 +20,6 @@ module player_draw
         output reg o_hsync,
         output reg o_hblnk,
         output reg [11:0] o_rgb,
-        output wire o_index,
         output wire [11:0] o_rom_addr
     );
     
@@ -92,7 +91,6 @@ module player_draw
         end
     end
     
-    assign o_index = 0;
     assign addrx = hcount_delayed2 - 448 - i_data[9:0];
     assign addry = vcount_delayed2 - 28 - i_data[19:10];
     assign o_rom_addr = {addry, addrx};

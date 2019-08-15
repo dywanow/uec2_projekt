@@ -1,31 +1,34 @@
 #ifndef BOMBERMAN_H_
 #define BOMBERMAN_H_
 
+#include "Element.h"
+#include "BombSet.h"
 #include "xil_types.h"
-#include "Vector.h"
 #include "xil_printf.h"
 
-class Bomberman
+class Bomberman : public Element
 {
-	u32 *drawer;
-	Vector<float> position;
-	Vector<float> position_aux;
-	Vector<float> velocity;
-
 public:
-	Bomberman(float xpos, float ypos, u32 baseaddr);
-	void SetPosition(u16 xpos, u16 ypos);
-	void Draw();
+	enum class MovementDirection { NONE, UP, DOWN, LEFT, RIGHT };
+
+	Bomberman(uint8_t x, uint8_t y, uint32_t baseaddr, uint32_t bombs_baseaddr);
+
 	void GoLeft();
 	void GoRight();
 	void GoUp();
 	void GoDown();
 	void Stop();
-	void StopX();
-	void StopY();
+	void PlaceBomb();
 	void Update();
-	Vector<float> GetPosition() const;
-	Vector<float> GetVelocity() const;
+	void Draw();
+
+	MovementDirection GetMovementDirection() const;
+	BombSet GetBombSet() const;
+
+private:
+	uint32_t *drawer;
+	MovementDirection movement_direction;
+	BombSet bomb_set;
 };
 
 #endif /* BOMBERMAN_H_ */

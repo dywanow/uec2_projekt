@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module map_draw
+module bombs_draw
     (
 		input wire i_pclk,
         input wire i_rst,
@@ -10,7 +10,8 @@ module map_draw
         input wire [11:0] i_hcount,
         input wire i_hsync,
         input wire i_hblnk,
-        input wire [3:0] i_data,
+        input wire [11:0] i_rgb,
+        input wire i_data,
         output reg [11:0] o_vcount,
         output reg o_vsync,
         output reg o_vblnk,
@@ -23,20 +24,21 @@ module map_draw
     
     wire hblnk_delayed, hsync_delayed, vblnk_delayed, vsync_delayed;
     wire [11:0] hcount_delayed, vcount_delayed;
+    wire [11:0] rgb_delayed;
     wire [3:0] addrx, addry;
     reg [11:0] o_rgb_nxt;
     
     delay 
     #(
-        .WIDTH(28),
+        .WIDTH(40),
         .CLK_DEL(1)
     ) 
     delay_map
     (
         .clk(i_pclk),
         .rst(i_rst),
-        .din({i_hblnk, i_hsync, i_vblnk, i_vsync, i_hcount, i_vcount}),
-        .dout({hblnk_delayed, hsync_delayed, vblnk_delayed, vsync_delayed, hcount_delayed, vcount_delayed})
+        .din({i_hblnk, i_hsync, i_vblnk, i_vsync, i_hcount, i_vcount, i_rgb}),
+        .dout({hblnk_delayed, hsync_delayed, vblnk_delayed, vsync_delayed, hcount_delayed, vcount_delayed, rgb_delayed})
     );
     
     always @(posedge i_pclk)
@@ -63,29 +65,13 @@ module map_draw
         if (vblnk_delayed || hblnk_delayed)
             o_rgb_nxt = 12'h000;
         else
-            // Active display, top edge, make a yellow line.
-            if (vcount_delayed == 0) o_rgb_nxt = 12'hff0;
-            // Active display, bottom edge, make a red line.
-            else if (vcount_delayed == 1079) o_rgb_nxt = 12'hf00;
-            // Active display, left edge, make a green line.
-            else if (hcount_delayed == 0) o_rgb_nxt = 12'h0f0;
-            // Active display, right edge, make a blue line.
-            else if (hcount_delayed == 1919) o_rgb_nxt = 12'h00f;
+            if (hcount_delayed >= 448 && hcount_delayed < 1472 && vcount_delayed >= 28 && vcount_delayed < 1052)
+                if (i_data == 1'b1)
+                    o_rgb_nxt = 12'h000;          // bomb
+                else 
+                    o_rgb_nxt = rgb_delayed;
             else
-                if (hcount_delayed >= 448 && hcount_delayed < 1472 && vcount_delayed >= 28 && vcount_delayed < 1052) begin
-                    if (i_data == 4'b0000)
-                        o_rgb_nxt = 12'h260;          // surrounding
-                    else if (i_data == 4'b0001)
-                        o_rgb_nxt = 12'hfec;          // path
-                    else if (i_data == 4'b0010)
-                        o_rgb_nxt = 12'h03c;          // obstacle1
-                    else if (i_data == 4'b0011)
-                        o_rgb_nxt = 12'h600;          // obstacle2
-                    else
-                        o_rgb_nxt = 12'h000;
-                end 
-                else
-                    o_rgb_nxt = 12'h555;
+                o_rgb_nxt = 12'h555;
 
         
         assign addrx = (i_hcount - 448) >> 6;
