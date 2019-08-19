@@ -2,14 +2,14 @@
 
 module vga_timing
     (
-        output wire [11:0] vcount,
-        output wire vsync,
-        output wire vblnk,
-        output wire [11:0] hcount,
-        output wire hsync,
-        output wire hblnk,
-        input wire pclk,
-        input wire rst
+        input wire i_pclk,
+        input wire i_rst,
+        output wire [11:0] o_vcount,
+        output wire o_vsync,
+        output wire o_vblnk,
+        output wire [11:0] o_hcount,
+        output wire o_hsync,
+        output wire o_hblnk
     );
     
 
@@ -34,16 +34,16 @@ module vga_timing
     reg [11:0] hc = 0;
     
     // Count pixels on a given line (hc) and lines on a given frame (vc)
-    always @(posedge pclk)
-        if (rst) begin
+    always @(posedge i_pclk)
+        if (i_rst) begin
             vc <= 0;
             hc <= 0;
         end
         else
-            if (hcount == HOR_TOTAL_TIME-1)
+            if (o_hcount == HOR_TOTAL_TIME-1)
             begin
                 hc <= 0;
-                if (vcount == VER_TOTAL_TIME-1)
+                if (o_vcount == VER_TOTAL_TIME-1)
                     vc <= 0;
                 else
                     vc <= vc + 1;
@@ -51,11 +51,11 @@ module vga_timing
             else
                 hc <= hc + 1;
 
-    assign vcount = vc;
-    assign hcount = hc;
-    assign vsync = (vc >= VER_SYNC_START && vc <= VER_SYNC_STOP);
-    assign hsync = (hc >= HOR_SYNC_START && hc <= HOR_SYNC_STOP);
-    assign vblnk = (vc >= VER_BLANK_START && vc <= VER_BLANK_STOP);
-    assign hblnk = (hc >= HOR_BLANK_START && hc <= HOR_BLANK_STOP);
+    assign o_vcount = vc;
+    assign o_hcount = hc;
+    assign o_vsync = (vc >= VER_SYNC_START && vc <= VER_SYNC_STOP);
+    assign o_hsync = (hc >= HOR_SYNC_START && hc <= HOR_SYNC_STOP);
+    assign o_vblnk = (vc >= VER_BLANK_START && vc <= VER_BLANK_STOP);
+    assign o_hblnk = (hc >= HOR_BLANK_START && hc <= HOR_BLANK_STOP);
 
 endmodule
