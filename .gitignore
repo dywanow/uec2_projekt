@@ -1,3 +1,11 @@
-doc
-backup
-vivado
+*
+!.gitignore
+!src/
+!src/*
+!hw/
+!hw/*
+!ip/
+!ip/*
+!bd/
+!bd/*
+!build.tcl
