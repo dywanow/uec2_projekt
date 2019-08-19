@@ -1,4 +1,4 @@
-# Test repository for uec2 project
+# Bomberman using Xilinx Microblaze for UEC2 project
 
 ## Essential software
 
@@ -7,13 +7,13 @@
 
 ## Installation instruction
 
-1. Create a directory uec2_projekt_test
+1. Create a directory uec2_projekt
 2. Open cmd
 3. Go to newly created directory (cd)
 4. Run the following command:
 
 ```
-git clone git://github.com/dywanow/uec2_projekt_test.git .
+git clone git://github.com/dywanow/uec2_projekt.git .
 ```
 
 5. Open Vivado
