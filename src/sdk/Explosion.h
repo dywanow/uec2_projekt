@@ -19,6 +19,7 @@ public:
 	Bomberman* GetBomberman() const;
 	Bomb* GetBomb() const;
 
+	uint8_t CollidesWithElement(const Element &element) const;
 	void Update(float dt);
 
 private:

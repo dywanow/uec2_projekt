@@ -50,3 +50,13 @@ void Explosion::Update(float dt)
 		}
 	}
 }
+
+uint8_t Explosion::CollidesWithElement(const Element &element) const
+{
+	auto el_pos = element.GetPosition();
+	if (element.IsCollidable() && element.IsActive() && el_pos == position)
+	{
+		return 1;
+	}
+	return 0;
+}
