@@ -1,14 +1,10 @@
 #include "Bomb.h"
 #include "Bomberman.h"
 
-Bomb::Bomb() : Element(0, 0, Element::Type::BOMB, Element::State::NOT_ACTIVE), time(0)
+Bomb::Bomb() : Element(0, 0, Element::Type::BOMB, Element::State::NOT_ACTIVE),
+			   time(0)
 {
-	position = owner->GetPosition();
-}
 
-Bomb::Bomb(Bomberman *owner) : Element(0, 0, Element::Type::BOMB, Element::State::NOT_ACTIVE),  owner(owner), time(0)
-{
-	position = owner->GetPosition();
 }
 
 void Bomb::SetTime(float time)
@@ -23,17 +19,13 @@ float Bomb::GetTime() const
 
 void Bomb::Update(float dt)
 {
-	if (state == Element::State::NOT_ACTIVE)
-	{
-		position = owner->GetPosition();
-		time = 0;
-	}
-	else
+	if (state == Element::State::ACTIVE)
 	{
 		time += dt;
 		if (time >= ACTIVE_TIME)
 		{
 			state = Element::State::NOT_ACTIVE;
+			time = 0;
 		}
 	}
 }

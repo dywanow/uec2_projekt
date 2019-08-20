@@ -4,8 +4,8 @@
 
 Game::Game() : player1(1, 1, Element::Type::PLR1),
 			   player2(14, 14, Element::Type::PLR2),
-			   bomb1(&player1),
-			   bomb2(&player2),
+			   bomb1(),
+			   bomb2(),
 			   keyboard(XPAR_UARTLITE_0_BASEADDR),
 			   timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, TIMER_NUMBER),
 			   bm(&player1, &player2, &bomb1, &bomb2, blocks, XPAR_AXI_BOARD_S00_AXI_BASEADDR)
@@ -91,6 +91,7 @@ void Game::HandleKeyboard()
 		}
 		if (pressed_key == ' ')
 		{
+			bomb1.SetPosition(player1.GetPosition());
 			bomb1.SetState(Element::State::ACTIVE);
 			xil_printf("BOMB: [%u, %u]\n", bomb1.GetPosition().GetX(), bomb1.GetPosition().GetY());
 		}

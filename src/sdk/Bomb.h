@@ -10,7 +10,6 @@ class Bomb : public Element
 {
 public:
 	Bomb();
-	Bomb(Bomberman *owner);
 
 	void SetTime(float time);
 	float GetTime() const;
@@ -20,7 +19,6 @@ public:
 private:
 	static const uint8_t ACTIVE_TIME = 4;
 
-	Bomberman *owner;
 	float time;
 
 };
