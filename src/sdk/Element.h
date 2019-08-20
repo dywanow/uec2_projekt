@@ -25,6 +25,7 @@ public:
 	uint8_t IsCollidable() const;
 	uint8_t IsActive() const;
 
+	void Draw(uint32_t *drawer) const;
 
 protected:
 	Vector position;

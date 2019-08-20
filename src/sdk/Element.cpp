@@ -76,3 +76,8 @@ uint8_t Element::IsActive() const
 	return state == State::ACTIVE;
 }
 
+void Element::Draw(uint32_t *drawer) const
+{
+	*drawer = (GetTypeCode() << 8) + GetNormalizedPosition();
+}
+

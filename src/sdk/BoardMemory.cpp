@@ -28,6 +28,6 @@ void BoardMemory::Update()
 	}
 	for (const auto &el : elements_to_draw)
 	{
-		*drawer = (el->GetTypeCode() << 8) + el->GetNormalizedPosition();
+		el->Draw(drawer);
 	}
 }
