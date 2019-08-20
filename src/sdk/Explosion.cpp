@@ -40,16 +40,13 @@ Bomb* Explosion::GetBomb() const
 
 void Explosion::Update(float dt)
 {
-	if (state == Element::State::NOT_ACTIVE)
-	{
-		time = 0;
-	}
-	else
+	if (state == Element::State::ACTIVE)
 	{
 		time += dt;
 		if (time >= ACTIVE_TIME)
 		{
 			state = Element::State::NOT_ACTIVE;
+			time = 0;
 		}
 	}
 }
