@@ -1,38 +1,15 @@
 #include "Vector.h"
 
-Vector::Vector(uint16_t x, uint16_t y) : x(x), y(y) { }
-
-Vector Vector::operator+(const Vector &v)
+uint8_t operator==(const Vector &v1, const Vector &v2)
 {
-	Vector vector;
-	vector.x = x + v.x;
-	vector.y = y + v.y;
-	return vector;
+	return v1.x == v2.x && v1.y == v2.y;
 }
 
-Vector Vector::operator*(const Vector &v)
+Vector::Vector(uint16_t x, uint16_t y) : x(x),
+										 y(y)
 {
-	Vector vector;
-	vector.x = x * v.x;
-	vector.y = y * v.y;
-	return vector;
-}
 
-Vector Vector::operator*(const uint16_t &value)
-{
-	Vector vector;
-	vector.x = x * value;
-	vector.y = y * value;
-	return vector;
 }
-
-Vector& Vector::operator+=(const Vector &v)
-{
-	x += v.x;
-	y += v.y;
-	return *this;
-}
-
 
 void Vector::SetX(uint16_t x)
 {

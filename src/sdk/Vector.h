@@ -5,12 +5,10 @@
 
 class Vector
 {
+	friend uint8_t operator==(const Vector &v1, const Vector &v2);
+
 public:
 	Vector(uint16_t x = 0, uint16_t y = 0);
-	Vector operator+(const Vector &v);
-	Vector operator*(const Vector &v);
-	Vector operator*(const uint16_t &value);
-	Vector& operator+=(const Vector &v);
 
 	void SetX(uint16_t x);
 	void SetY(uint16_t y);
