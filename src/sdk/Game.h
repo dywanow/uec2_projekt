@@ -4,7 +4,6 @@
 #include "Arena.h"
 #include "Keyboard.h"
 #include "Timer.h"
-#include "BoardMemory.h"
 #include "xparameters.h"
 #include "xil_types.h"
 #include "xil_printf.h"

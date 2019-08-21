@@ -4,32 +4,28 @@
 #include "Element.h"
 #include "xil_types.h"
 
-class Block;
-class BombSet;
-
 class Bomber : public Element
 {
 public:
 	enum class MovementDirection { NONE, UP, DOWN, LEFT, RIGHT };
 
 	Bomber();
-	Bomber(uint8_t x, uint8_t y, Element::Type type);
-
-	void GoLeft();
-	void GoRight();
-	void GoUp();
-	void GoDown();
-	void Stop();
-
-	uint8_t CollidesWithElement(const Element &element) const;
 	void Update(float dt);
-
+	void SetMovementDirection(MovementDirection movement_direction);
+	void IncrementBombsNumber();
+	void DecrementBombsNumber();
+	void SetMaxBombsNumber(uint8_t max_bombs_number);
 	MovementDirection GetMovementDirection() const;
+	uint8_t GetBombsNumber() const;
+	uint8_t GetMaxBombsNumber() const;
 
 private:
 	static const float MOVE_TIME;
+
 	MovementDirection movement_direction;
 	float time;
+	uint8_t max_bombs_number;
+	uint8_t bombs_number;
 };
 
 #endif /* BOMBERMAN_H_ */

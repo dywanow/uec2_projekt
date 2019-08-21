@@ -3,6 +3,9 @@
 
 #include "Vector.h"
 #include "xil_types.h"
+#include "xil_printf.h"
+
+class Arena;
 
 class Element
 {
@@ -12,7 +15,7 @@ public:
 
 	Element(uint16_t i, uint16_t j, Type type, State state);
 	Element(Vector position, Type type, State state);
-
+	void SetArena(Arena *arena);
 	void SetPosition(uint16_t i, uint16_t j);
 	void SetPosition(Vector position);
 	void SetType(Type type);
@@ -24,10 +27,10 @@ public:
 	uint8_t GetTypeCode() const;
 	uint8_t IsCollidable() const;
 	uint8_t IsActive() const;
-
 	void Draw(uint32_t *drawer) const;
 
 protected:
+	Arena *arena;
 	Vector position;
 	Type type;
 	State state;

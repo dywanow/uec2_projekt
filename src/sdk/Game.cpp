@@ -32,72 +32,47 @@ void Game::HandleKeyboard()
 	if (!keyboard.IsKeyPressed())
 	{
 		pressed_key = keyboard.GetKey();
-//		if (pressed_key == 'w')
-//		{
-//			player1.GoUp();
-//		}
-//		if (pressed_key == 'a')
-//		{
-//			player1.GoLeft();
-//		}
-//		if (pressed_key == 's')
-//		{
-//			player1.GoDown();
-//		}
-//		if (pressed_key == 'd')
-//		{
-//			player1.GoRight();
-//		}
-//		if (pressed_key == ' ')
-//		{
-//			bomb1.SetPosition(player1.GetPosition());
-//			bomb1.SetState(Element::State::ACTIVE);
-//			xil_printf("BOMB: [%u, %u]\n", bomb1.GetPosition().GetX(), bomb1.GetPosition().GetY());
-//		}
-//		if (pressed_key == '8')
-//		{
-//			player2.GoUp();
-//		}
-//		if (pressed_key == '4')
-//		{
-//			player2.GoLeft();
-//		}
-//		if (pressed_key == '2')
-//		{
-//			player2.GoDown();
-//		}
-//		if (pressed_key == '6')
-//		{
-//			player2.GoRight();
-//		}
-//		if (pressed_key == '5')
-//		{
-//			bomb1.SetState(Element::State::NOT_ACTIVE);
-//			xil_printf("POS: [%u, %u]\n", player2.GetPosition().GetX(), player2.GetPosition().GetY());
-//		}
-//		if (pressed_key == 'p')
-//		{
-//			player1.SetPosition(1, 1);
-//		}
+		if (pressed_key == 'w')
+		{
+			arena.players[0].SetMovementDirection(Bomber::MovementDirection::UP);
+		}
+		if (pressed_key == 'a')
+		{
+			arena.players[0].SetMovementDirection(Bomber::MovementDirection::LEFT);
+		}
+		if (pressed_key == 's')
+		{
+			arena.players[0].SetMovementDirection(Bomber::MovementDirection::DOWN);
+		}
+		if (pressed_key == 'd')
+		{
+			arena.players[0].SetMovementDirection(Bomber::MovementDirection::RIGHT);
+		}
+		if (pressed_key == ' ')
+		{
+			if (arena.players[0].GetBombsNumber() < arena.players[0].GetMaxBombsNumber())
+			{
+				for (auto &bomb : arena.bombs)
+				{
+					if (!bomb.IsActive())
+					{
+						bomb.SetState(Element::State::ACTIVE);
+						bomb.SetPosition(arena.players[0].GetPosition());
+						bomb.SetBomberID(0);
+						arena.players[0].IncrementBombsNumber();
+						break;
+					}
+				}
+			}
+		}
+		if (pressed_key == 'p')
+		{
+			arena.players[0].DecrementBombsNumber();
+		}
 		xil_printf("[%c]\n", pressed_key);
 	}
 }
 
-//void Game::HandleCollisions()
-//{
-//	for (auto &p : players)
-//	{
-//		for (auto &col_el : collidable_elements)
-//		{
-//			if (p->CollidesWithElement(*col_el))
-//			{
-//				p->Stop();
-//				auto pos = col_el->GetPosition();
-//				xil_printf("COLLISION | (%u, %u) | %u\n", pos.GetX(), pos.GetY(), col_el->GetTypeCode());
-//			}
-//		}
-//	}
-//}
 
 void Game::Update(float dt)
 {

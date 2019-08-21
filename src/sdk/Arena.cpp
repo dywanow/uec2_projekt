@@ -1,12 +1,16 @@
 #include "Arena.h"
+#include "Element.h"
+#include "Block.h"
+#include "Bomber.h"
+#include "Bomb.h"
 
 Arena::Arena()
 {
-	for (uint8_t j = 0; j < SIZE; j++)
+	for (uint8_t j = 0; j < HEIGHT; j++)
 	{
-		for (uint8_t i = 0; i < SIZE; i++)
+		for (uint8_t i = 0; i < WIDTH; i++)
 		{
-			blocks[i + j*SIZE].SetPosition(i, j);
+			blocks[i + j*WIDTH].SetPosition(i, j);
 		}
 	}
 	const auto SURR = Element::Type::SURR, PATH = Element::Type::PATH, OBS1 = Element::Type::OBS1, OBS2 = Element::Type::OBS2;
@@ -29,31 +33,42 @@ Arena::Arena()
 		SURR, OBS1, OBS1, OBS1, OBS2, OBS1, PATH, OBS1, OBS2, OBS1, OBS2, OBS1, OBS1, OBS2, PATH, SURR,
 		SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR, SURR
 	};
-	for (uint16_t i = 0; i < SIZE*SIZE; i++)
+	for (uint16_t i = 0; i < BLOCKS_NUMBER; i++)
 	{
 		blocks[i].SetType(types[i]);
+		elements[i] = &blocks[i];
 	}
+
+	for (uint8_t i = 0; i < BOMBS_NUMBER; i++)
+	{
+		elements[BLOCKS_NUMBER+i] = &bombs[i];
+	}
+
 	players[0].SetPosition(1, 1);
 	players[1].SetPosition(14, 14);
 	players[1].SetType(Element::Type::PLR2);
+	for (uint8_t i = 0; i < PLAYERS_NUMBER; i++)
+	{
+		elements[BLOCKS_NUMBER+BOMBS_NUMBER+i] = &players[i];
+		players[i].SetMaxBombsNumber(BOMBS_PER_PLAYER);
+
+	}
+
+	for (auto &el : elements)
+	{
+		el->SetArena(this);
+	}
 }
+
 
 void Arena::Update(float dt)
 {
-	for (auto &block : blocks)
+	for (auto &e : elements)
 	{
-		simple_view[block.GetNormalizedPosition()] = block.GetTypeCode();
-	}
-	for (auto &bomb : bombs)
-	{
-		if (bomb.IsActive())
+		if (e->IsActive())
 		{
-			simple_view[bomb.GetNormalizedPosition()] = bomb.GetTypeCode();
+			view[e->GetNormalizedPosition()] = e;
 		}
-	}
-	for (auto &player : players)
-	{
-		simple_view[player.GetNormalizedPosition()] = player.GetTypeCode();
 	}
 	for (auto &player : players)
 	{
@@ -65,10 +80,11 @@ void Arena::Update(float dt)
 	}
 }
 
+
 void Arena::Draw(uint32_t *drawer)
 {
-	for (uint16_t pos = 0; pos < SIZE*SIZE; pos++)
+	for (auto &v : view)
 	{
-		*drawer = (simple_view[pos] << 8) + pos;
+		*drawer = (v->GetTypeCode() << 8) + v->GetNormalizedPosition();
 	}
 }

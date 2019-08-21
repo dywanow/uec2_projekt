@@ -1,88 +1,97 @@
 #include "Bomber.h"
-#include "Block.h"
+#include "Arena.h"
 
 const float Bomber::MOVE_TIME = 0.3f;
 
 Bomber::Bomber() : Element(0, 0, Element::Type::PLR1, Element::State::ACTIVE),
-						 movement_direction(MovementDirection::NONE),
-						 time(0)
+                   movement_direction(MovementDirection::NONE),
+                   time(0),
+				   max_bombs_number(0),
+                   bombs_number(0)
 {
 
-}
-
-Bomber::Bomber(uint8_t x, uint8_t y, Element::Type type) : Element(x, y, type, Element::State::ACTIVE),
-																 movement_direction(MovementDirection::NONE),
-																 time(0)
-{
-
-}
-
-void Bomber::GoLeft()
-{
-	movement_direction = MovementDirection::LEFT;
-}
-void Bomber::GoRight()
-{
-	movement_direction = MovementDirection::RIGHT;
-}
-void Bomber::GoUp()
-{
-	movement_direction = MovementDirection::UP;
-}
-void Bomber::GoDown()
-{
-	movement_direction = MovementDirection::DOWN;
-}
-
-void Bomber::Stop()
-{
-	movement_direction = MovementDirection::NONE;
 }
 
 
 void Bomber::Update(float dt)
 {
-	time += dt;
-	if (time >= MOVE_TIME && movement_direction != MovementDirection::NONE)
+	for (auto &el : arena->elements)
 	{
-		switch (movement_direction)
+		auto el_pos = el->GetPosition();
+		if (el->IsCollidable() && el->IsActive() &&
+			((movement_direction == MovementDirection::LEFT && el_pos.GetX() == position.GetX() - 1 && el_pos.GetY() == position.GetY()) ||
+			(movement_direction == MovementDirection::RIGHT && el_pos.GetX() == position.GetX() + 1 && el_pos.GetY() == position.GetY()) ||
+			(movement_direction == MovementDirection::UP && el_pos.GetY() == position.GetY() - 1 && el_pos.GetX() == position.GetX()) ||
+			(movement_direction == MovementDirection::DOWN && el_pos.GetY() == position.GetY() + 1 && el_pos.GetX() == position.GetX())))
 		{
-		case MovementDirection::LEFT:
-			position.SetX(position.GetX() - 1);
-			break;
-		case MovementDirection::RIGHT:
-			position.SetX(position.GetX() + 1);
-			break;
-		case MovementDirection::UP:
-			position.SetY(position.GetY() - 1);
-			break;
-		case MovementDirection::DOWN:
-			position.SetY(position.GetY() + 1);
-			break;
-		default:
-			break;
+			xil_printf("COLLISION | (%u, %u) | %u\n", el_pos.GetX(), el_pos.GetY(), el->GetTypeCode());
+			movement_direction = MovementDirection::NONE;
 		}
-		time = 0;
 	}
-	movement_direction = MovementDirection::NONE;
+
+	time += dt;
+	if (time >= MOVE_TIME)
+	{
+		if (movement_direction != MovementDirection::NONE)
+		{
+			switch (movement_direction)
+			{
+			case MovementDirection::LEFT:
+				position.SetX(position.GetX() - 1);
+				break;
+			case MovementDirection::RIGHT:
+				position.SetX(position.GetX() + 1);
+				break;
+			case MovementDirection::UP:
+				position.SetY(position.GetY() - 1);
+				break;
+			case MovementDirection::DOWN:
+				position.SetY(position.GetY() + 1);
+				break;
+			default:
+				break;
+			}
+			time = 0;
+			movement_direction = MovementDirection::NONE;
+		}
+		else
+		{
+			time = MOVE_TIME;
+		}
+	}
 }
 
+void Bomber::SetMovementDirection(Bomber::MovementDirection movement_direction)
+{
+	this->movement_direction = movement_direction;
+}
+
+void Bomber::IncrementBombsNumber()
+{
+	bombs_number++;
+}
+
+void Bomber::DecrementBombsNumber()
+{
+	bombs_number--;
+}
+
+void Bomber::SetMaxBombsNumber(uint8_t max_bombs_number)
+{
+	this->max_bombs_number = max_bombs_number;
+}
 
 Bomber::MovementDirection Bomber::GetMovementDirection() const
 {
 	return movement_direction;
 }
 
-uint8_t Bomber::CollidesWithElement(const Element &element) const
+uint8_t Bomber::GetBombsNumber() const
 {
-	auto el_pos = element.GetPosition();
-	if (element.IsCollidable() && element.IsActive() &&
-		((movement_direction == Bomber::MovementDirection::LEFT && el_pos.GetX() == position.GetX() - 1 && el_pos.GetY() == position.GetY()) ||
-		(movement_direction == Bomber::MovementDirection::RIGHT && el_pos.GetX() == position.GetX() + 1 && el_pos.GetY() == position.GetY()) ||
-		(movement_direction == Bomber::MovementDirection::UP && el_pos.GetY() == position.GetY() - 1 && el_pos.GetX() == position.GetX()) ||
-		(movement_direction == Bomber::MovementDirection::DOWN && el_pos.GetY() == position.GetY() + 1 && el_pos.GetX() == position.GetX())))
-		{
-			return 1;
-		}
-	return 0;
+	return bombs_number;
+}
+
+uint8_t Bomber::GetMaxBombsNumber() const
+{
+	return max_bombs_number;
 }

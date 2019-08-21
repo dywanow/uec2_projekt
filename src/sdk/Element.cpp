@@ -1,4 +1,5 @@
 #include "Element.h"
+#include "Arena.h"
 
 Element::Element(uint16_t i, uint16_t j, Element::Type type, State state) : position(Vector(i, j)), type(type), state(state)
 {
@@ -8,6 +9,11 @@ Element::Element(uint16_t i, uint16_t j, Element::Type type, State state) : posi
 Element::Element(Vector position, Element::Type type, State state) : position(position), type(type), state(state)
 {
 
+}
+
+void Element::SetArena(Arena *arena)
+{
+	this->arena = arena;
 }
 
 void Element::SetPosition(uint16_t i, uint16_t j)
