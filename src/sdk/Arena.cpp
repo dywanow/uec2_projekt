@@ -33,24 +33,27 @@ Arena::Arena()
 	{
 		blocks[i].SetType(types[i]);
 	}
+	players[0].SetPosition(1, 1);
+	players[1].SetPosition(14, 14);
+	players[1].SetType(Element::Type::PLR2);
 }
 
 void Arena::Update(float dt)
 {
 	for (auto &block : blocks)
 	{
-		simple_view[block.GetNormalizedPosition()] = block.GetType();
+		simple_view[block.GetNormalizedPosition()] = block.GetTypeCode();
 	}
 	for (auto &bomb : bombs)
 	{
 		if (bomb.IsActive())
 		{
-			simple_view[bomb.GetNormalizedPosition()] = bomb.GetType();
+			simple_view[bomb.GetNormalizedPosition()] = bomb.GetTypeCode();
 		}
 	}
 	for (auto &player : players)
 	{
-		simple_view[player.GetNormalizedPosition()] = player.GetType();
+		simple_view[player.GetNormalizedPosition()] = player.GetTypeCode();
 	}
 	for (auto &player : players)
 	{
@@ -59,5 +62,13 @@ void Arena::Update(float dt)
 	for (auto &bomb : bombs)
 	{
 		bomb.Update(dt);
+	}
+}
+
+void Arena::Draw(uint32_t *drawer)
+{
+	for (uint16_t pos = 0; pos < SIZE*SIZE; pos++)
+	{
+		*drawer = (simple_view[pos] << 8) + pos;
 	}
 }

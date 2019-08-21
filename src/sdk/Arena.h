@@ -11,6 +11,7 @@ class Arena
 public:
 	Arena();
 	void Update(float dt);
+	void Draw(uint32_t *drawer);
 
 private:
 	static const uint8_t SIZE = 16;
@@ -20,7 +21,7 @@ private:
 	Block blocks[SIZE*SIZE];
 	Bomberman players[PLAYERS_NUMBER];
 	Bomb bombs[BOMBS_NUMBER];
-	Element::Type simple_view[SIZE*SIZE];
+	uint8_t simple_view[SIZE*SIZE];
 };
 
 #endif  /* SRC_ARENAELEMENT_H_ */
