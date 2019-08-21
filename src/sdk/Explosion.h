@@ -5,35 +5,19 @@
 #include "ExplosionPart.h"
 #include "xil_types.h"
 
-class Bomber;
-class Bomb;
-
 class Explosion : public Element
 {
 public:
 	Explosion();
-
-	void SetTime(float time);
-	void SetBomber(Bomber *owner);
-	void SetBomb(Bomb *bomb);
-	float GetTime() const;
-	Bomber* GetBomber() const;
-	Bomb* GetBomb() const;
-
-	uint8_t CollidesWithElement(const Element &element) const;
 	void Update(float dt);
-
 	void Draw(uint32_t *drawer) const;
 
 private:
 	static const uint8_t ACTIVE_TIME = 1;
 	static const uint8_t PARTS_NUMBER = 12;
 
-	Bomber *player;
-	Bomb *bomb;
 	ExplosionPart explosion_parts[PARTS_NUMBER];
 	float time;
-
 };
 
 #endif /* SRC_EXPLOSION_H_ */

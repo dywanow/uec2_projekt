@@ -3,40 +3,9 @@
 #include "Bomb.h"
 
 Explosion::Explosion() : Element(0, 0, Element::Type::EXPL, Element::State::NOT_ACTIVE),
-						 time(0)
+                         time(0)
 {
 
-}
-
-
-void Explosion::SetTime(float time)
-{
-	this->time = time;
-}
-
-void Explosion::SetBomber(Bomber *player)
-{
-	this->player = player;
-}
-
-void Explosion::SetBomb(Bomb *bomb)
-{
-	this->bomb = bomb;
-}
-
-float Explosion::GetTime() const
-{
-	return time;
-}
-
-Bomber* Explosion::GetBomber() const
-{
-	return player;
-}
-
-Bomb* Explosion::GetBomb() const
-{
-	return bomb;
 }
 
 void Explosion::Update(float dt)
@@ -51,16 +20,6 @@ void Explosion::Update(float dt)
 			time = 0;
 		}
 	}
-}
-
-uint8_t Explosion::CollidesWithElement(const Element &element) const
-{
-	auto el_pos = element.GetPosition();
-	if (element.IsCollidable() && element.IsActive() && el_pos == position)
-	{
-		return 1;
-	}
-	return 0;
 }
 
 void Explosion::Draw(uint32_t *drawer) const

@@ -8,8 +8,6 @@ class ExplosionPart : public Element
 {
 public:
 	ExplosionPart();
-
-	uint8_t CollidesWithElement(const Element &element) const;
 };
 
 #endif /* SRC_EXPLOSION_H_ */
