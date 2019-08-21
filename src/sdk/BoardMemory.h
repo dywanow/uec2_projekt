@@ -2,7 +2,7 @@
 #define SRC_BOARDMEMORY_H_
 
 #include "Element.h"
-#include "Bomberman.h"
+#include "Bomber.h"
 #include "Block.h"
 #include "Bomb.h"
 #include "xil_types.h"
@@ -11,7 +11,7 @@
 class BoardMemory
 {
 public:
-	BoardMemory(Bomberman *player1, Bomberman *player2, Bomb *bomb1, Bomb *bomb2, Block *blocks, uint32_t baseaddr);
+	BoardMemory(Bomber *player1, Bomber *player2, Bomb *bomb1, Bomb *bomb2, Block *blocks, uint32_t baseaddr);
 	void Update();
 
 private:

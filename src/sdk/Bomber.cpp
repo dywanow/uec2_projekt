@@ -1,46 +1,46 @@
-#include "Bomberman.h"
+#include "Bomber.h"
 #include "Block.h"
 
-const float Bomberman::MOVE_TIME = 0.3f;
+const float Bomber::MOVE_TIME = 0.3f;
 
-Bomberman::Bomberman() : Element(0, 0, Element::Type::PLR1, Element::State::ACTIVE),
+Bomber::Bomber() : Element(0, 0, Element::Type::PLR1, Element::State::ACTIVE),
 						 movement_direction(MovementDirection::NONE),
 						 time(0)
 {
 
 }
 
-Bomberman::Bomberman(uint8_t x, uint8_t y, Element::Type type) : Element(x, y, type, Element::State::ACTIVE),
+Bomber::Bomber(uint8_t x, uint8_t y, Element::Type type) : Element(x, y, type, Element::State::ACTIVE),
 																 movement_direction(MovementDirection::NONE),
 																 time(0)
 {
 
 }
 
-void Bomberman::GoLeft()
+void Bomber::GoLeft()
 {
 	movement_direction = MovementDirection::LEFT;
 }
-void Bomberman::GoRight()
+void Bomber::GoRight()
 {
 	movement_direction = MovementDirection::RIGHT;
 }
-void Bomberman::GoUp()
+void Bomber::GoUp()
 {
 	movement_direction = MovementDirection::UP;
 }
-void Bomberman::GoDown()
+void Bomber::GoDown()
 {
 	movement_direction = MovementDirection::DOWN;
 }
 
-void Bomberman::Stop()
+void Bomber::Stop()
 {
 	movement_direction = MovementDirection::NONE;
 }
 
 
-void Bomberman::Update(float dt)
+void Bomber::Update(float dt)
 {
 	time += dt;
 	if (time >= MOVE_TIME && movement_direction != MovementDirection::NONE)
@@ -68,19 +68,19 @@ void Bomberman::Update(float dt)
 }
 
 
-Bomberman::MovementDirection Bomberman::GetMovementDirection() const
+Bomber::MovementDirection Bomber::GetMovementDirection() const
 {
 	return movement_direction;
 }
 
-uint8_t Bomberman::CollidesWithElement(const Element &element) const
+uint8_t Bomber::CollidesWithElement(const Element &element) const
 {
 	auto el_pos = element.GetPosition();
 	if (element.IsCollidable() && element.IsActive() &&
-		((movement_direction == Bomberman::MovementDirection::LEFT && el_pos.GetX() == position.GetX() - 1 && el_pos.GetY() == position.GetY()) ||
-		(movement_direction == Bomberman::MovementDirection::RIGHT && el_pos.GetX() == position.GetX() + 1 && el_pos.GetY() == position.GetY()) ||
-		(movement_direction == Bomberman::MovementDirection::UP && el_pos.GetY() == position.GetY() - 1 && el_pos.GetX() == position.GetX()) ||
-		(movement_direction == Bomberman::MovementDirection::DOWN && el_pos.GetY() == position.GetY() + 1 && el_pos.GetX() == position.GetX())))
+		((movement_direction == Bomber::MovementDirection::LEFT && el_pos.GetX() == position.GetX() - 1 && el_pos.GetY() == position.GetY()) ||
+		(movement_direction == Bomber::MovementDirection::RIGHT && el_pos.GetX() == position.GetX() + 1 && el_pos.GetY() == position.GetY()) ||
+		(movement_direction == Bomber::MovementDirection::UP && el_pos.GetY() == position.GetY() - 1 && el_pos.GetX() == position.GetX()) ||
+		(movement_direction == Bomber::MovementDirection::DOWN && el_pos.GetY() == position.GetY() + 1 && el_pos.GetX() == position.GetX())))
 		{
 			return 1;
 		}

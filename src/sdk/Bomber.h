@@ -7,13 +7,13 @@
 class Block;
 class BombSet;
 
-class Bomberman : public Element
+class Bomber : public Element
 {
 public:
 	enum class MovementDirection { NONE, UP, DOWN, LEFT, RIGHT };
 
-	Bomberman();
-	Bomberman(uint8_t x, uint8_t y, Element::Type type);
+	Bomber();
+	Bomber(uint8_t x, uint8_t y, Element::Type type);
 
 	void GoLeft();
 	void GoRight();

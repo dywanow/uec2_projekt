@@ -2,7 +2,7 @@
 #define SRC_ARENA_H_
 
 #include "Block.h"
-#include "Bomberman.h"
+#include "Bomber.h"
 #include "Bomb.h"
 #include "xil_types.h"
 
@@ -19,7 +19,7 @@ private:
 	static const uint8_t BOMBS_NUMBER = 2;
 
 	Block blocks[SIZE*SIZE];
-	Bomberman players[PLAYERS_NUMBER];
+	Bomber players[PLAYERS_NUMBER];
 	Bomb bombs[BOMBS_NUMBER];
 	uint8_t simple_view[SIZE*SIZE];
 };

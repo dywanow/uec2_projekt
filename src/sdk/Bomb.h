@@ -4,7 +4,7 @@
 #include "Element.h"
 #include "xil_types.h"
 
-class Bomberman;
+class Bomber;
 
 class Bomb : public Element
 {

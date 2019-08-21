@@ -1,6 +1,6 @@
 #include "BoardMemory.h"
 
-BoardMemory::BoardMemory(Bomberman *player1, Bomberman *player2, Bomb *bomb1, Bomb *bomb2, Block *blocks, uint32_t baseaddr) : drawer((uint32_t *)baseaddr)
+BoardMemory::BoardMemory(Bomber *player1, Bomber *player2, Bomb *bomb1, Bomb *bomb2, Block *blocks, uint32_t baseaddr) : drawer((uint32_t *)baseaddr)
 {
 	for (uint16_t i = 0; i < STATIC_ELEMENTS_NUMBER; i++)
 	{

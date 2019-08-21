@@ -1,5 +1,5 @@
 #include "Explosion.h"
-#include "Bomberman.h"
+#include "Bomber.h"
 #include "Bomb.h"
 
 Explosion::Explosion() : Element(0, 0, Element::Type::EXPL, Element::State::NOT_ACTIVE),
@@ -14,7 +14,7 @@ void Explosion::SetTime(float time)
 	this->time = time;
 }
 
-void Explosion::SetBomberman(Bomberman *player)
+void Explosion::SetBomber(Bomber *player)
 {
 	this->player = player;
 }
@@ -29,7 +29,7 @@ float Explosion::GetTime() const
 	return time;
 }
 
-Bomberman* Explosion::GetBomberman() const
+Bomber* Explosion::GetBomber() const
 {
 	return player;
 }

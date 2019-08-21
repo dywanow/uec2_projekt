@@ -1,5 +1,5 @@
 #include "Bomb.h"
-#include "Bomberman.h"
+#include "Bomber.h"
 
 Bomb::Bomb() : Element(0, 0, Element::Type::BOMB, Element::State::NOT_ACTIVE),
 			   time(0)
