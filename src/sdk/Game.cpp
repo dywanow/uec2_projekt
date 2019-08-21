@@ -34,19 +34,19 @@ void Game::HandleKeyboard()
 		pressed_key = keyboard.GetKey();
 		if (pressed_key == 'w')
 		{
-			arena.players[0].SetMovementDirection(Bomber::MovementDirection::UP);
+			arena.players[0].SetMovement(Bomber::Movement::UP);
 		}
 		if (pressed_key == 'a')
 		{
-			arena.players[0].SetMovementDirection(Bomber::MovementDirection::LEFT);
+			arena.players[0].SetMovement(Bomber::Movement::LEFT);
 		}
 		if (pressed_key == 's')
 		{
-			arena.players[0].SetMovementDirection(Bomber::MovementDirection::DOWN);
+			arena.players[0].SetMovement(Bomber::Movement::DOWN);
 		}
 		if (pressed_key == 'd')
 		{
-			arena.players[0].SetMovementDirection(Bomber::MovementDirection::RIGHT);
+			arena.players[0].SetMovement(Bomber::Movement::RIGHT);
 		}
 		if (pressed_key == ' ')
 		{

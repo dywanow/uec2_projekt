@@ -7,22 +7,22 @@
 class Bomber : public Element
 {
 public:
-	enum class MovementDirection { NONE, UP, DOWN, LEFT, RIGHT };
+	enum class Movement { NONE, UP, DOWN, LEFT, RIGHT };
 
 	Bomber();
 	void Update(float dt);
-	void SetMovementDirection(MovementDirection movement_direction);
+	void SetMovement(Movement movement);
 	void IncrementBombsNumber();
 	void DecrementBombsNumber();
 	void SetMaxBombsNumber(uint8_t max_bombs_number);
-	MovementDirection GetMovementDirection() const;
+	Movement GetMovement() const;
 	uint8_t GetBombsNumber() const;
 	uint8_t GetMaxBombsNumber() const;
 
 private:
 	static const float MOVE_TIME;
 
-	MovementDirection movement_direction;
+	Movement movement;
 	float time;
 	uint8_t max_bombs_number;
 	uint8_t bombs_number;
