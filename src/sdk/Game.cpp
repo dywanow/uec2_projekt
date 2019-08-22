@@ -50,20 +50,7 @@ void Game::HandleKeyboard()
 		}
 		if (pressed_key == ' ')
 		{
-			if (arena.players[0].GetBombsNumber() < arena.players[0].GetMaxBombsNumber())
-			{
-				for (auto &bomb : arena.bombs)
-				{
-					if (!bomb.IsActive())
-					{
-						bomb.SetState(Element::State::ACTIVE);
-						bomb.SetPosition(arena.players[0].GetPosition());
-						bomb.SetBomberID(0);
-						arena.players[0].IncrementBombsNumber();
-						break;
-					}
-				}
-			}
+			arena.InitBomb(0);
 		}
 		if (pressed_key == 'p')
 		{

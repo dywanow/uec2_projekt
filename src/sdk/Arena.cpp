@@ -51,7 +51,11 @@ Arena::Arena()
 	{
 		elements[BLOCKS_NUMBER+BOMBS_NUMBER+i] = &players[i];
 		players[i].SetMaxBombsNumber(BOMBS_PER_PLAYER);
+	}
 
+	for (uint8_t i = 0; i < EXPLOSIONS_NUMBER; i++)
+	{
+		elements[BLOCKS_NUMBER+BOMBS_NUMBER+PLAYERS_NUMBER+i] = &explosions[i];
 	}
 
 	for (auto &el : elements)
@@ -60,6 +64,50 @@ Arena::Arena()
 	}
 }
 
+void Arena::InitBomb(uint8_t bomber_id)
+{
+	if (players[bomber_id].GetBombsNumber() < players[bomber_id].GetMaxBombsNumber())
+	{
+		for (auto &bomb : bombs)
+		{
+			if (!IsPositionOccupied(bomber_id))
+			{
+				bomb.SetState(Element::State::ACTIVE);
+				bomb.SetPosition(players[bomber_id].GetPosition());
+				bomb.SetBomberID(bomber_id);
+				players[bomber_id].IncrementBombsNumber();
+				break;
+			}
+		}
+	}
+}
+
+void Arena::InitExplosion(uint8_t bomber_id)
+{
+	for (auto &explosion : explosions)
+	{
+		if (!explosion.IsActive())
+		{
+			explosion.SetState(Element::State::ACTIVE);
+			explosion.SetPosition(players[bomber_id].GetPosition());
+			explosion.SetBomberID(bomber_id);
+			explosion.InitParts();
+			break;
+		}
+	}
+}
+
+uint8_t Arena::IsPositionOccupied(uint8_t bomber_id) const
+{
+	for (auto &bomb : bombs)
+	{
+		if (bomb.GetPosition() == players[bomber_id].GetPosition() && bomb.IsActive())
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
 
 void Arena::Update(float dt)
 {

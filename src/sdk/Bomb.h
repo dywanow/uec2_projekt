@@ -17,8 +17,10 @@ public:
 
 private:
 	static const uint8_t ACTIVE_TIME = 4;
+	static const uint8_t EXPLOSION_DELAY = 3;
 
 	uint8_t bomber_id;
+	uint8_t explosion_init;
 	float time;
 };
 
