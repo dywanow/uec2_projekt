@@ -8,8 +8,10 @@ class Block : public Element
 {
 public:
 	Block();
+	void Update();
 
 private:
+	void Destroy();
 };
 
 #endif /* SRC_BLOCK_H_ */

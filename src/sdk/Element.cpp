@@ -1,12 +1,14 @@
 #include "Element.h"
 #include "Arena.h"
 
-Element::Element(uint16_t i, uint16_t j, Element::Type type, State state) : position(Vector(i, j)), type(type), state(state)
+Element::Element() : position(Vector(0, 0)),
+                     type(Element::Types::PATH),
+					 active(0)
 {
 
 }
 
-Element::Element(Vector position, Element::Type type, State state) : position(position), type(type), state(state)
+Element::Element(uint16_t x, uint16_t y, Element::Types type, uint8_t active) : position(Vector(x, y)), type(type), active(active)
 {
 
 }
@@ -16,9 +18,9 @@ void Element::SetArena(Arena *arena)
 	this->arena = arena;
 }
 
-void Element::SetPosition(uint16_t i, uint16_t j)
+void Element::SetPosition(uint16_t x, uint16_t y)
 {
-	SetPosition(Vector(i, j));
+	SetPosition(Vector(x, y));
 }
 
 void Element::SetPosition(Vector position)
@@ -26,14 +28,24 @@ void Element::SetPosition(Vector position)
 	this->position = position;
 }
 
-void Element::SetType(Element::Type type)
+void Element::SetType(Element::Types type)
 {
 	this->type = type;
 }
 
-void Element::SetState(Element::State state)
+void Element::SetID(uint8_t id)
 {
-	this->state = state;
+	this->id = id;
+}
+
+void Element::Activate()
+{
+	active = 1;
+}
+
+void Element::Deactivate()
+{
+	active = 0;
 }
 
 Vector Element::GetPosition() const
@@ -41,14 +53,14 @@ Vector Element::GetPosition() const
 	return position;
 }
 
-Element::Type Element::GetType() const
+Element::Types Element::Type() const
 {
 	return type;
 }
 
-Element::State Element::GetState() const
+uint8_t Element::ID() const
 {
-	return state;
+	return id;
 }
 
 uint8_t Element::GetNormalizedPosition() const
@@ -56,34 +68,34 @@ uint8_t Element::GetNormalizedPosition() const
 	return position.GetX() + (position.GetY() << 4);
 }
 
-uint8_t Element::GetTypeCode() const
+uint8_t Element::TypeCode() const
 {
 	switch (type)
 	{
-		case Type::PATH: return 0;
-		case Type::SURR: return 1;
-		case Type::OBS1: return 2;
-		case Type::OBS2: return 3;
-		case Type::BOMB: return 4;
-		case Type::EXPL: return 5;
-		case Type::PLR1: return 6;
-		case Type::PLR2: return 7;
+		case Types::PATH: return 0;
+		case Types::SURR: return 1;
+		case Types::OBS1: return 2;
+		case Types::OBS2: return 3;
+		case Types::BOMB: return 4;
+		case Types::EXPL: return 5;
+		case Types::PLR1: return 6;
+		case Types::PLR2: return 7;
 		default: return 0;
 	}
 }
 
 uint8_t Element::IsCollidable() const
 {
-	return type != Type::PATH;
+	return type != Types::PATH;
 }
 
 uint8_t Element::IsActive() const
 {
-	return state == State::ACTIVE;
+	return active;
 }
 
-void Element::Draw(uint32_t *drawer) const
+uint8_t Element::IsDestructible() const
 {
-	*drawer = (GetTypeCode() << 8) + GetNormalizedPosition();
+	return type != Types::SURR && type != Types::OBS2 && type != Types::EXPL;
 }
 

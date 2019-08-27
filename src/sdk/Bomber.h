@@ -10,14 +10,13 @@ public:
 	enum class Movement { NONE, UP, DOWN, LEFT, RIGHT };
 
 	Bomber();
-	void Update(float dt);
-	void SetMovement(Movement movement);
-	void IncrementBombsNumber();
+	void MakeMove(Movement movement);
+	void IncrementCurrentBombsNumber();
 	void DecrementBombsNumber();
 	void SetMaxBombsNumber(uint8_t max_bombs_number);
-	Movement GetMovement() const;
-	uint8_t GetBombsNumber() const;
-	uint8_t GetMaxBombsNumber() const;
+	uint8_t CurrentBombsNumber() const;
+	uint8_t MaxBombsNumber() const;
+	void Update(float dt);
 
 private:
 	static const float MOVE_TIME;
@@ -25,7 +24,9 @@ private:
 	Movement movement;
 	float time;
 	uint8_t max_bombs_number;
-	uint8_t bombs_number;
+	uint8_t current_bombs_number;
+
+	uint8_t Collides(const Vector &element_position) const;
 };
 
 #endif /* BOMBERMAN_H_ */

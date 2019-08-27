@@ -34,27 +34,51 @@ void Game::HandleKeyboard()
 		pressed_key = keyboard.GetKey();
 		if (pressed_key == 'w')
 		{
-			arena.players[0].SetMovement(Bomber::Movement::UP);
+			arena.MoveBomberUp(0);
 		}
 		if (pressed_key == 'a')
 		{
-			arena.players[0].SetMovement(Bomber::Movement::LEFT);
+			arena.MoveBomberLeft(0);
 		}
 		if (pressed_key == 's')
 		{
-			arena.players[0].SetMovement(Bomber::Movement::DOWN);
+			arena.MoveBomberDown(0);
 		}
 		if (pressed_key == 'd')
 		{
-			arena.players[0].SetMovement(Bomber::Movement::RIGHT);
+			arena.MoveBomberRight(0);
 		}
 		if (pressed_key == ' ')
 		{
 			arena.InitBomb(0);
+			xil_printf("BOMB0 @ (%u, %u) [%u]\n", arena.GetBomber(0).GetPosition().GetX(), arena.GetBomber(0).GetPosition().GetY(), arena.GetBomber(0).GetNormalizedPosition());
+		}
+		if (pressed_key == '8')
+		{
+			arena.MoveBomberUp(1);
+		}
+		if (pressed_key == '4')
+		{
+			arena.MoveBomberLeft(1);
+		}
+		if (pressed_key == '2')
+		{
+			arena.MoveBomberDown(1);
+		}
+		if (pressed_key == '6')
+		{
+			arena.MoveBomberRight(1);
+		}
+		if (pressed_key == '5')
+		{
+			arena.InitBomb(1);
+			xil_printf("BOMB1 @ (%u, %u) [%u]\n", arena.GetBomber(1).GetPosition().GetX(), arena.GetBomber(1).GetPosition().GetY(), arena.GetBomber(1).GetNormalizedPosition());
 		}
 		if (pressed_key == 'p')
 		{
-			arena.players[0].DecrementBombsNumber();
+			xil_printf("PLAYER0 @ (%u, %u) [%u]\nPLAYER1 @ (%u, %u) [%u]\n",
+					arena.GetBomber(0).GetPosition().GetX(), arena.GetBomber(0).GetPosition().GetY(), arena.GetBomber(0).GetNormalizedPosition(),
+					arena.GetBomber(1).GetPosition().GetX(), arena.GetBomber(1).GetPosition().GetY(), arena.GetBomber(1).GetNormalizedPosition());
 		}
 		xil_printf("[%c]\n", pressed_key);
 	}

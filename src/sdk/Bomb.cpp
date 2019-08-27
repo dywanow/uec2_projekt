@@ -1,8 +1,8 @@
 #include "Bomb.h"
 #include "Arena.h"
 
-Bomb::Bomb() : Element(0, 0, Element::Type::BOMB, Element::State::NOT_ACTIVE),
-               explosion_init(0),
+Bomb::Bomb() : Element(0, 0, Element::Types::BOMB, 0),
+               explosion_initialized(0),
                time(0)
 {
 
@@ -28,22 +28,33 @@ uint8_t Bomb::GetBomberID() const
 	return bomber_id;
 }
 
+void Bomb::Explode()
+{
+	arena->InitExplosion(bomber_id, id);
+	explosion_initialized = 1;
+	time = EXPLOSION_DELAY;
+}
+
 void Bomb::Update(float dt)
 {
-	if (state == Element::State::ACTIVE)
+	if (active)
 	{
 		time += dt;
-		if (time >= EXPLOSION_DELAY && !explosion_init)
+		if (time >= EXPLOSION_DELAY && !explosion_initialized)
 		{
-			arena->InitExplosion(bomber_id);
-			explosion_init = 1;
+			Explode();
 		}
 		if (time >= ACTIVE_TIME)
 		{
-			arena->players[bomber_id].DecrementBombsNumber();
-			state = Element::State::NOT_ACTIVE;
-			explosion_init = 0;
-			time = 0;
+			Clear();
 		}
 	}
+}
+
+void Bomb::Clear()
+{
+	arena->BomberDeleteBomb(bomber_id);
+	active = 0;
+	explosion_initialized = 0;
+	time = 0;
 }

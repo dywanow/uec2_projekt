@@ -10,30 +10,32 @@ class Arena;
 class Element
 {
 public:
-	enum class Type { SURR, PATH, OBS1, OBS2, BOMB, EXPL, PLR1, PLR2 };
-	enum class State { ACTIVE, NOT_ACTIVE };
+	enum class Types { SURR, PATH, OBS1, OBS2, BOMB, EXPL, PLR1, PLR2 };
 
-	Element(uint16_t i, uint16_t j, Type type, State state);
-	Element(Vector position, Type type, State state);
+	Element();
+	Element(uint16_t x, uint16_t y, Types type, uint8_t active);
 	void SetArena(Arena *arena);
-	void SetPosition(uint16_t i, uint16_t j);
+	void SetPosition(uint16_t x, uint16_t y);
 	void SetPosition(Vector position);
-	void SetType(Type type);
-	void SetState(State state);
+	void SetType(Types type);
+	void SetID(uint8_t id);
+	void Activate();
+	void Deactivate();
 	Vector GetPosition() const;
-	Type GetType() const;
-	State GetState() const;
+	Types Type() const;
+	uint8_t ID() const;
 	uint8_t GetNormalizedPosition() const;
-	uint8_t GetTypeCode() const;
+	uint8_t TypeCode() const;
 	uint8_t IsCollidable() const;
 	uint8_t IsActive() const;
-	void Draw(uint32_t *drawer) const;
+	uint8_t IsDestructible() const;
 
 protected:
 	Arena *arena;
 	Vector position;
-	Type type;
-	State state;
+	Types type;
+	uint8_t active;
+	uint8_t id;
 };
 
 #endif  /* SRC_ARENAELEMENT_H_ */

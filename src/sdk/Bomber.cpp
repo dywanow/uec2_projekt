@@ -3,11 +3,11 @@
 
 const float Bomber::MOVE_TIME = 0.3f;
 
-Bomber::Bomber() : Element(0, 0, Element::Type::PLR1, Element::State::ACTIVE),
+Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
                    movement(Movement::NONE),
                    time(0),
 				   max_bombs_number(0),
-                   bombs_number(0)
+				   current_bombs_number(0)
 {
 
 }
@@ -15,16 +15,13 @@ Bomber::Bomber() : Element(0, 0, Element::Type::PLR1, Element::State::ACTIVE),
 
 void Bomber::Update(float dt)
 {
-	for (auto &el : arena->elements)
+	for (uint16_t vis_el_nr = 0; vis_el_nr < Arena::VISIBLE_ELEMENTS_NUMBER; vis_el_nr++)
 	{
-		auto el_pos = el->GetPosition();
-		if (el->IsCollidable() && el->IsActive() &&
-			((movement == Movement::LEFT && el_pos.GetX() == position.GetX() - 1 && el_pos.GetY() == position.GetY()) ||
-			(movement == Movement::RIGHT && el_pos.GetX() == position.GetX() + 1 && el_pos.GetY() == position.GetY()) ||
-			(movement == Movement::UP && el_pos.GetY() == position.GetY() - 1 && el_pos.GetX() == position.GetX()) ||
-			(movement == Movement::DOWN && el_pos.GetY() == position.GetY() + 1 && el_pos.GetX() == position.GetX())))
+		const auto vis_el = arena->GetVisibleElement(vis_el_nr);
+		const auto vis_el_pos = vis_el.GetPosition();
+		if (vis_el.IsCollidable() && vis_el.IsActive() && Collides(vis_el_pos))
 		{
-			xil_printf("COLLISION | (%u, %u) | %u\n", el_pos.GetX(), el_pos.GetY(), el->GetTypeCode());
+			xil_printf("COLLISION | (%u, %u) | %u\n", vis_el_pos.GetX(), vis_el_pos.GetY(), vis_el.TypeCode());
 			movement = Movement::NONE;
 		}
 	}
@@ -61,19 +58,19 @@ void Bomber::Update(float dt)
 	}
 }
 
-void Bomber::SetMovement(Bomber::Movement movement)
+void Bomber::MakeMove(Bomber::Movement movement)
 {
 	this->movement = movement;
 }
 
-void Bomber::IncrementBombsNumber()
+void Bomber::IncrementCurrentBombsNumber()
 {
-	bombs_number++;
+	current_bombs_number++;
 }
 
 void Bomber::DecrementBombsNumber()
 {
-	bombs_number--;
+	current_bombs_number--;
 }
 
 void Bomber::SetMaxBombsNumber(uint8_t max_bombs_number)
@@ -81,17 +78,20 @@ void Bomber::SetMaxBombsNumber(uint8_t max_bombs_number)
 	this->max_bombs_number = max_bombs_number;
 }
 
-Bomber::Movement Bomber::GetMovement() const
+uint8_t Bomber::CurrentBombsNumber() const
 {
-	return movement;
+	return current_bombs_number;
 }
 
-uint8_t Bomber::GetBombsNumber() const
-{
-	return bombs_number;
-}
-
-uint8_t Bomber::GetMaxBombsNumber() const
+uint8_t Bomber::MaxBombsNumber() const
 {
 	return max_bombs_number;
+}
+
+uint8_t Bomber::Collides(const Vector &element_position) const
+{
+	return ((movement == Movement::LEFT && element_position.GetX() == position.GetX() - 1 && element_position.GetY() == position.GetY()) ||
+			(movement == Movement::RIGHT && element_position.GetX() == position.GetX() + 1 && element_position.GetY() == position.GetY()) ||
+			(movement == Movement::UP && element_position.GetY() == position.GetY() - 1 && element_position.GetX() == position.GetX()) ||
+			(movement == Movement::DOWN && element_position.GetY() == position.GetY() + 1 && element_position.GetX() == position.GetX()));
 }

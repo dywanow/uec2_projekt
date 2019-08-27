@@ -13,6 +13,7 @@ public:
 	void SetBomberID(uint8_t bomber_id);
 	float GetTime() const;
 	uint8_t GetBomberID() const;
+	void Explode();
 	void Update(float dt);
 
 private:
@@ -20,8 +21,10 @@ private:
 	static const uint8_t EXPLOSION_DELAY = 3;
 
 	uint8_t bomber_id;
-	uint8_t explosion_init;
+	uint8_t explosion_initialized;
 	float time;
+
+	void Clear();
 };
 
 #endif /* SRC_BOMB_H_ */
