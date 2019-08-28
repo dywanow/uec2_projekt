@@ -24,15 +24,15 @@ Arena::Arena()
         elements[BLOCKS_NUMBER+i] = &bombs[i];
     }
 
-    players[1].SetType(Element::Types::PLR2);
-    for (uint8_t i = 0; i < PLAYERS_NUMBER; i++)
+    bombers[1].SetType(Element::Types::PLR2);
+    for (uint8_t i = 0; i < BOMBERS_NUMBER; i++)
     {
-        elements[BLOCKS_NUMBER+BOMBS_NUMBER+i] = &players[i];
+        elements[BLOCKS_NUMBER+BOMBS_NUMBER+i] = &bombers[i];
     }
 
     for (uint8_t i = 0; i < EXPLOSIONS_NUMBER; i++)
     {
-        elements[BLOCKS_NUMBER+BOMBS_NUMBER+PLAYERS_NUMBER+i] = &explosions[i];
+        elements[BLOCKS_NUMBER+BOMBS_NUMBER+BOMBERS_NUMBER+i] = &explosions[i];
     }
 
     for (auto &el : elements)
@@ -70,14 +70,14 @@ void Arena::Init()
         blocks[i].SetType(types[i]);
     }
 
-    players[0].SetPosition(1, 1);
-    players[1].SetPosition(14, 14);
-    for (uint8_t i = 0; i < PLAYERS_NUMBER; i++)
+    bombers[0].SetPosition(1, 1);
+    bombers[1].SetPosition(14, 14);
+    for (uint8_t i = 0; i < BOMBERS_NUMBER; i++)
     {
-        players[i].SetMaxBombsNumber(BOMBS_PER_PLAYER);
-        players[i].SetCurrentBombsNumber(0);
-        players[i].SetID(i);
-        players[i].Revive();
+        bombers[i].SetMaxBombsNumber(BOMBS_PER_PLAYER);
+        bombers[i].SetCurrentBombsNumber(0);
+        bombers[i].SetID(i);
+        bombers[i].Revive();
     }
 
     for (auto &bomb : bombs)
@@ -117,7 +117,7 @@ void Arena::MoveBomberRight(uint8_t bomber_id)
 
 void Arena::KillBomber(uint8_t bomber_id)
 {
-    players[bomber_id].Die();
+    bombers[bomber_id].Die();
 }
 
 void Arena::InitBomb(uint8_t bomber_id)
@@ -132,7 +132,7 @@ void Arena::InitBomb(uint8_t bomber_id)
                 bomb.SetBomberID(bomber_id);
                 bomb.SetPosition(BomberPosition(bomber_id));
                 bomb.Activate();
-                players[bomber_id].IncrementCurrentBombsNumber();
+                bombers[bomber_id].IncrementCurrentBombsNumber();
                 break;
             }
         }
@@ -170,12 +170,12 @@ void Arena::DetonateBomb(uint8_t bomb_id)
 
 void Arena::BomberDeleteBomb(uint8_t bomber_id)
 {
-    players[bomber_id].DecrementBombsNumber();
+    bombers[bomber_id].DecrementBombsNumber();
 }
 
 Bomber Arena::AccessBomber(uint8_t bomber_id) const
 {
-    return players[bomber_id];
+    return bombers[bomber_id];
 }
 
 Bomb Arena::AccessBomb(uint8_t bomb_id) const
@@ -208,7 +208,7 @@ uint8_t Arena::IsPositionOccupied(uint8_t bomber_id) const
 {
     for (const auto &bomb : bombs)
     {
-        if (bomb.Position() == players[bomber_id].Position() && bomb.IsActive())
+        if (bomb.Position() == bombers[bomber_id].Position() && bomb.IsActive())
         {
             return 1;
         }
@@ -268,25 +268,25 @@ void Arena::Draw(uint32_t *drawer)
 
 void Arena::MoveBomber(uint8_t bomber_id, Bomber::Movement movement)
 {
-    players[bomber_id].MakeMove(movement);
+    bombers[bomber_id].MakeMove(movement);
 }
 
 uint8_t Arena::BomberCurrentBombsNumber(uint8_t bomber_id) const
 {
-    return players[bomber_id].CurrentBombsNumber();
+    return bombers[bomber_id].CurrentBombsNumber();
 }
 
 uint8_t Arena::BomberMaxBombsNumber(uint8_t bomber_id) const
 {
-    return players[bomber_id].MaxBombsNumber();
+    return bombers[bomber_id].MaxBombsNumber();
 }
 
 Vector Arena::BomberPosition(uint8_t bomber_id) const
 {
-    return players[bomber_id].Position();
+    return bombers[bomber_id].Position();
 }
 
 uint8_t Arena::IsAnyPlayerDead() const
 {
-    return !(players[0].IsAlive() && players[1].IsAlive());
+    return !(bombers[0].IsAlive() && bombers[1].IsAlive());
 }

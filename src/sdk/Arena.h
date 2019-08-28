@@ -17,11 +17,11 @@ class Arena
 public:
     static const uint16_t BLOCKS_NUMBER = 256;
     static const uint16_t VISIBLE_ELEMENTS_NUMBER = 256;
-    static const uint8_t PLAYERS_NUMBER = 2;
+    static const uint8_t BOMBERS_NUMBER = 2;
     static const uint8_t BOMBS_PER_PLAYER = 3;
-    static const uint8_t BOMBS_NUMBER = PLAYERS_NUMBER*BOMBS_PER_PLAYER;
+    static const uint8_t BOMBS_NUMBER = BOMBERS_NUMBER*BOMBS_PER_PLAYER;
     static const uint8_t EXPLOSIONS_NUMBER = BOMBS_NUMBER;
-    static const uint16_t ELEMENTS_NUMBER = BLOCKS_NUMBER+PLAYERS_NUMBER+BOMBS_NUMBER+EXPLOSIONS_NUMBER;
+    static const uint16_t ELEMENTS_NUMBER = BLOCKS_NUMBER+BOMBERS_NUMBER+BOMBS_NUMBER+EXPLOSIONS_NUMBER;
     static const uint8_t WIDTH = 16;
     static const uint8_t HEIGHT = 16;
 
@@ -46,7 +46,7 @@ public:
 
 private:
     Block blocks[BLOCKS_NUMBER];
-    Bomber players[PLAYERS_NUMBER];
+    Bomber bombers[BOMBERS_NUMBER];
     Bomb bombs[BOMBS_NUMBER];
     Explosion explosions[EXPLOSIONS_NUMBER];
     Element *elements[ELEMENTS_NUMBER];
