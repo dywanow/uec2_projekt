@@ -2,8 +2,8 @@
 #include "Arena.h"
 
 Bomb::Bomb() : Element(0, 0, Element::Types::BOMB, 0),
-               explosion_initialized(0),
-               time(0)
+               time(0),
+			   detonated(0)
 {
 
 }
@@ -30,9 +30,14 @@ uint8_t Bomb::GetBomberID() const
 
 void Bomb::Explode()
 {
+	detonated = 1;
 	arena->InitExplosion(bomber_id, id);
-	explosion_initialized = 1;
 	time = EXPLOSION_DELAY;
+}
+
+uint8_t Bomb::IsDetonated() const
+{
+	return detonated;
 }
 
 void Bomb::Update(float dt)
@@ -40,7 +45,7 @@ void Bomb::Update(float dt)
 	if (active)
 	{
 		time += dt;
-		if (time >= EXPLOSION_DELAY && !explosion_initialized)
+		if (time >= EXPLOSION_DELAY && !detonated)
 		{
 			Explode();
 		}
@@ -55,6 +60,6 @@ void Bomb::Clear()
 {
 	arena->BomberDeleteBomb(bomber_id);
 	active = 0;
-	explosion_initialized = 0;
 	time = 0;
+	detonated = 0;
 }

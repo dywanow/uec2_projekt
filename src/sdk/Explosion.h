@@ -29,6 +29,8 @@ private:
 	uint8_t bomb_id;
 
 	void DeactivateParts();
+	uint8_t PositionOffset(uint8_t direction_number, uint8_t index);
+	void CalculatePosition(uint8_t direction_number, Vector &position);
 };
 
 #endif /* SRC_EXPLOSION_H_ */

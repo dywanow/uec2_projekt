@@ -123,8 +123,9 @@ void Arena::DetonateBomb(uint8_t bomb_id)
 {
 	for (auto &bomb : bombs)
 	{
-		if (bomb.ID() == bomb_id)
+		if (bomb.ID() == bomb_id && bomb.IsActive() && !bomb.IsDetonated())
 		{
+			xil_printf("%u Detonate\n", bomb_id);
 			bomb.Explode();
 			break;
 		}

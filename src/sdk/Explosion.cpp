@@ -31,132 +31,47 @@ ExplosionPart Explosion::GetPart(uint8_t part_number) const
 
 void Explosion::InitParts()
 {
-	for (auto &ep : parts)
-	{
-		ep.Deactivate();
-	}
+	DeactivateParts();
 
 	const auto origin_norm_pos = arena->GetBomb(bomb_id).GetNormalizedPosition();
 	const auto origin_pos = arena->GetBomb(bomb_id).GetPosition();
-	auto pos = origin_pos;
+	Vector pos;
 	Element current_element;
 	uint8_t current_norm_pos;
 
-	// TODO: Optimize following code
+	// dir_nr: 0 - UP
+	//         1 - LEFT
+	//         2 - DOWN
+	//         3 - RIGHT
 
-	// UP
-	for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
+	for (uint8_t dir_nr = 0; dir_nr < 4; dir_nr++)
 	{
-		current_norm_pos = origin_norm_pos-(i+1)*Arena::WIDTH;
-		current_element = arena->GetVisibleElement(current_norm_pos);
-		if (!current_element.IsDestructible())
+		pos = origin_pos;
+		for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
 		{
-			break;
-		}
-		else
-		{
-			if (current_element.Type() == Types::BOMB)
+			current_norm_pos = origin_norm_pos + PositionOffset(dir_nr, i);
+			current_element = arena->GetVisibleElement(current_norm_pos);
+			if (!current_element.IsDestructible())
 			{
-				arena->DetonateBomb(current_element.ID());
+				break;
 			}
-			pos.SetY(pos.GetY() - 1);
-			parts[i].SetPosition(pos);
-			parts[i].Activate();
-//			xil_printf("%u\n", current_norm_pos);
-		}
-//		xil_printf("U %u\n", pos.GetY());
-		if (current_element.IsCollidable())
-		{
-			break;
-		}
-
-	}
-	pos = origin_pos;
-
-	// LEFT
-	for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
-	{
-		current_norm_pos = origin_norm_pos-(i+1);
-		current_element = arena->GetVisibleElement(current_norm_pos);
-		if (!current_element.IsDestructible())
-		{
-			break;
-		}
-		else
-		{
-			if (current_element.Type() == Types::BOMB)
+			else
 			{
-				arena->DetonateBomb(current_element.ID());
+				if (current_element.Type() == Types::BOMB)
+				{
+					arena->DetonateBomb(current_element.ID());
+					break;
+				}
+				CalculatePosition(dir_nr, pos);
+				parts[dir_nr * EXPLOSION_LENGTH + i].SetPosition(pos);
+				parts[dir_nr * EXPLOSION_LENGTH + i].Activate();
 			}
-			pos.SetX(pos.GetX() - 1);
-			parts[EXPLOSION_LENGTH+i].SetPosition(pos);
-			parts[EXPLOSION_LENGTH+i].Activate();
-//			xil_printf("%u\n", current_norm_pos);
-		}
-//		xil_printf("L %u\n", pos.GetX());
-		if (current_element.IsCollidable())
-		{
-			break;
-		}
-
-	}
-	pos = origin_pos;
-
-	// DOWN
-	for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
-	{
-		current_norm_pos = origin_norm_pos+(i+1)*Arena::WIDTH;
-		current_element = arena->GetVisibleElement(current_norm_pos);
-		if (!current_element.IsDestructible())
-		{
-			break;
-		}
-		else
-		{
-			if (current_element.Type() == Types::BOMB)
+			xil_printf("%#%u, %u] (%u, %u)\n", bomb_id, dir_nr, pos.GetX(), pos.GetY());
+			if (current_element.IsCollidable())
 			{
-				arena->DetonateBomb(current_element.ID());
+				break;
 			}
-			pos.SetY(pos.GetY() + 1);
-			parts[2*EXPLOSION_LENGTH+i].SetPosition(pos);
-			parts[2*EXPLOSION_LENGTH+i].Activate();
-//			xil_printf("%u\n", current_norm_pos);
 		}
-//		xil_printf("D %u\n", pos.GetY());
-		if (current_element.IsCollidable())
-		{
-			break;
-		}
-
-	}
-	pos = origin_pos;
-
-	// RIGHT
-	for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
-	{
-		current_norm_pos = origin_norm_pos+(i+1);
-		current_element = arena->GetVisibleElement(current_norm_pos);
-		if (!current_element.IsDestructible())
-		{
-			break;
-		}
-		else
-		{
-			if (current_element.Type() == Types::BOMB)
-			{
-				arena->DetonateBomb(current_element.ID());
-			}
-			pos.SetX(pos.GetX() + 1);
-			parts[3*EXPLOSION_LENGTH+i].SetPosition(pos);
-			parts[3*EXPLOSION_LENGTH+i].Activate();
-//			xil_printf("%u\n", current_norm_pos);
-		}
-//		xil_printf("R %u\n", pos.GetX());
-		if (current_element.IsCollidable())
-		{
-			break;
-		}
-
 	}
 }
 
@@ -179,5 +94,28 @@ void Explosion::DeactivateParts()
 	for (auto &ep : parts)
 	{
 		ep.Deactivate();
+	}
+}
+
+uint8_t Explosion::PositionOffset(uint8_t direction_number, uint8_t index)
+{
+	switch (direction_number)
+	{
+		case 0: return -(index + 1) * Arena::WIDTH;
+		case 1: return -(index + 1);
+		case 2: return (index + 1) * Arena::WIDTH;
+		case 3: return index + 1;
+	}
+	return 0;
+}
+
+void Explosion::CalculatePosition(uint8_t direction_number, Vector &position)
+{
+	switch (direction_number)
+	{
+		case 0: position.SetY(position.GetY() - 1); break;
+		case 1: position.SetX(position.GetX() - 1); break;
+		case 2: position.SetY(position.GetY() + 1); break;
+		case 3: position.SetX(position.GetX() + 1); break;
 	}
 }
