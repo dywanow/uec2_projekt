@@ -17,8 +17,8 @@ void Bomber::Update(float dt)
 {
 	for (uint16_t vis_el_nr = 0; vis_el_nr < Arena::VISIBLE_ELEMENTS_NUMBER; vis_el_nr++)
 	{
-		const auto vis_el = arena->GetVisibleElement(vis_el_nr);
-		const auto vis_el_pos = vis_el.GetPosition();
+		const auto vis_el = arena->AccessVisibleElement(vis_el_nr);
+		const auto vis_el_pos = vis_el.Position();
 		if (vis_el.IsCollidable() && vis_el.IsActive() && Collides(vis_el_pos))
 		{
 			xil_printf("COLLISION | (%u, %u) | %u\n", vis_el_pos.GetX(), vis_el_pos.GetY(), vis_el.TypeCode());

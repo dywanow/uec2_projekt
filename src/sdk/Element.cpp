@@ -59,7 +59,7 @@ void Element::ResetTime()
 	time = 0;
 }
 
-Vector Element::GetPosition() const
+Vector Element::Position() const
 {
 	return position;
 }
@@ -74,7 +74,7 @@ uint8_t Element::ID() const
 	return id;
 }
 
-uint8_t Element::GetNormalizedPosition() const
+uint8_t Element::NormalizedPosition() const
 {
 	return position.GetX() + (position.GetY() << 4);
 }

@@ -7,20 +7,11 @@ Bomb::Bomb() : Element(0, 0, Element::Types::BOMB, 0),
 
 }
 
-void Bomb::SetTime(float time)
-{
-	this->time = time;
-}
-
 void Bomb::SetBomberID(uint8_t bomber_id)
 {
 	this->bomber_id = bomber_id;
 }
 
-float Bomb::GetTime() const
-{
-	return time;
-}
 
 uint8_t Bomb::GetBomberID() const
 {

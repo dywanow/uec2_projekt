@@ -10,11 +10,6 @@ Game::Game() : state(Game::States::BATTLE),
 
 }
 
-void Game::Init()
-{
-
-}
-
 
 void Game::Loop()
 {
@@ -62,7 +57,7 @@ void Game::HandleBattleInput()
 	if (pressed_key == ' ')
 	{
 		arena.InitBomb(0);
-		xil_printf("BOMB0 @ (%u, %u) [%u]\n", arena.GetBomber(0).GetPosition().GetX(), arena.GetBomber(0).GetPosition().GetY(), arena.GetBomber(0).GetNormalizedPosition());
+		xil_printf("BOMB0 @ (%u, %u) [%u]\n", arena.AccessBomber(0).Position().GetX(), arena.AccessBomber(0).Position().GetY(), arena.AccessBomber(0).NormalizedPosition());
 	}
 	if (pressed_key == '8')
 	{
@@ -83,13 +78,13 @@ void Game::HandleBattleInput()
 	if (pressed_key == '5')
 	{
 		arena.InitBomb(1);
-		xil_printf("BOMB1 @ (%u, %u) [%u]\n", arena.GetBomber(1).GetPosition().GetX(), arena.GetBomber(1).GetPosition().GetY(), arena.GetBomber(1).GetNormalizedPosition());
+		xil_printf("BOMB1 @ (%u, %u) [%u]\n", arena.AccessBomber(1).Position().GetX(), arena.AccessBomber(1).Position().GetY(), arena.AccessBomber(1).NormalizedPosition());
 	}
 	if (pressed_key == 'p')
 	{
 		xil_printf("PLAYER0 @ (%u, %u) [%u]\nPLAYER1 @ (%u, %u) [%u]\n",
-		arena.GetBomber(0).GetPosition().GetX(), arena.GetBomber(0).GetPosition().GetY(), arena.GetBomber(0).GetNormalizedPosition(),
-		arena.GetBomber(1).GetPosition().GetX(), arena.GetBomber(1).GetPosition().GetY(), arena.GetBomber(1).GetNormalizedPosition());
+		arena.AccessBomber(0).Position().GetX(), arena.AccessBomber(0).Position().GetY(), arena.AccessBomber(0).NormalizedPosition(),
+		arena.AccessBomber(1).Position().GetX(), arena.AccessBomber(1).Position().GetY(), arena.AccessBomber(1).NormalizedPosition());
 	}
 }
 

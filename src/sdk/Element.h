@@ -22,10 +22,10 @@ public:
 	void Activate();
 	void Deactivate();
 	void ResetTime();
-	Vector GetPosition() const;
+	Vector Position() const;
 	Types Type() const;
 	uint8_t ID() const;
-	uint8_t GetNormalizedPosition() const;
+	uint8_t NormalizedPosition() const;
 	uint8_t TypeCode() const;
 	uint8_t IsCollidable() const;
 	uint8_t IsActive() const;

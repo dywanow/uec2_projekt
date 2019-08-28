@@ -36,11 +36,11 @@ public:
 	void InitExplosion(uint8_t bomber_id, uint8_t bomb_id);
 	void BomberDeleteBomb(uint8_t bomber_id);
 	void DetonateBomb(uint8_t bomb_id);
-	Bomb GetBomb(uint8_t bomb_id) const;
-	Bomber GetBomber(uint8_t bomber_id) const;
-	Explosion GetExplosion(uint8_t explosion_number) const;
-	ExplosionPart GetExplosionPart(uint8_t explosion_number, uint8_t part_number) const;
-	Element GetVisibleElement(uint8_t visible_element_position) const;
+	Bomb AccessBomb(uint8_t bomb_id) const;
+	Bomber AccessBomber(uint8_t bomber_id) const;
+	Explosion AccessExplosion(uint8_t explosion_number) const;
+	ExplosionPart AccessExplosionPart(uint8_t explosion_number, uint8_t part_number) const;
+	Element AccessVisibleElement(uint8_t visible_element_position) const;
 	uint8_t Update(float dt);
 	void Draw(uint32_t *drawer);
 

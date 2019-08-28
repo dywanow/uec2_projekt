@@ -23,8 +23,8 @@ void Explosion::InitParts()
 {
 	DeactivateParts();
 
-	const auto origin_norm_pos = arena->GetBomb(bomb_id).GetNormalizedPosition();
-	const auto origin_pos = arena->GetBomb(bomb_id).GetPosition();
+	const auto origin_norm_pos = arena->AccessBomb(bomb_id).NormalizedPosition();
+	const auto origin_pos = arena->AccessBomb(bomb_id).Position();
 	Vector pos;
 	Element current_element;
 	uint8_t current_norm_pos;
@@ -40,7 +40,7 @@ void Explosion::InitParts()
 		for (uint8_t i = 0; i < EXPLOSION_LENGTH; i++)
 		{
 			current_norm_pos = origin_norm_pos + PositionOffset(dir_nr, i);
-			current_element = arena->GetVisibleElement(current_norm_pos);
+			current_element = arena->AccessVisibleElement(current_norm_pos);
 			if (!current_element.IsDestructible())
 			{
 				break;

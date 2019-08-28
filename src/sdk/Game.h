@@ -12,7 +12,6 @@ class Game
 {
 public:
 	Game();
-	void Init();
 	void Loop();
 
 private:

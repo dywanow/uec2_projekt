@@ -147,7 +147,7 @@ void Arena::InitExplosion(uint8_t bomber_id, uint8_t bomb_id)
 		if (!explosion.IsActive())
 		{
 			explosion.SetBombID(bomb_id);
-			explosion.SetPosition(GetBomb(bomb_id).GetPosition());
+			explosion.SetPosition(AccessBomb(bomb_id).Position());
 			explosion.Activate();
 			explosion.InitParts();
 			break;
@@ -173,12 +173,12 @@ void Arena::BomberDeleteBomb(uint8_t bomber_id)
 	players[bomber_id].DecrementBombsNumber();
 }
 
-Bomber Arena::GetBomber(uint8_t bomber_id) const
+Bomber Arena::AccessBomber(uint8_t bomber_id) const
 {
 	return players[bomber_id];
 }
 
-Bomb Arena::GetBomb(uint8_t bomb_id) const
+Bomb Arena::AccessBomb(uint8_t bomb_id) const
 {
 	for (const auto &bomb : bombs)
 	{
@@ -189,17 +189,17 @@ Bomb Arena::GetBomb(uint8_t bomb_id) const
 	}
 }
 
-Explosion Arena::GetExplosion(uint8_t explosion_number) const
+Explosion Arena::AccessExplosion(uint8_t explosion_number) const
 {
 	return explosions[explosion_number];
 }
 
-ExplosionPart Arena::GetExplosionPart(uint8_t explosion_number, uint8_t part_number) const
+ExplosionPart Arena::AccessExplosionPart(uint8_t explosion_number, uint8_t part_number) const
 {
 	return explosions[explosion_number].GetPart(part_number);
 }
 
-Element Arena::GetVisibleElement(uint8_t visible_element_position) const
+Element Arena::AccessVisibleElement(uint8_t visible_element_position) const
 {
 	return *visible_elements[visible_element_position];
 }
@@ -208,7 +208,7 @@ uint8_t Arena::IsPositionOccupied(uint8_t bomber_id) const
 {
 	for (const auto &bomb : bombs)
 	{
-		if (bomb.GetPosition() == players[bomber_id].GetPosition() && bomb.IsActive())
+		if (bomb.Position() == players[bomber_id].Position() && bomb.IsActive())
 		{
 			return 1;
 		}
@@ -233,7 +233,7 @@ uint8_t Arena::Update(float dt)
 	{
 		if (e->IsActive())
 		{
-			visible_elements[e->GetNormalizedPosition()] = e;
+			visible_elements[e->NormalizedPosition()] = e;
 		}
 	}
 	for (auto &expl : explosions)
@@ -244,7 +244,7 @@ uint8_t Arena::Update(float dt)
 			{
 				if (ep.IsActive())
 				{
-					visible_elements[ep.GetNormalizedPosition()] = &ep;
+					visible_elements[ep.NormalizedPosition()] = &ep;
 				}
 			}
 		}
@@ -261,7 +261,7 @@ void Arena::Draw(uint32_t *drawer)
 {
 	for (auto &v : visible_elements)
 	{
-		*drawer = (v->TypeCode() << 8) + v->GetNormalizedPosition();
+		*drawer = (v->TypeCode() << 8) + v->NormalizedPosition();
 	}
 }
 
@@ -283,7 +283,7 @@ uint8_t Arena::BomberMaxBombsNumber(uint8_t bomber_id) const
 
 Vector Arena::BomberPosition(uint8_t bomber_id) const
 {
-	return players[bomber_id].GetPosition();
+	return players[bomber_id].Position();
 }
 
 uint8_t Arena::IsAnyPlayerDead() const
