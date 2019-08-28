@@ -24,7 +24,6 @@ private:
 	static const uint8_t ACTIVE_TIME = 1;
 	static const uint8_t EXPLOSION_LENGTH = PARTS_NUMBER / 4;
 
-	float time;
 	uint8_t bomber_id;
 	uint8_t bomb_id;
 

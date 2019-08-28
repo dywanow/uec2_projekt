@@ -5,7 +5,6 @@ const float Bomber::MOVE_TIME = 0.3f;
 
 Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
                    movement(Movement::NONE),
-                   time(0),
 				   max_bombs_number(0),
 				   current_bombs_number(0)
 {

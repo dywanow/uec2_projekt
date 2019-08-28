@@ -2,7 +2,7 @@
 #include "Arena.h"
 
 Bomb::Bomb() : Element(0, 0, Element::Types::BOMB, 0),
-               time(0),
+//               time(0),
 			   detonated(0)
 {
 

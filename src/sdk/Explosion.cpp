@@ -3,8 +3,7 @@
 #include "Bomb.h"
 #include "Arena.h"
 
-Explosion::Explosion() : Element(0, 0, Types::EXPL, 0),
-                         time(0)
+Explosion::Explosion() : Element(0, 0, Types::EXPL, 0)
 {
 
 }

@@ -29,6 +29,7 @@ public:
 	uint8_t IsCollidable() const;
 	uint8_t IsActive() const;
 	uint8_t IsDestructible() const;
+	virtual void Update(float dt=0);
 
 protected:
 	Arena *arena;
@@ -36,6 +37,7 @@ protected:
 	Types type;
 	uint8_t active;
 	uint8_t id;
+	float time;
 };
 
 #endif  /* SRC_ARENAELEMENT_H_ */

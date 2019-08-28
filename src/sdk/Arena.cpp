@@ -213,21 +213,9 @@ void Arena::Update(float dt)
 			}
 		}
 	}
-	for (auto &player : players)
+	for (auto &e : elements)
 	{
-		player.Update(dt);
-	}
-	for (auto &bomb : bombs)
-	{
-		bomb.Update(dt);
-	}
-	for (auto &explosion : explosions)
-	{
-		explosion.Update(dt);
-	}
-	for (auto &block : blocks)
-	{
-		block.Update();
+		e->Update(dt);
 	}
 }
 

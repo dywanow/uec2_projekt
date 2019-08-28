@@ -3,7 +3,8 @@
 
 Element::Element() : position(Vector(0, 0)),
                      type(Element::Types::PATH),
-					 active(0)
+					 active(0),
+					 time(0)
 {
 
 }
@@ -11,6 +12,11 @@ Element::Element() : position(Vector(0, 0)),
 Element::Element(uint16_t x, uint16_t y, Element::Types type, uint8_t active) : position(Vector(x, y)), type(type), active(active)
 {
 
+}
+
+void Element::Update(float dt)
+{
+	time += dt;
 }
 
 void Element::SetArena(Arena *arena)

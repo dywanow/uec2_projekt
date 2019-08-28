@@ -6,7 +6,7 @@ Block::Block() : Element(0, 0, Element::Types::PATH, 1)
 
 }
 
-void Block::Update()
+void Block::Update(float dt)
 {
 	for (uint8_t expl_nr = 0; expl_nr < Arena::EXPLOSIONS_NUMBER; expl_nr++)
 	{

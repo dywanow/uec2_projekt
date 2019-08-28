@@ -22,7 +22,6 @@ private:
 	static const uint8_t EXPLOSION_DELAY = 3;
 
 	uint8_t bomber_id;
-	float time;
 	uint8_t detonated;
 
 	void Clear();

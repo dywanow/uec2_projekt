@@ -22,7 +22,6 @@ private:
 	static const float MOVE_TIME;
 
 	Movement movement;
-	float time;
 	uint8_t max_bombs_number;
 	uint8_t current_bombs_number;
 
