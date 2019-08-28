@@ -11,23 +11,23 @@
 class Game
 {
 public:
-	Game();
-	void Loop();
+    Game();
+    void Loop();
 
 private:
-	enum class States { BATTLE };
+    enum class States { BATTLE };
 
-	States state;
-	Arena arena;
-	Keyboard keyboard;
-	u8 pressed_key;
-	Timer timer;
-	uint32_t *arena_drawer;
+    States state;
+    Arena arena;
+    Keyboard keyboard;
+    u8 pressed_key;
+    Timer timer;
+    uint32_t *arena_drawer;
 
-	void HandleKeyboard();
-	void HandleBattleInput();
-	void Update(float dt);
-	void Draw();
+    void HandleKeyboard();
+    void HandleBattleInput();
+    void Update(float dt);
+    void Draw();
 };
 
 #endif /* SRC_GAME_H_ */

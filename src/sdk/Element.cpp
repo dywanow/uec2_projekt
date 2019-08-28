@@ -3,8 +3,8 @@
 
 Element::Element() : position(Vector(0, 0)),
                      type(Element::Types::PATH),
-					 active(0),
-					 time(0)
+                     active(0),
+                     time(0)
 {
 
 }
@@ -16,97 +16,97 @@ Element::Element(uint16_t x, uint16_t y, Element::Types type, uint8_t active) : 
 
 void Element::Update(float dt)
 {
-	time += dt;
+    time += dt;
 }
 
 void Element::SetArena(Arena *arena)
 {
-	this->arena = arena;
+    this->arena = arena;
 }
 
 void Element::SetPosition(uint16_t x, uint16_t y)
 {
-	SetPosition(Vector(x, y));
+    SetPosition(Vector(x, y));
 }
 
 void Element::SetPosition(Vector position)
 {
-	this->position = position;
+    this->position = position;
 }
 
 void Element::SetType(Element::Types type)
 {
-	this->type = type;
+    this->type = type;
 }
 
 void Element::SetID(uint8_t id)
 {
-	this->id = id;
+    this->id = id;
 }
 
 void Element::Activate()
 {
-	active = 1;
+    active = 1;
 }
 
 void Element::Deactivate()
 {
-	active = 0;
+    active = 0;
 }
 
 void Element::ResetTime()
 {
-	time = 0;
+    time = 0;
 }
 
 Vector Element::Position() const
 {
-	return position;
+    return position;
 }
 
 Element::Types Element::Type() const
 {
-	return type;
+    return type;
 }
 
 uint8_t Element::ID() const
 {
-	return id;
+    return id;
 }
 
 uint8_t Element::NormalizedPosition() const
 {
-	return position.GetX() + (position.GetY() << 4);
+    return position.GetX() + (position.GetY() << 4);
 }
 
 uint8_t Element::TypeCode() const
 {
-	switch (type)
-	{
-		case Types::PATH: return 0;
-		case Types::SURR: return 1;
-		case Types::OBS1: return 2;
-		case Types::OBS2: return 3;
-		case Types::BOMB: return 4;
-		case Types::EXPL: return 5;
-		case Types::PLR1: return 6;
-		case Types::PLR2: return 7;
-		default: return 0;
-	}
+    switch (type)
+    {
+        case Types::PATH: return 0;
+        case Types::SURR: return 1;
+        case Types::OBS1: return 2;
+        case Types::OBS2: return 3;
+        case Types::BOMB: return 4;
+        case Types::EXPL: return 5;
+        case Types::PLR1: return 6;
+        case Types::PLR2: return 7;
+        default: return 0;
+    }
 }
 
 uint8_t Element::IsCollidable() const
 {
-	return type != Types::PATH;
+    return type != Types::PATH;
 }
 
 uint8_t Element::IsActive() const
 {
-	return active;
+    return active;
 }
 
 uint8_t Element::IsDestructible() const
 {
-	return type != Types::SURR && type != Types::OBS2 && type != Types::EXPL;
+    return type != Types::SURR && type != Types::OBS2 && type != Types::EXPL;
 }
 

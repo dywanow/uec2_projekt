@@ -8,25 +8,25 @@
 class Explosion : public Element
 {
 public:
-	static const uint8_t PARTS_NUMBER = 8;
+    static const uint8_t PARTS_NUMBER = 8;
 
-	ExplosionPart parts[PARTS_NUMBER];
+    ExplosionPart parts[PARTS_NUMBER];
 
-	Explosion();
-	void SetBombID(uint8_t bomb_id);
-	ExplosionPart GetPart(uint8_t part_number) const;
-	void InitParts();
-	void Update(float dt);
+    Explosion();
+    void SetBombID(uint8_t bomb_id);
+    ExplosionPart GetPart(uint8_t part_number) const;
+    void InitParts();
+    void Update(float dt);
 
 private:
-	static const uint8_t ACTIVE_TIME = 1;
-	static const uint8_t EXPLOSION_LENGTH = PARTS_NUMBER / 4;
+    static const uint8_t ACTIVE_TIME = 1;
+    static const uint8_t EXPLOSION_LENGTH = PARTS_NUMBER / 4;
 
-	uint8_t bomb_id;
+    uint8_t bomb_id;
 
-	void DeactivateParts();
-	uint8_t PositionOffset(uint8_t direction_number, uint8_t index);
-	void CalculatePosition(uint8_t direction_number, Vector &position);
+    void DeactivateParts();
+    uint8_t PositionOffset(uint8_t direction_number, uint8_t index);
+    void CalculatePosition(uint8_t direction_number, Vector &position);
 };
 
 #endif /* SRC_EXPLOSION_H_ */

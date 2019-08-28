@@ -7,21 +7,21 @@
 class Bomb : public Element
 {
 public:
-	Bomb();
-	void SetBomberID(uint8_t bomber_id);
-	uint8_t GetBomberID() const;
-	void Detonate();
-	void PrepareToDetonate();
-	uint8_t IsDetonated() const;
-	void Update(float dt);
+    Bomb();
+    void SetBomberID(uint8_t bomber_id);
+    uint8_t GetBomberID() const;
+    void Detonate();
+    void PrepareToDetonate();
+    uint8_t IsDetonated() const;
+    void Update(float dt);
 
 private:
-	static const uint8_t ACTIVE_TIME = 3;
+    static const uint8_t ACTIVE_TIME = 3;
 
-	uint8_t bomber_id;
-	uint8_t detonated;
+    uint8_t bomber_id;
+    uint8_t detonated;
 
-	void Clear();
+    void Clear();
 };
 
 #endif /* SRC_BOMB_H_ */

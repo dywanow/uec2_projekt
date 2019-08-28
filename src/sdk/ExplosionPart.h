@@ -7,7 +7,7 @@
 class ExplosionPart : public Element
 {
 public:
-	ExplosionPart();
+    ExplosionPart();
 };
 
 #endif /* SRC_EXPLOSION_H_ */

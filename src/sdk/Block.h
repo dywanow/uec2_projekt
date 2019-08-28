@@ -7,11 +7,11 @@
 class Block : public Element
 {
 public:
-	Block();
-	void Update(float dt=0);
+    Block();
+    void Update(float dt=0);
 
 private:
-	void Destroy();
+    void Destroy();
 };
 
 #endif /* SRC_BLOCK_H_ */
