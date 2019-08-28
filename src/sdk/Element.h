@@ -21,6 +21,7 @@ public:
 	void SetID(uint8_t id);
 	void Activate();
 	void Deactivate();
+	void ResetTime();
 	Vector GetPosition() const;
 	Types Type() const;
 	uint8_t ID() const;

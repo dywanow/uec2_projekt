@@ -16,6 +16,9 @@ public:
 	void Loop();
 
 private:
+	enum class States { BATTLE };
+
+	States state;
 	Arena arena;
 	Keyboard keyboard;
 	u8 pressed_key;
@@ -23,6 +26,7 @@ private:
 	uint32_t *arena_drawer;
 
 	void HandleKeyboard();
+	void HandleBattleInput();
 	void Update(float dt);
 	void Draw();
 };

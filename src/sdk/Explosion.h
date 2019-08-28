@@ -13,9 +13,7 @@ public:
 	ExplosionPart parts[PARTS_NUMBER];
 
 	Explosion();
-	void SetBomberID(uint8_t bomber_id);
 	void SetBombID(uint8_t bomb_id);
-	uint8_t GetBombID() const;
 	ExplosionPart GetPart(uint8_t part_number) const;
 	void InitParts();
 	void Update(float dt);
@@ -24,7 +22,6 @@ private:
 	static const uint8_t ACTIVE_TIME = 1;
 	static const uint8_t EXPLOSION_LENGTH = PARTS_NUMBER / 4;
 
-	uint8_t bomber_id;
 	uint8_t bomb_id;
 
 	void DeactivateParts();

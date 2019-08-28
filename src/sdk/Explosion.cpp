@@ -8,19 +8,10 @@ Explosion::Explosion() : Element(0, 0, Types::EXPL, 0)
 
 }
 
-void Explosion::SetBomberID(uint8_t bomber_id)
-{
-	this->bomber_id = bomber_id;
-}
 
 void Explosion::SetBombID(uint8_t bomb_id)
 {
 	this->bomb_id = bomb_id;
-}
-
-uint8_t Explosion::GetBombID() const
-{
-	return bomb_id;
 }
 
 ExplosionPart Explosion::GetPart(uint8_t part_number) const
@@ -59,6 +50,11 @@ void Explosion::InitParts()
 				if (current_element.Type() == Types::BOMB)
 				{
 					arena->DetonateBomb(current_element.ID());
+					break;
+				}
+				if (current_element.Type() == Types::PLR1 || current_element.Type() == Types::PLR2)
+				{
+					arena->KillBomber(current_element.ID());
 					break;
 				}
 				CalculatePosition(dir_nr, pos);

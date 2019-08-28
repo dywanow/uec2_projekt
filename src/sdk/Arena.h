@@ -26,10 +26,12 @@ public:
 	static const uint8_t HEIGHT = 16;
 
 	Arena();
+	void Init();
 	void MoveBomberUp(uint8_t bomber_id);
 	void MoveBomberLeft(uint8_t bomber_id);
 	void MoveBomberDown(uint8_t bomber_id);
 	void MoveBomberRight(uint8_t bomber_id);
+	void KillBomber(uint8_t bomber_id);
 	void InitBomb(uint8_t bomber_id);
 	void InitExplosion(uint8_t bomber_id, uint8_t bomb_id);
 	void BomberDeleteBomb(uint8_t bomber_id);
@@ -39,7 +41,7 @@ public:
 	Explosion GetExplosion(uint8_t explosion_number) const;
 	ExplosionPart GetExplosionPart(uint8_t explosion_number, uint8_t part_number) const;
 	Element GetVisibleElement(uint8_t visible_element_position) const;
-	void Update(float dt);
+	uint8_t Update(float dt);
 	void Draw(uint32_t *drawer);
 
 private:
@@ -57,6 +59,7 @@ private:
 	void BomberAddBomb(uint8_t bomber_id);
 	uint8_t IsPositionOccupied(uint8_t bomber_id) const;
 	uint8_t AvailableBombID() const;
+	uint8_t IsAnyPlayerDead() const;
 };
 
 #endif  /* SRC_ARENAELEMENT_H_ */

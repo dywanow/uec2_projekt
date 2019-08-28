@@ -6,7 +6,8 @@ const float Bomber::MOVE_TIME = 0.3f;
 Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
                    movement(Movement::NONE),
 				   max_bombs_number(0),
-				   current_bombs_number(0)
+				   current_bombs_number(0),
+				   alive(1)
 {
 
 }
@@ -62,6 +63,16 @@ void Bomber::MakeMove(Bomber::Movement movement)
 	this->movement = movement;
 }
 
+void Bomber::Die()
+{
+	alive = 0;
+}
+
+void Bomber::Revive()
+{
+	alive = 1;
+}
+
 void Bomber::IncrementCurrentBombsNumber()
 {
 	current_bombs_number++;
@@ -70,6 +81,11 @@ void Bomber::IncrementCurrentBombsNumber()
 void Bomber::DecrementBombsNumber()
 {
 	current_bombs_number--;
+}
+
+void Bomber::SetCurrentBombsNumber(uint8_t current_bombs_number)
+{
+	this->current_bombs_number = current_bombs_number;
 }
 
 void Bomber::SetMaxBombsNumber(uint8_t max_bombs_number)
@@ -85,6 +101,11 @@ uint8_t Bomber::CurrentBombsNumber() const
 uint8_t Bomber::MaxBombsNumber() const
 {
 	return max_bombs_number;
+}
+
+uint8_t Bomber::IsAlive() const
+{
+	return alive;
 }
 
 uint8_t Bomber::Collides(const Vector &element_position) const
