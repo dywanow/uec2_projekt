@@ -4,7 +4,7 @@
 
 Game::Game() : keyboard(XPAR_UARTLITE_0_BASEADDR),
 			   timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, TIMER_NUMBER),
-			   arena_drawer((uint32_t *)XPAR_AXI_BOARD_S00_AXI_BASEADDR)
+			   arena_drawer(reinterpret_cast<uint32_t*>(XPAR_AXI_BOARD_S00_AXI_BASEADDR))
 {
 
 }
