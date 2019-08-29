@@ -41,8 +41,9 @@ public:
     Explosion AccessExplosion(uint8_t explosion_number) const;
     ExplosionPart AccessExplosionPart(uint8_t explosion_number, uint8_t part_number) const;
     Element AccessVisibleElement(uint8_t visible_element_position) const;
-    uint8_t Update(float dt);
-    void Draw(uint32_t *drawer);
+    uint8_t IsAnyPlayerDead() const;
+    void Update(float dt);
+    void Draw(uint32_t *axi_data);
 
 private:
     Block blocks[BLOCKS_NUMBER];
@@ -59,7 +60,7 @@ private:
     void BomberAddBomb(uint8_t bomber_id);
     uint8_t IsPositionOccupied(uint8_t bomber_id) const;
     uint8_t AvailableBombID() const;
-    uint8_t IsAnyPlayerDead() const;
+
 };
 
 #endif  /* SRC_ARENAELEMENT_H_ */

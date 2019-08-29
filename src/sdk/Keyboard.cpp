@@ -6,13 +6,18 @@ Keyboard::Keyboard(uint32_t baseaddr) : baseaddr(baseaddr)
 
 }
 
-u8 Keyboard::IsKeyPressed()
+uint8_t Keyboard::IsKeyPressed()
 {
-    return XUartLite_IsReceiveEmpty(baseaddr);
+    if (!XUartLite_IsReceiveEmpty(baseaddr))
+    {
+    	key = XUartLite_RecvByte(baseaddr);
+    	return 1;
+    }
+    return 0;
 }
 
-u8 Keyboard::GetKey()
+uint8_t Keyboard::GetKey()
 {
-    return XUartLite_RecvByte(baseaddr);
+    return key;
 }
 

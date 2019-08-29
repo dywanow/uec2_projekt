@@ -16,7 +16,7 @@ Element::Element(uint16_t x, uint16_t y, Element::Types type, uint8_t active) : 
 
 void Element::Update(float dt)
 {
-    time += dt;
+
 }
 
 void Element::SetArena(Arena *arena)

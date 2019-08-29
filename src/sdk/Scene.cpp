@@ -1,7 +1,9 @@
 #include "Scene.h"
 
-Scene::Scene(uint32_t axi_base_addr, uint8_t id) : axi_data(reinterpret_cast<uint32_t*>(axi_base_addr)),
-                                                   id(id)
+Scene::Scene(uint8_t id, Keyboard *input) : input(input),
+											active(0),
+											id(id)
+
 {
 
 }
@@ -24,4 +26,24 @@ uint8_t Scene::IsActive() const
 uint8_t Scene::ID() const
 {
     return id;
+}
+
+void Scene::Init()
+{
+
+}
+
+void Scene::HandleInput()
+{
+
+}
+
+void Scene::Update(float dt)
+{
+
+}
+
+void Scene::Draw()
+{
+
 }

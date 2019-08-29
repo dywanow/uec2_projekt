@@ -2,12 +2,16 @@
 
 #define TIMER_NUMBER 0
 
-Game::Game() : state(Game::States::BATTLE),
+Game::Game() : state(Game::States::MENU),
                keyboard(XPAR_UARTLITE_0_BASEADDR),
+               current_scene(&menu),
+			   menu(0, &keyboard),
+               battle(XPAR_AXI_BATTLE_ARENA_S00_AXI_BASEADDR, 1, &keyboard),
+			   endgame(2, &keyboard),
                timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, TIMER_NUMBER),
-               arena_drawer(reinterpret_cast<uint32_t*>(XPAR_AXI_BOARD_S00_AXI_BASEADDR))
+               axi_scenes_data(reinterpret_cast<uint32_t*>(XPAR_AXI_SCENES_S00_AXI_BASEADDR))
 {
-
+	menu.Activate();
 }
 
 
@@ -25,81 +29,46 @@ void Game::Loop()
 
 void Game::HandleKeyboard()
 {
-    if (!keyboard.IsKeyPressed())
+    if (keyboard.IsKeyPressed())
     {
-        pressed_key = keyboard.GetKey();
-        if (state == States::BATTLE)
-        {
-            HandleBattleInput();
-        }
-        xil_printf("[%c]\n", pressed_key);
-    }
-}
-
-void Game::HandleBattleInput()
-{
-    if (pressed_key == 'w')
-    {
-        arena.MoveBomberUp(0);
-    }
-    if (pressed_key == 'a')
-    {
-        arena.MoveBomberLeft(0);
-    }
-    if (pressed_key == 's')
-    {
-        arena.MoveBomberDown(0);
-    }
-    if (pressed_key == 'd')
-    {
-        arena.MoveBomberRight(0);
-    }
-    if (pressed_key == ' ')
-    {
-        arena.InitBomb(0);
-        xil_printf("BOMB0 @ (%u, %u) [%u]\n", arena.AccessBomber(0).Position().GetX(), arena.AccessBomber(0).Position().GetY(), arena.AccessBomber(0).NormalizedPosition());
-    }
-    if (pressed_key == '8')
-    {
-        arena.MoveBomberUp(1);
-    }
-    if (pressed_key == '4')
-    {
-        arena.MoveBomberLeft(1);
-    }
-    if (pressed_key == '2')
-    {
-        arena.MoveBomberDown(1);
-    }
-    if (pressed_key == '6')
-    {
-        arena.MoveBomberRight(1);
-    }
-    if (pressed_key == '5')
-    {
-        arena.InitBomb(1);
-        xil_printf("BOMB1 @ (%u, %u) [%u]\n", arena.AccessBomber(1).Position().GetX(), arena.AccessBomber(1).Position().GetY(), arena.AccessBomber(1).NormalizedPosition());
-    }
-    if (pressed_key == 'p')
-    {
-        xil_printf("PLAYER0 @ (%u, %u) [%u]\nPLAYER1 @ (%u, %u) [%u]\n",
-        arena.AccessBomber(0).Position().GetX(), arena.AccessBomber(0).Position().GetY(), arena.AccessBomber(0).NormalizedPosition(),
-        arena.AccessBomber(1).Position().GetX(), arena.AccessBomber(1).Position().GetY(), arena.AccessBomber(1).NormalizedPosition());
+        current_scene->HandleInput();
+        xil_printf("[%c]\n", keyboard.GetKey());
     }
 }
 
 void Game::Update(float dt)
 {
-    if (state == States::BATTLE)
-    {
-        if (arena.Update(dt))
-        {
-            arena.Init();
-        }
-    }
+	current_scene->Update(dt);
+	*axi_scenes_data = current_scene->ID() << 1;
+	if (!current_scene->IsActive())
+	{
+		SwitchScene();
+		current_scene->Activate();
+		current_scene->Init();
+	}
 }
 
 void Game::Draw()
 {
-    arena.Draw(arena_drawer);
+    current_scene->Draw();
+}
+
+void Game::SwitchScene()
+{
+	switch (state)
+	{
+	case States::MENU:
+		current_scene = &battle;
+		state = States::BATTLE;
+		break;
+	case States::BATTLE:
+		current_scene = &endgame;
+		state = States::ENDGAME;
+		break;
+	case States::ENDGAME:
+		current_scene = &menu;
+		state = States::MENU;
+	default:
+		break;
+	}
 }

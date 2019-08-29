@@ -11,6 +11,7 @@ public:
     uint8_t GetKey();
 private:
     uint32_t baseaddr;
+    uint8_t key;
 };
 
 #endif /* SRC_KEYBOARD_H_ */

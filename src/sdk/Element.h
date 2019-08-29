@@ -30,7 +30,7 @@ public:
     uint8_t IsCollidable() const;
     uint8_t IsActive() const;
     uint8_t IsDestructible() const;
-    virtual void Update(float dt=0);
+    virtual void Update(float dt);
 
 protected:
     Arena *arena;

@@ -227,7 +227,7 @@ uint8_t Arena::AvailableBombID() const
     }
 }
 
-uint8_t Arena::Update(float dt)
+void Arena::Update(float dt)
 {
     for (auto &e : elements)
     {
@@ -253,15 +253,14 @@ uint8_t Arena::Update(float dt)
     {
         e->Update(dt);
     }
-    return IsAnyPlayerDead();
 }
 
 
-void Arena::Draw(uint32_t *drawer)
+void Arena::Draw(uint32_t *axi_data)
 {
     for (auto &v : visible_elements)
     {
-        *drawer = (v->TypeCode() << 8) + v->NormalizedPosition();
+        *axi_data = (v->TypeCode() << 8) + v->NormalizedPosition();
     }
 }
 

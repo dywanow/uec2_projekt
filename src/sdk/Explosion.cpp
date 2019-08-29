@@ -55,7 +55,6 @@ void Explosion::InitParts()
                 if (current_element.Type() == Types::PLR1 || current_element.Type() == Types::PLR2)
                 {
                     arena->KillBomber(current_element.ID());
-                    break;
                 }
                 CalculatePosition(dir_nr, pos);
                 parts[dir_nr * EXPLOSION_LENGTH + i].SetPosition(pos);

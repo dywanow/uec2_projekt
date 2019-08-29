@@ -35,14 +35,14 @@ module rom_rgb_mux
     
     always @*
         case (i_sel)
-            T_PATH: rom_rgb_nxt <= i_path_rom_rgb;
-            T_SURR: rom_rgb_nxt <= i_surr_rom_rgb;
-            T_OBS1: rom_rgb_nxt <= i_obs1_rom_rgb;        
-            T_OBS2: rom_rgb_nxt <= i_obs2_rom_rgb;        
-            T_BOMB: rom_rgb_nxt <= i_bomb_rom_rgb;
-            T_EXPL: rom_rgb_nxt <= i_expl_rom_rgb;
-            T_PLR1: rom_rgb_nxt <= i_plr1_rom_rgb;
-            T_PLR2: rom_rgb_nxt <= i_plr2_rom_rgb;
-            default: rom_rgb_nxt <= 0;
+            T_PATH: rom_rgb_nxt = i_path_rom_rgb;
+            T_SURR: rom_rgb_nxt = i_surr_rom_rgb;
+            T_OBS1: rom_rgb_nxt = i_obs1_rom_rgb;        
+            T_OBS2: rom_rgb_nxt = i_obs2_rom_rgb;        
+            T_BOMB: rom_rgb_nxt = i_bomb_rom_rgb;
+            T_EXPL: rom_rgb_nxt = i_expl_rom_rgb;
+            T_PLR1: rom_rgb_nxt = i_plr1_rom_rgb;
+            T_PLR2: rom_rgb_nxt = i_plr2_rom_rgb;
+            default: rom_rgb_nxt = 0;
         endcase
 endmodule

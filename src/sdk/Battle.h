@@ -8,12 +8,14 @@
 class Battle : public Scene
 {
 public:
-    Battle(uint32_t axi_base_addr, uint8_t id);
+    Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input);
+    void Init();
     void HandleInput();
-    uint8_t Update(float dt);
+    void Update(float dt);
     void Draw();
 
 private:
+    uint32_t * const axi_arena_data;
     Arena arena;
 };
 
