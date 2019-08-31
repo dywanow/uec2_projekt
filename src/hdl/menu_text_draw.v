@@ -1,6 +1,10 @@
 `timescale 1ns / 1ps
 
 module menu_text_draw
+    # ( parameter
+        X_ADDR_WIDTH = 1,
+        Y_ADDR_WIDTH = 1
+    )
     (
 		input wire i_pclk,
         input wire i_rst,
@@ -19,14 +23,14 @@ module menu_text_draw
         output reg o_hsync,
         output reg o_hblnk,
         output reg [11:0] o_rgb,
-        output wire [8:0] o_char_addr,
+        output wire [X_ADDR_WIDTH+Y_ADDR_WIDTH-1:0] o_char_addr,
         output wire [3:0] o_char_line
     );
 
-    localparam XPOS = 704,
-               YPOS = 400,
-               WIDTH = 512,
-               HEIGHT = 128;
+    localparam XPOS = 672,
+               YPOS = 320,
+               WIDTH = 576,
+               HEIGHT = 192;
     
     reg [11:0] rgb_nxt;
     wire [11:0] hcount_relative, vcount_relative;
@@ -96,7 +100,7 @@ module menu_text_draw
     
     assign hcount_relative = i_hcount - XPOS;
     assign vcount_relative = i_vcount - YPOS;
-    assign o_char_addr = {vcount_relative[6:4], hcount_relative[8:3]};
+    assign o_char_addr = {vcount_relative[Y_ADDR_WIDTH+3:4], hcount_relative[X_ADDR_WIDTH+2:3]};
     assign char_line_tmp = vcount_relative[3:0];
     assign rom_bit_addr_tmp = hcount_relative[2:0];
     
