@@ -11,6 +11,7 @@ module board_draw
         input wire i_hsync,
         input wire i_hblnk,
         input wire [3:0] i_axi_data,
+        input wire [11:0] i_rgb,
         input wire [11:0] i_rom_rgb,
         output reg [11:0] o_vcount,
         output reg o_vsync,
@@ -113,7 +114,7 @@ module board_draw
             if (hcount_del_2_clk >= H_MIN && hcount_del_2_clk < H_MAX && vcount_del_2_clk >= V_MIN && vcount_del_2_clk < V_MAX)
                 rgb_nxt = i_rom_rgb;
             else
-                rgb_nxt = 12'h555;
+                rgb_nxt = i_rgb;
     
     
     assign o_sel = i_axi_data;

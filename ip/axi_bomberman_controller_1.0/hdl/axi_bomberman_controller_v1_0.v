@@ -6,7 +6,6 @@
 		// Users to add parameters here
         parameter ADDR_WIDTH = 1,
         parameter DATA_WIDTH = 20,
-        parameter MEMORY_WIDTH = 2,
 		// User parameters ends
 		// Do not modify the parameters beyond this line
 
@@ -76,7 +75,7 @@
 	);
 
 	// Add user logic here
-    reg [DATA_WIDTH-1:0] memory[0:MEMORY_WIDTH-1];
+    (* rom_style = "distributed" *) reg [DATA_WIDTH-1:0] memory[0:2**ADDR_WIDTH-1];
         
     always @(posedge s00_axi_aclk)
         if (s00_axi_awvalid && s00_axi_awready)

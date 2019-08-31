@@ -44,6 +44,8 @@ set files [list \
  "[file normalize "$origin_dir/src/hdl/vga_timing.v"]"\
  "[file normalize "$origin_dir/src/hdl/scene_mux.v"]"\
  "[file normalize "$origin_dir/src/hdl/endgame_text_draw.v"]"\
+ "[file normalize "$origin_dir/src/hdl/font_rom.v"]"\
+ "[file normalize "$origin_dir/src/hdl/text_rom.v"]"\
  "[file normalize "$origin_dir/src/hdl/menu_text_draw.v"]"\
  "[file normalize "$origin_dir/bd/design_1/hdl/design_1_wrapper.v"]"\
  "[file normalize "$origin_dir/src/coe/path.coe"]"\
@@ -96,7 +98,7 @@ set obj [get_filesets sim_1]
 proc cr_bd_design_1 { parentCell } {
 # The design that will be created by this Tcl proc contains the following 
 # module references:
-# scene_mux, vga_timing, board_draw, rom_rgb_mux, endgame_text_draw, menu_text_draw
+# scene_mux, vga_timing, board_draw, rom_rgb_mux, endgame_text_draw, font_rom, menu_text_draw, text_rom
 
 
 
@@ -126,6 +128,7 @@ proc cr_bd_design_1 { parentCell } {
   xilinx.com:ip:lmb_v10:3.0\
   xilinx.com:ip:blk_mem_gen:8.4\
   xilinx.com:ip:xlslice:1.0\
+  xilinx.com:ip:xlconcat:2.1\
   "
 
    set list_ips_missing ""
@@ -156,7 +159,9 @@ proc cr_bd_design_1 { parentCell } {
   board_draw\
   rom_rgb_mux\
   endgame_text_draw\
+  font_rom\
   menu_text_draw\
+  text_rom\
   "
 
    set list_mods_missing ""
@@ -222,6 +227,7 @@ proc create_hier_cell_menu_draw { parentCell nameHier } {
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
   create_bd_pin -dir I i_pclk
+  create_bd_pin -dir I -from 11 -to 0 i_rgb
   create_bd_pin -dir I i_vblnk
   create_bd_pin -dir I -from 11 -to 0 i_vcount
   create_bd_pin -dir I i_vsync
@@ -229,6 +235,24 @@ proc create_hier_cell_menu_draw { parentCell nameHier } {
   create_bd_pin -dir O -from 11 -to 0 o_rgb
   create_bd_pin -dir O o_vsync
   create_bd_pin -dir I -type rst reset
+
+  # Create instance: font_rom, and set properties
+  set block_name font_rom
+  set block_cell_name font_rom
+  if { [catch {set font_rom [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $font_rom eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
+  # Create instance: menu_rom_addr, and set properties
+  set menu_rom_addr [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 menu_rom_addr ]
+  set_property -dict [ list \
+   CONFIG.IN0_WIDTH {4} \
+   CONFIG.IN1_WIDTH {7} \
+ ] $menu_rom_addr
 
   # Create instance: menu_text_draw_0, and set properties
   set block_name menu_text_draw
@@ -241,18 +265,40 @@ proc create_hier_cell_menu_draw { parentCell nameHier } {
      return 1
    }
   
+  # Create instance: menu_text_rom, and set properties
+  set block_name text_rom
+  set block_cell_name menu_text_rom
+  if { [catch {set menu_text_rom [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $menu_text_rom eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.PATH {../rom/menu_text.data} \
+   CONFIG.X_ADDR_WIDTH {6} \
+   CONFIG.Y_ADDR_WIDTH {3} \
+ ] $menu_text_rom
+
   # Create port connections
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins menu_text_draw_0/i_pclk]
+  connect_bd_net -net font_rom_char_line_pixels [get_bd_pins font_rom/rom_word] [get_bd_pins menu_text_draw_0/i_rom_word]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins menu_text_draw_0/i_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins menu_text_draw_0/i_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins menu_text_draw_0/i_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins font_rom/clk] [get_bd_pins menu_text_draw_0/i_pclk] [get_bd_pins menu_text_rom/i_clk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins menu_text_draw_0/i_rgb]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins menu_text_draw_0/i_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins menu_text_draw_0/i_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins menu_text_draw_0/i_vsync]
   connect_bd_net -net menu_text_draw_0_o_hsync [get_bd_pins o_hsync] [get_bd_pins menu_text_draw_0/o_hsync]
   connect_bd_net -net menu_text_draw_0_o_rgb [get_bd_pins o_rgb] [get_bd_pins menu_text_draw_0/o_rgb]
+  connect_bd_net -net menu_text_draw_0_o_title_char_addr [get_bd_pins menu_text_draw_0/o_char_addr] [get_bd_pins menu_text_rom/i_char_addr]
+  connect_bd_net -net menu_text_draw_0_o_title_char_line [get_bd_pins menu_rom_addr/In0] [get_bd_pins menu_text_draw_0/o_char_line]
   connect_bd_net -net menu_text_draw_0_o_vsync [get_bd_pins o_vsync] [get_bd_pins menu_text_draw_0/o_vsync]
   connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins menu_text_draw_0/i_rst]
-  connect_bd_net -net vga_timing_0_o_hblnk [get_bd_pins i_hblnk] [get_bd_pins menu_text_draw_0/i_hblnk]
-  connect_bd_net -net vga_timing_0_o_hcount [get_bd_pins i_hcount] [get_bd_pins menu_text_draw_0/i_hcount]
-  connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins i_hsync] [get_bd_pins menu_text_draw_0/i_hsync]
-  connect_bd_net -net vga_timing_0_o_vblnk [get_bd_pins i_vblnk] [get_bd_pins menu_text_draw_0/i_vblnk]
-  connect_bd_net -net vga_timing_0_o_vcount [get_bd_pins i_vcount] [get_bd_pins menu_text_draw_0/i_vcount]
-  connect_bd_net -net vga_timing_0_o_vsync [get_bd_pins i_vsync] [get_bd_pins menu_text_draw_0/i_vsync]
+  connect_bd_net -net title_text_addr_dout [get_bd_pins font_rom/addr] [get_bd_pins menu_rom_addr/dout]
+  connect_bd_net -net title_text_rom_o_char_code [get_bd_pins menu_rom_addr/In1] [get_bd_pins menu_text_rom/o_char_code]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -377,6 +423,7 @@ proc create_hier_cell_battle_draw { parentCell nameHier } {
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
   create_bd_pin -dir I i_pclk
+  create_bd_pin -dir I -from 11 -to 0 i_rgb
   create_bd_pin -dir I i_vblnk
   create_bd_pin -dir I -from 11 -to 0 i_vcount
   create_bd_pin -dir I i_vsync
@@ -595,6 +642,7 @@ proc create_hier_cell_battle_draw { parentCell nameHier } {
   connect_bd_net -net expl_texture_douta [get_bd_pins expl_texture/douta] [get_bd_pins rom_rgb_mux_0/i_expl_rom_rgb]
   connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_arena_data] [get_bd_pins arena_draw_0/i_axi_data]
   connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins arena_draw_0/i_pclk] [get_bd_pins bomb_texture/clka] [get_bd_pins expl_texture/clka] [get_bd_pins obs1_texture/clka] [get_bd_pins obs2_texture/clka] [get_bd_pins path_texture/clka] [get_bd_pins plr1_texture/clka] [get_bd_pins plr2_texture/clka] [get_bd_pins rom_rgb_mux_0/i_pclk] [get_bd_pins surr_texture/clka]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins arena_draw_0/i_rgb]
   connect_bd_net -net obs1_texture_douta [get_bd_pins obs1_texture/douta] [get_bd_pins rom_rgb_mux_0/i_obs1_rom_rgb]
   connect_bd_net -net obs2_texture_douta [get_bd_pins obs2_texture/douta] [get_bd_pins rom_rgb_mux_0/i_obs2_rom_rgb]
   connect_bd_net -net path_texture_douta [get_bd_pins path_texture/douta] [get_bd_pins rom_rgb_mux_0/i_path_rom_rgb]
@@ -655,8 +703,8 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   create_bd_pin -dir O -from 3 -to 0 g
   create_bd_pin -dir O hs
   create_bd_pin -dir I -from 3 -to 0 i_axi_battle_arena_data
+  create_bd_pin -dir I -from 1 -to 0 i_axi_scene_sel
   create_bd_pin -dir I i_pclk
-  create_bd_pin -dir I -from 1 -to 0 i_scene_sel
   create_bd_pin -dir O -from 7 -to 0 o_axi_battle_board_addr
   create_bd_pin -dir O -from 3 -to 0 r
   create_bd_pin -dir I -type rst reset
@@ -664,6 +712,13 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
 
   # Create instance: battle_draw
   create_hier_cell_battle_draw $hier_obj battle_draw
+
+  # Create instance: bg_color, and set properties
+  set bg_color [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 bg_color ]
+  set_property -dict [ list \
+   CONFIG.CONST_VAL {0x69e} \
+   CONFIG.CONST_WIDTH {12} \
+ ] $bg_color
 
   # Create instance: blue_value, and set properties
   set blue_value [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 blue_value ]
@@ -732,7 +787,7 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   connect_bd_net -net green_value_Dout [get_bd_pins g] [get_bd_pins green_value/Dout]
   connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_battle_arena_data] [get_bd_pins battle_draw/i_axi_arena_data]
   connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins battle_draw/i_pclk] [get_bd_pins endgame_draw/i_pclk] [get_bd_pins menu_draw/i_pclk] [get_bd_pins scene_mux_0/i_pclk] [get_bd_pins vga_timing_0/i_pclk]
-  connect_bd_net -net i_scene_sel_1 [get_bd_pins i_scene_sel] [get_bd_pins scene_mux_0/i_sel]
+  connect_bd_net -net i_scene_sel_1 [get_bd_pins i_axi_scene_sel] [get_bd_pins scene_mux_0/i_sel]
   connect_bd_net -net i_vsync_1 [get_bd_pins battle_draw/i_vsync] [get_bd_pins endgame_draw/i_vsync] [get_bd_pins menu_draw/i_vsync] [get_bd_pins vga_timing_0/o_vsync]
   connect_bd_net -net menu_draw_o_hsync [get_bd_pins menu_draw/o_hsync] [get_bd_pins scene_mux_0/i_menu_hs]
   connect_bd_net -net menu_draw_o_rgb [get_bd_pins menu_draw/o_rgb] [get_bd_pins scene_mux_0/i_menu_scene_rgb]
@@ -747,6 +802,7 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins battle_draw/i_hsync] [get_bd_pins endgame_draw/i_hsync] [get_bd_pins menu_draw/i_hsync] [get_bd_pins vga_timing_0/o_hsync]
   connect_bd_net -net vga_timing_0_o_vblnk [get_bd_pins battle_draw/i_vblnk] [get_bd_pins endgame_draw/i_vblnk] [get_bd_pins menu_draw/i_vblnk] [get_bd_pins vga_timing_0/o_vblnk]
   connect_bd_net -net vga_timing_0_o_vcount [get_bd_pins battle_draw/i_vcount] [get_bd_pins endgame_draw/i_vcount] [get_bd_pins menu_draw/i_vcount] [get_bd_pins vga_timing_0/o_vcount]
+  connect_bd_net -net xlconstant_0_dout [get_bd_pins battle_draw/i_rgb] [get_bd_pins bg_color/dout] [get_bd_pins menu_draw/i_rgb]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -885,7 +941,6 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {8} \
    CONFIG.DATA_WIDTH {4} \
-   CONFIG.MEMORY_WIDTH {256} \
  ] $axi_battle_arena
 
   # Create instance: axi_scenes, and set properties
@@ -893,7 +948,6 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {1} \
    CONFIG.DATA_WIDTH {2} \
-   CONFIG.MEMORY_WIDTH {1} \
  ] $axi_scenes
 
   # Create instance: axi_timer_0, and set properties
@@ -979,7 +1033,7 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
 
   # Create port connections
   connect_bd_net -net axi_bomberman_controller_0_data [get_bd_pins axi_battle_arena/data] [get_bd_pins vga_drawer/i_axi_battle_arena_data]
-  connect_bd_net -net axi_scenes_data [get_bd_pins axi_scenes/data] [get_bd_pins vga_drawer/i_scene_sel]
+  connect_bd_net -net axi_scenes_data [get_bd_pins axi_scenes/data] [get_bd_pins vga_drawer/i_axi_scene_sel]
   connect_bd_net -net clk_wiz_0_locked [get_bd_pins clk_wiz_0/locked] [get_bd_pins rst_clk_wiz_0_100M/dcm_locked]
   connect_bd_net -net clk_wiz_0_pclk [get_bd_pins axi_battle_arena/pclk] [get_bd_pins axi_scenes/pclk] [get_bd_pins clk_wiz_0/pclk] [get_bd_pins vga_drawer/i_pclk]
   connect_bd_net -net mdm_1_debug_sys_rst [get_bd_pins mdm_1/Debug_SYS_Rst] [get_bd_pins rst_clk_wiz_0_100M/mb_debug_sys_rst]
