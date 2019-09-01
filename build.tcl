@@ -128,6 +128,7 @@ proc cr_bd_design_1 { parentCell } {
   xilinx.com:ip:lmb_v10:3.0\
   xilinx.com:ip:blk_mem_gen:8.4\
   xilinx.com:ip:xlslice:1.0\
+  xilinx.com:ip:dist_mem_gen:8.0\
   xilinx.com:ip:xlconcat:2.1\
   "
 
@@ -264,7 +265,11 @@ proc create_hier_cell_menu_draw { parentCell nameHier } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
-  
+    set_property -dict [ list \
+   CONFIG.X_ADDR_WIDTH {7} \
+   CONFIG.Y_ADDR_WIDTH {4} \
+ ] $menu_text_draw_0
+
   # Create instance: menu_text_rom, and set properties
   set block_name text_rom
   set block_cell_name menu_text_rom
@@ -277,8 +282,8 @@ proc create_hier_cell_menu_draw { parentCell nameHier } {
    }
     set_property -dict [ list \
    CONFIG.PATH {../rom/menu_text.data} \
-   CONFIG.X_ADDR_WIDTH {6} \
-   CONFIG.Y_ADDR_WIDTH {3} \
+   CONFIG.X_ADDR_WIDTH {7} \
+   CONFIG.Y_ADDR_WIDTH {4} \
  ] $menu_text_rom
 
   # Create port connections
@@ -445,157 +450,76 @@ proc create_hier_cell_battle_draw { parentCell nameHier } {
    }
   
   # Create instance: bomb_texture, and set properties
-  set bomb_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 bomb_texture ]
+  set bomb_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 bomb_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/bomb.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/bomb.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $bomb_texture
 
   # Create instance: expl_texture, and set properties
-  set expl_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 expl_texture ]
+  set expl_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 expl_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/expl.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/expl.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $expl_texture
 
   # Create instance: obs1_texture, and set properties
-  set obs1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 obs1_texture ]
+  set obs1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 obs1_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/obs1.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/obs1.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $obs1_texture
 
   # Create instance: obs2_texture, and set properties
-  set obs2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 obs2_texture ]
+  set obs2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 obs2_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/obs2.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/obs2.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $obs2_texture
 
   # Create instance: path_texture, and set properties
-  set path_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 path_texture ]
+  set path_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 path_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/path.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/path.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.input_options {non_registered} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+   CONFIG.reset_qspo {false} \
+   CONFIG.sync_reset_qspo {false} \
  ] $path_texture
 
   # Create instance: plr1_texture, and set properties
-  set plr1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 plr1_texture ]
+  set plr1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 plr1_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/plr1.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/plr1.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $plr1_texture
 
   # Create instance: plr2_texture, and set properties
-  set plr2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 plr2_texture ]
+  set plr2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 plr2_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/plr2.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/plr2.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $plr2_texture
 
   # Create instance: rom_rgb_mux_0, and set properties
@@ -610,47 +534,35 @@ proc create_hier_cell_battle_draw { parentCell nameHier } {
    }
   
   # Create instance: surr_texture, and set properties
-  set surr_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 surr_texture ]
+  set surr_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 surr_texture ]
   set_property -dict [ list \
-   CONFIG.Byte_Size {9} \
-   CONFIG.Coe_File {../../../../../../../../src/coe/surr.coe} \
-   CONFIG.EN_SAFETY_CKT {false} \
-   CONFIG.Enable_32bit_Address {false} \
-   CONFIG.Enable_A {Always_Enabled} \
-   CONFIG.Load_Init_File {true} \
-   CONFIG.Memory_Type {Single_Port_ROM} \
-   CONFIG.Port_A_Write_Rate {0} \
-   CONFIG.Read_Width_A {12} \
-   CONFIG.Read_Width_B {12} \
-   CONFIG.Register_PortA_Output_of_Memory_Primitives {true} \
-   CONFIG.Use_Byte_Write_Enable {false} \
-   CONFIG.Use_RSTA_Pin {false} \
-   CONFIG.Write_Depth_A {4096} \
-   CONFIG.Write_Width_A {12} \
-   CONFIG.Write_Width_B {12} \
-   CONFIG.use_bram_block {Stand_Alone} \
+   CONFIG.coefficient_file {../../../../../../../../src/coe/surr.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
  ] $surr_texture
 
   # Create port connections
   connect_bd_net -net board_draw_0_o_axi_addr [get_bd_pins o_axi_board_addr] [get_bd_pins arena_draw_0/o_axi_addr]
   connect_bd_net -net board_draw_0_o_hsync [get_bd_pins o_hsync] [get_bd_pins arena_draw_0/o_hsync]
   connect_bd_net -net board_draw_0_o_rgb [get_bd_pins o_rgb] [get_bd_pins arena_draw_0/o_rgb]
-  connect_bd_net -net board_draw_0_o_rom_addr [get_bd_pins arena_draw_0/o_rom_addr] [get_bd_pins bomb_texture/addra] [get_bd_pins expl_texture/addra] [get_bd_pins obs1_texture/addra] [get_bd_pins obs2_texture/addra] [get_bd_pins path_texture/addra] [get_bd_pins plr1_texture/addra] [get_bd_pins plr2_texture/addra] [get_bd_pins surr_texture/addra]
+  connect_bd_net -net board_draw_0_o_rom_addr [get_bd_pins arena_draw_0/o_rom_addr] [get_bd_pins bomb_texture/a] [get_bd_pins expl_texture/a] [get_bd_pins obs1_texture/a] [get_bd_pins obs2_texture/a] [get_bd_pins path_texture/a] [get_bd_pins plr1_texture/a] [get_bd_pins plr2_texture/a] [get_bd_pins surr_texture/a]
   connect_bd_net -net board_draw_0_o_sel [get_bd_pins arena_draw_0/o_sel] [get_bd_pins rom_rgb_mux_0/i_sel]
   connect_bd_net -net board_draw_0_o_vsync [get_bd_pins o_vsync] [get_bd_pins arena_draw_0/o_vsync]
-  connect_bd_net -net bomb_texture_douta [get_bd_pins bomb_texture/douta] [get_bd_pins rom_rgb_mux_0/i_bomb_rom_rgb]
-  connect_bd_net -net expl_texture_douta [get_bd_pins expl_texture/douta] [get_bd_pins rom_rgb_mux_0/i_expl_rom_rgb]
+  connect_bd_net -net bomb_texture_qspo [get_bd_pins bomb_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_bomb_rom_rgb]
+  connect_bd_net -net dist_mem_gen_0_qspo [get_bd_pins path_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_path_rom_rgb]
+  connect_bd_net -net expl_texture_qspo [get_bd_pins expl_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_expl_rom_rgb]
   connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_arena_data] [get_bd_pins arena_draw_0/i_axi_data]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins arena_draw_0/i_pclk] [get_bd_pins bomb_texture/clka] [get_bd_pins expl_texture/clka] [get_bd_pins obs1_texture/clka] [get_bd_pins obs2_texture/clka] [get_bd_pins path_texture/clka] [get_bd_pins plr1_texture/clka] [get_bd_pins plr2_texture/clka] [get_bd_pins rom_rgb_mux_0/i_pclk] [get_bd_pins surr_texture/clka]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins arena_draw_0/i_pclk] [get_bd_pins bomb_texture/clk] [get_bd_pins expl_texture/clk] [get_bd_pins obs1_texture/clk] [get_bd_pins obs2_texture/clk] [get_bd_pins path_texture/clk] [get_bd_pins plr1_texture/clk] [get_bd_pins plr2_texture/clk] [get_bd_pins rom_rgb_mux_0/i_pclk] [get_bd_pins surr_texture/clk]
   connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins arena_draw_0/i_rgb]
-  connect_bd_net -net obs1_texture_douta [get_bd_pins obs1_texture/douta] [get_bd_pins rom_rgb_mux_0/i_obs1_rom_rgb]
-  connect_bd_net -net obs2_texture_douta [get_bd_pins obs2_texture/douta] [get_bd_pins rom_rgb_mux_0/i_obs2_rom_rgb]
-  connect_bd_net -net path_texture_douta [get_bd_pins path_texture/douta] [get_bd_pins rom_rgb_mux_0/i_path_rom_rgb]
-  connect_bd_net -net plr1_texture_douta [get_bd_pins plr1_texture/douta] [get_bd_pins rom_rgb_mux_0/i_plr1_rom_rgb]
-  connect_bd_net -net plr2_texture_douta [get_bd_pins plr2_texture/douta] [get_bd_pins rom_rgb_mux_0/i_plr2_rom_rgb]
+  connect_bd_net -net obs1_texture_qspo [get_bd_pins obs1_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_obs1_rom_rgb]
+  connect_bd_net -net obs2_texture_qspo [get_bd_pins obs2_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_obs2_rom_rgb]
+  connect_bd_net -net plr1_texture_qspo [get_bd_pins plr1_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_plr1_rom_rgb]
+  connect_bd_net -net plr2_texture_qspo [get_bd_pins plr2_texture/qspo] [get_bd_pins rom_rgb_mux_0/i_plr2_rom_rgb]
   connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins arena_draw_0/i_rst] [get_bd_pins rom_rgb_mux_0/i_rst]
   connect_bd_net -net rom_rgb_mux_0_o_rom_rgb [get_bd_pins arena_draw_0/i_rom_rgb] [get_bd_pins rom_rgb_mux_0/o_rom_rgb]
-  connect_bd_net -net surr_texture_douta [get_bd_pins rom_rgb_mux_0/i_surr_rom_rgb] [get_bd_pins surr_texture/douta]
+  connect_bd_net -net surr_texture_qspo [get_bd_pins rom_rgb_mux_0/i_surr_rom_rgb] [get_bd_pins surr_texture/qspo]
   connect_bd_net -net vga_timing_0_o_hblnk [get_bd_pins i_hblnk] [get_bd_pins arena_draw_0/i_hblnk]
   connect_bd_net -net vga_timing_0_o_hcount [get_bd_pins i_hcount] [get_bd_pins arena_draw_0/i_hcount]
   connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins i_hsync] [get_bd_pins arena_draw_0/i_hsync]
