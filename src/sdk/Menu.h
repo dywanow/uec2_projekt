@@ -7,11 +7,15 @@
 class Menu : public Scene
 {
 public:
-	Menu(uint8_t id, Keyboard *input);
-    void Init();
-    void HandleInput();
-    void Update(float dt);
-    void Draw();
+	Menu(uint32_t axi_menu_text_base_addr, uint8_t id, Keyboard *input);
+    void HandleInput() override;
+    void Update(float dt) override;
+
+private:
+    static const float STYLE_SWITCH_TIME;
+    uint32_t * const axi_text;
+    float time;
+    uint8_t text_style;
 };
 
 #endif /* SRC_MENU_H_ */

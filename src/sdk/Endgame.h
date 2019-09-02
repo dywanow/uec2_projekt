@@ -8,10 +8,9 @@ class Endgame : public Scene
 {
 public:
     Endgame(uint8_t id, Keyboard *input);
-    void Init();
-    void HandleInput();
-    void Update(float dt);
-    void Draw();
+    void Init() override;
+    void HandleInput() override;
+    void Update(float dt) override;
 };
 
 #endif /* SRC_ENDGAME_H_ */

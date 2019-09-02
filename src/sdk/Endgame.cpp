@@ -23,8 +23,3 @@ void Endgame::Update(float dt)
 {
 
 }
-
-void Endgame::Draw()
-{
-
-}

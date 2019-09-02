@@ -10,9 +10,9 @@ public:
     Scene(uint8_t id, Keyboard *input);
     void Activate();
     void Deactivate();
-    virtual void Init();
     uint8_t IsActive() const;
     uint8_t ID() const;
+    virtual void Init();
     virtual void HandleInput();
     virtual void Update(float dt);
     virtual void Draw();

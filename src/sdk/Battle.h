@@ -10,10 +10,10 @@ class Battle : public Scene
 {
 public:
     Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input, uint32_t axi_bomber_info_base_addr);
-    void Init();
-    void HandleInput();
-    void Update(float dt);
-    void Draw();
+    void Init() override;
+    void HandleInput() override;
+    void Update(float dt) override;
+    void Draw() override;
 
 private:
     uint32_t * const axi_arena_data;
