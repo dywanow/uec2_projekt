@@ -8,6 +8,7 @@ class Menu : public Scene
 {
 public:
 	Menu(uint32_t axi_menu_text_base_addr, uint8_t id, Keyboard *input);
+    void Init() override;
     void HandleInput() override;
     void Update(float dt) override;
 

@@ -3,11 +3,15 @@
 const float Menu::STYLE_SWITCH_TIME = 0.5f;
 
 Menu::Menu(uint32_t axi_menu_text_base_addr, uint8_t id, Keyboard *input) : Scene(id, input),
-																			axi_text(reinterpret_cast<uint32_t*>(axi_menu_text_base_addr)),
-																			time(0),
-																			text_style(0)
+																			axi_text(reinterpret_cast<uint32_t*>(axi_menu_text_base_addr))
 {
+	Init();
+}
 
+void Menu::Init()
+{
+	time = 0;
+	text_style = 0;
 }
 
 void Menu::HandleInput()
