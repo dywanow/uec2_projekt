@@ -6,12 +6,13 @@ Game::Game() : state(Game::States::MENU),
                keyboard(XPAR_UARTLITE_0_BASEADDR),
                current_scene(&menu),
 			   menu(0, &keyboard),
-               battle(XPAR_AXI_BATTLE_ARENA_S00_AXI_BASEADDR, 1, &keyboard),
+               battle(XPAR_AXI_BATTLE_ARENA_S00_AXI_BASEADDR, 1, &keyboard, XPAR_AXI_BATTLE_BOMBER_INFO_TEXT_S00_AXI_BASEADDR),
 			   endgame(2, &keyboard),
                timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, TIMER_NUMBER),
                axi_scenes_data(reinterpret_cast<uint32_t*>(XPAR_AXI_SCENES_S00_AXI_BASEADDR))
 {
 	menu.Activate();
+//	xil_printf("GAME\n");
 }
 
 

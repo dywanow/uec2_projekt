@@ -20,6 +20,8 @@ public:
     uint8_t CurrentBombsNumber() const;
     uint8_t MaxBombsNumber() const;
     uint8_t IsAlive() const;
+    uint8_t LivesNumber() const;
+    uint8_t FreeBombs() const;
     void Update(float dt);
 
 private:
@@ -29,6 +31,7 @@ private:
     uint8_t max_bombs_number;
     uint8_t current_bombs_number;
     uint8_t alive;
+    uint8_t lives_number;
 
     uint8_t Collides(const Vector &element_position) const;
 };

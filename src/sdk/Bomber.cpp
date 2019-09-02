@@ -7,7 +7,8 @@ Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
                    movement(Movement::NONE),
                    max_bombs_number(0),
                    current_bombs_number(0),
-                   alive(1)
+                   alive(1),
+				   lives_number(3)
 {
 
 }
@@ -106,6 +107,16 @@ uint8_t Bomber::MaxBombsNumber() const
 uint8_t Bomber::IsAlive() const
 {
     return alive;
+}
+
+uint8_t Bomber::LivesNumber() const
+{
+	return lives_number;
+}
+
+uint8_t Bomber::FreeBombs() const
+{
+	return max_bombs_number - current_bombs_number;
 }
 
 uint8_t Bomber::Collides(const Vector &element_position) const

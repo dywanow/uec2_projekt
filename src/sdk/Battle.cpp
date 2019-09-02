@@ -1,7 +1,8 @@
 #include "Battle.h"
 
-Battle::Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input) : Scene(id, input),
-																			axi_arena_data(reinterpret_cast<uint32_t*>(axi_arena_base_addr))
+Battle::Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input, uint32_t bomber_info_base_addr) : Scene(id, input),
+																											axi_arena_data(reinterpret_cast<uint32_t*>(axi_arena_base_addr)),
+																											bomber_info(bomber_info_base_addr)
 {
 
 }
@@ -67,6 +68,8 @@ void Battle::HandleInput()
 void Battle::Update(float dt)
 {
     arena.Update(dt);
+    bomber_info.Update(arena.AccessBomber(0));
+    bomber_info.Update(arena.AccessBomber(1));
     active = !arena.IsAnyPlayerDead();
 }
 
