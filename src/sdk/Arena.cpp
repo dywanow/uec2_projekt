@@ -118,6 +118,14 @@ void Arena::MoveBomberRight(uint8_t bomber_id)
 void Arena::KillBomber(uint8_t bomber_id)
 {
     bombers[bomber_id].Die();
+    if (bomber_id == 0)
+    {
+        bombers[bomber_id].SetPosition(1, 1);
+    }
+    else
+    {
+        bombers[bomber_id].SetPosition(14, 14);
+    }
 }
 
 void Arena::InitBomb(uint8_t bomber_id)

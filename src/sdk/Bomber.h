@@ -8,6 +8,7 @@ class Bomber : public Element
 {
 public:
     enum class Movement { NONE, UP, DOWN, LEFT, RIGHT };
+    enum class States { PLAY, WAIT };
 
     Bomber();
     void MakeMove(Movement movement);
@@ -26,12 +27,15 @@ public:
 
 private:
     static const float MOVE_TIME;
+    static const uint8_t WAIT_TIME = 1;
 
     Movement movement;
+    States state;
     uint8_t max_bombs_number;
     uint8_t current_bombs_number;
     uint8_t alive;
     uint8_t lives_number;
+    float wait_time;
 
     uint8_t Collides(const Vector &element_position) const;
 };

@@ -5,10 +5,12 @@ const float Bomber::MOVE_TIME = 0.3f;
 
 Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
                    movement(Movement::NONE),
+                   state(States::PLAY),
                    max_bombs_number(0),
                    current_bombs_number(0),
                    alive(1),
-				   lives_number(3)
+				   lives_number(3),
+                   wait_time(0)
 {
 
 }
@@ -16,62 +18,89 @@ Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
 
 void Bomber::Update(float dt)
 {
-    for (uint16_t vis_el_nr = 0; vis_el_nr < Arena::VISIBLE_ELEMENTS_NUMBER; vis_el_nr++)
+    if (state == States::PLAY)
     {
-        const auto vis_el = arena->AccessVisibleElement(vis_el_nr);
-        const auto vis_el_pos = vis_el.Position();
-        if (vis_el.IsCollidable() && vis_el.IsActive() && Collides(vis_el_pos))
+        for (uint16_t vis_el_nr = 0; vis_el_nr < Arena::VISIBLE_ELEMENTS_NUMBER; vis_el_nr++)
         {
-            xil_printf("COLLISION | (%u, %u) | %u\n", vis_el_pos.GetX(), vis_el_pos.GetY(), vis_el.TypeCode());
-            movement = Movement::NONE;
+            const auto vis_el = arena->AccessVisibleElement(vis_el_nr);
+            const auto vis_el_pos = vis_el.Position();
+            if (vis_el.IsCollidable() && vis_el.IsActive() && Collides(vis_el_pos))
+            {
+                xil_printf("COLLISION | (%u, %u) | %u\n", vis_el_pos.GetX(), vis_el_pos.GetY(), vis_el.TypeCode());
+                movement = Movement::NONE;
+            }
+        }
+
+        time += dt;
+        if (time >= MOVE_TIME)
+        {
+            if (movement != Movement::NONE)
+            {
+                switch (movement)
+                {
+                case Movement::LEFT:
+                    position.SetX(position.GetX() - 1);
+                    break;
+                case Movement::RIGHT:
+                    position.SetX(position.GetX() + 1);
+                    break;
+                case Movement::UP:
+                    position.SetY(position.GetY() - 1);
+                    break;
+                case Movement::DOWN:
+                    position.SetY(position.GetY() + 1);
+                    break;
+                default:
+                    break;
+                }
+                time = 0;
+                movement = Movement::NONE;
+            }
+            else
+            {
+                time = MOVE_TIME;
+            }
         }
     }
 
-    time += dt;
-    if (time >= MOVE_TIME)
+    else if (state == States::WAIT)
     {
-        if (movement != Movement::NONE)
+        if (wait_time >= WAIT_TIME)
         {
-            switch (movement)
-            {
-            case Movement::LEFT:
-                position.SetX(position.GetX() - 1);
-                break;
-            case Movement::RIGHT:
-                position.SetX(position.GetX() + 1);
-                break;
-            case Movement::UP:
-                position.SetY(position.GetY() - 1);
-                break;
-            case Movement::DOWN:
-                position.SetY(position.GetY() + 1);
-                break;
-            default:
-                break;
-            }
-            time = 0;
-            movement = Movement::NONE;
+            wait_time = 0;
+            state = States::PLAY;
+            active = 1;
         }
         else
         {
-            time = MOVE_TIME;
+            wait_time += dt;
         }
     }
+
 }
 
 void Bomber::MakeMove(Bomber::Movement movement)
 {
-    this->movement = movement;
+    if (state == States::PLAY)
+    {
+        this->movement = movement;   
+    }
 }
 
 void Bomber::Die()
 {
-    alive = 0;
+    state = States::WAIT;
+    alive = (--lives_number) != 0;
+    active = 0;
 }
 
 void Bomber::Revive()
 {
+    state = States::PLAY;
+    wait_time = 0;
+	lives_number = 3;
     alive = 1;
+    active = 1;
 }
 
 void Bomber::IncrementCurrentBombsNumber()

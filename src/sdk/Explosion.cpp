@@ -29,6 +29,15 @@ void Explosion::InitParts()
     Element current_element;
     uint8_t current_norm_pos;
 
+    for (uint8_t i = 0; i < Arena::BOMBERS_NUMBER; i++)
+    {
+        if (arena->AccessBomber(i).Position() == origin_pos)
+        {
+            arena->KillBomber(i);
+            return;
+        }
+    }
+
     // dir_nr: 0 - UP
     //         1 - LEFT
     //         2 - DOWN
