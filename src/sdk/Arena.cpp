@@ -24,6 +24,8 @@ Arena::Arena()
         elements[BLOCKS_NUMBER+i] = &bombs[i];
     }
 
+    bombers[0].SetID(0);
+    bombers[1].SetID(1);
     bombers[1].SetType(Element::Types::PLR2);
     for (uint8_t i = 0; i < BOMBERS_NUMBER; i++)
     {
@@ -72,26 +74,10 @@ void Arena::Init()
 
     bombers[0].SetPosition(1, 1);
     bombers[1].SetPosition(14, 14);
-    for (uint8_t i = 0; i < BOMBERS_NUMBER; i++)
-    {
-        bombers[i].SetMaxBombsNumber(BOMBS_PER_PLAYER);
-        bombers[i].SetCurrentBombsNumber(0);
-        bombers[i].SetID(i);
-        bombers[i].Revive();
-    }
-
-    for (auto &bomb : bombs)
-    {
-        bomb.PrepareToDetonate();
-    }
 
     for (auto &el : elements)
     {
-        if (el->Type() == Element::Types::EXPL || el->Type() == Element::Types::BOMB)
-        {
-            el->Deactivate();
-        }
-        el->ResetTime();
+        el->Init();
     }
 }
 
@@ -130,7 +116,7 @@ void Arena::KillBomber(uint8_t bomber_id)
 
 void Arena::InitBomb(uint8_t bomber_id)
 {
-    if (BomberCurrentBombsNumber(bomber_id) < BomberMaxBombsNumber(bomber_id) && !IsPositionOccupied(bomber_id))
+    if (BomberCurrentBombsNumber(bomber_id) < BomberMaxBombsNumber(bomber_id) && !IsPositionOccupied(bomber_id) && bombers[bomber_id].IsActive())
     {
         for (auto &bomb : bombs)
         {

@@ -8,6 +8,7 @@ class Block : public Element
 {
 public:
     Block();
+    void Init();
     void Update(float dt=0);
 
 private:

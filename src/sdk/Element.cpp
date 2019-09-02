@@ -9,12 +9,19 @@ Element::Element() : position(Vector(0, 0)),
 
 }
 
-Element::Element(uint16_t x, uint16_t y, Element::Types type, uint8_t active) : position(Vector(x, y)), type(type), active(active)
+Element::Element(uint16_t x, uint16_t y, Element::Types type) : position(Vector(x, y)),
+                                                                type(type),
+                                                                active(0)
 {
 
 }
 
 void Element::Update(float dt)
+{
+
+}
+
+void Element::Init()
 {
 
 }

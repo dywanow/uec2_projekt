@@ -3,18 +3,23 @@
 
 const float Bomber::MOVE_TIME = 0.3f;
 
-Bomber::Bomber() : Element(0, 0, Element::Types::PLR1, 1),
-                   movement(Movement::NONE),
-                   state(States::PLAY),
-                   max_bombs_number(0),
-                   current_bombs_number(0),
-                   alive(1),
-				   lives_number(3),
-                   wait_time(0)
+Bomber::Bomber() : Element(0, 0, Element::Types::PLR1)
 {
-
+    Init();
 }
 
+void Bomber::Init()
+{
+    movement = Movement::NONE;
+    state = States::PLAY;
+    max_bombs_number = 3;
+    current_bombs_number = 0;
+    alive = 1;
+	lives_number = 3;
+    wait_time = 0;
+    active = 1;
+    time = 0;
+}
 
 void Bomber::Update(float dt)
 {

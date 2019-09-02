@@ -8,6 +8,7 @@ class Bomb : public Element
 {
 public:
     Bomb();
+    void Init();
     void SetBomberID(uint8_t bomber_id);
     uint8_t GetBomberID() const;
     void Detonate();

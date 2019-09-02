@@ -13,6 +13,7 @@ public:
     ExplosionPart parts[PARTS_NUMBER];
 
     Explosion();
+    void Init();
     void SetBombID(uint8_t bomb_id);
     ExplosionPart GetPart(uint8_t part_number) const;
     void InitParts();

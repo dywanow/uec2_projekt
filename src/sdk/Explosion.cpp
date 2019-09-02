@@ -3,11 +3,16 @@
 #include "Bomb.h"
 #include "Arena.h"
 
-Explosion::Explosion() : Element(0, 0, Types::EXPL, 0)
+Explosion::Explosion() : Element(0, 0, Types::EXPL)
 {
-
+    Init();
 }
 
+void Explosion::Init()
+{
+    active = 0;
+    time = 0;
+}
 
 void Explosion::SetBombID(uint8_t bomb_id)
 {
@@ -31,10 +36,10 @@ void Explosion::InitParts()
 
     for (uint8_t i = 0; i < Arena::BOMBERS_NUMBER; i++)
     {
-        if (arena->AccessBomber(i).Position() == origin_pos)
+        auto b = arena->AccessBomber(i);
+        if (b.Position() == origin_pos && b.IsActive())
         {
             arena->KillBomber(i);
-            return;
         }
     }
 

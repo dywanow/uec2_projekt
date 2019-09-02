@@ -13,7 +13,8 @@ public:
     enum class Types { SURR, PATH, OBS1, OBS2, BOMB, EXPL, PLR1, PLR2 };
 
     Element();
-    Element(uint16_t x, uint16_t y, Types type, uint8_t active);
+    Element(uint16_t x, uint16_t y, Types type);
+    virtual void Init();
     void SetArena(Arena *arena);
     void SetPosition(uint16_t x, uint16_t y);
     void SetPosition(Vector position);

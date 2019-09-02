@@ -11,6 +11,7 @@ public:
     enum class States { PLAY, WAIT };
 
     Bomber();
+    void Init();
     void MakeMove(Movement movement);
     void Die();
     void Revive();

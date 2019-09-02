@@ -1,9 +1,14 @@
 #include "Block.h"
 #include "Arena.h"
 
-Block::Block() : Element(0, 0, Element::Types::PATH, 1)
+Block::Block() : Element(0, 0, Element::Types::PATH)
 {
+    Init();
+}
 
+void Block::Init()
+{
+    active = 1;
 }
 
 void Block::Update(float dt)

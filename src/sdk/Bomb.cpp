@@ -1,10 +1,16 @@
 #include "Bomb.h"
 #include "Arena.h"
 
-Bomb::Bomb() : Element(0, 0, Element::Types::BOMB, 0),
-               detonated(0)
+Bomb::Bomb() : Element(0, 0, Element::Types::BOMB)
 {
+    Init();
+}
 
+void Bomb::Init()
+{
+    detonated = 0;
+    active = 0;
+    time = 0;
 }
 
 void Bomb::SetBomberID(uint8_t bomber_id)
