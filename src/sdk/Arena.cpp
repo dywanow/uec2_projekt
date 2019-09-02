@@ -225,6 +225,10 @@ void Arena::Update(float dt)
 {
     for (auto &e : elements)
     {
+        e->Update(dt);
+    }
+    for (auto &e : elements)
+    {
         if (e->IsActive())
         {
             visible_elements[e->NormalizedPosition()] = e;
@@ -242,10 +246,6 @@ void Arena::Update(float dt)
                 }
             }
         }
-    }
-    for (auto &e : elements)
-    {
-        e->Update(dt);
     }
 }
 
