@@ -117,17 +117,18 @@ proc cr_bd_design_1 { parentCell } {
   set bCheckIPs 1
   if { $bCheckIPs == 1 } {
      set list_check_ips "\ 
-  xilinx.com:user:axi_bomberman_controller:1.0\
+  xilinx.com:user:axi_bomberman_memory:1.0\
+  xilinx.com:user:axi_bomberman_single_memory:1.0\
   xilinx.com:ip:axi_timer:2.0\
   xilinx.com:ip:axi_uartlite:2.0\
   xilinx.com:ip:clk_wiz:5.4\
-  xilinx.com:ip:xlconstant:1.1\
   xilinx.com:ip:mdm:3.2\
   xilinx.com:ip:microblaze:10.0\
   xilinx.com:ip:proc_sys_reset:5.0\
   xilinx.com:ip:lmb_bram_if_cntlr:4.0\
   xilinx.com:ip:lmb_v10:3.0\
   xilinx.com:ip:blk_mem_gen:8.4\
+  xilinx.com:ip:xlconstant:1.1\
   xilinx.com:ip:xlslice:1.0\
   xilinx.com:ip:dist_mem_gen:8.0\
   xilinx.com:ip:xlconcat:2.1\
@@ -932,23 +933,21 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   set vs [ create_bd_port -dir O vs ]
 
   # Create instance: axi_battle_arena, and set properties
-  set axi_battle_arena [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_battle_arena ]
+  set axi_battle_arena [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_memory:1.0 axi_battle_arena ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {8} \
    CONFIG.DATA_WIDTH {4} \
  ] $axi_battle_arena
 
   # Create instance: axi_battle_bomber_info_text, and set properties
-  set axi_battle_bomber_info_text [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_battle_bomber_info_text ]
+  set axi_battle_bomber_info_text [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_memory:1.0 axi_battle_bomber_info_text ]
   set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {1} \
    CONFIG.DATA_WIDTH {14} \
  ] $axi_battle_bomber_info_text
 
   # Create instance: axi_scenes, and set properties
-  set axi_scenes [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_controller:1.0 axi_scenes ]
+  set axi_scenes [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_single_memory:1.0 axi_scenes ]
   set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {1} \
    CONFIG.DATA_WIDTH {2} \
  ] $axi_scenes
 
@@ -981,12 +980,6 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
    CONFIG.RESET_BOARD_INTERFACE {reset} \
    CONFIG.USE_BOARD_FLOW {true} \
  ] $clk_wiz_0
-
-  # Create instance: constant_addr_0, and set properties
-  set constant_addr_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 constant_addr_0 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
- ] $constant_addr_0
 
   # Create instance: mdm_1, and set properties
   set mdm_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:mdm:3.2 mdm_1 ]
@@ -1027,16 +1020,16 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   connect_bd_intf_net -intf_net microblaze_0_M_AXI_DP [get_bd_intf_pins microblaze_0/M_AXI_DP] [get_bd_intf_pins microblaze_0_axi_periph/S00_AXI]
   connect_bd_intf_net -intf_net microblaze_0_axi_periph_M00_AXI [get_bd_intf_pins axi_timer_0/S_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M00_AXI]
   connect_bd_intf_net -intf_net microblaze_0_axi_periph_M01_AXI [get_bd_intf_pins axi_uartlite_0/S_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M01_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M02_AXI [get_bd_intf_pins axi_battle_arena/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M02_AXI]
-  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M03_AXI [get_bd_intf_pins axi_scenes/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M03_AXI]
+  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M02_AXI [get_bd_intf_pins axi_scenes/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M02_AXI]
+  connect_bd_intf_net -intf_net microblaze_0_axi_periph_M03_AXI [get_bd_intf_pins axi_battle_arena/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M03_AXI]
   connect_bd_intf_net -intf_net microblaze_0_axi_periph_M04_AXI [get_bd_intf_pins axi_battle_bomber_info_text/S00_AXI] [get_bd_intf_pins microblaze_0_axi_periph/M04_AXI]
   connect_bd_intf_net -intf_net microblaze_0_debug [get_bd_intf_pins mdm_1/MBDEBUG_0] [get_bd_intf_pins microblaze_0/DEBUG]
   connect_bd_intf_net -intf_net microblaze_0_dlmb_1 [get_bd_intf_pins microblaze_0/DLMB] [get_bd_intf_pins microblaze_0_local_memory/DLMB]
   connect_bd_intf_net -intf_net microblaze_0_ilmb_1 [get_bd_intf_pins microblaze_0/ILMB] [get_bd_intf_pins microblaze_0_local_memory/ILMB]
 
   # Create port connections
-  connect_bd_net -net axi_battle_text_data [get_bd_pins axi_battle_bomber_info_text/data] [get_bd_pins vga_drawer/i_axi_battle_bomber_info_text_data]
-  connect_bd_net -net axi_bomberman_controller_0_data [get_bd_pins axi_battle_arena/data] [get_bd_pins vga_drawer/i_axi_battle_arena_data]
+  connect_bd_net -net axi_battle_arena_data [get_bd_pins axi_battle_arena/data] [get_bd_pins vga_drawer/i_axi_battle_arena_data]
+  connect_bd_net -net axi_battle_bomber_info_text_data [get_bd_pins axi_battle_bomber_info_text/data] [get_bd_pins vga_drawer/i_axi_battle_bomber_info_text_data]
   connect_bd_net -net axi_scenes_data [get_bd_pins axi_scenes/data] [get_bd_pins vga_drawer/i_axi_scene_sel]
   connect_bd_net -net clk_wiz_0_locked [get_bd_pins clk_wiz_0/locked] [get_bd_pins rst_clk_wiz_0_100M/dcm_locked]
   connect_bd_net -net clk_wiz_0_pclk [get_bd_pins axi_battle_arena/pclk] [get_bd_pins axi_battle_bomber_info_text/pclk] [get_bd_pins axi_scenes/pclk] [get_bd_pins clk_wiz_0/pclk] [get_bd_pins vga_drawer/i_pclk]
@@ -1051,16 +1044,15 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   connect_bd_net -net vga_drawer_b [get_bd_ports b] [get_bd_pins vga_drawer/b]
   connect_bd_net -net vga_drawer_g [get_bd_ports g] [get_bd_pins vga_drawer/g]
   connect_bd_net -net vga_drawer_hs [get_bd_ports hs] [get_bd_pins vga_drawer/hs]
-  connect_bd_net -net vga_drawer_o_axi_addr [get_bd_pins axi_battle_arena/addr] [get_bd_pins vga_drawer/o_axi_battle_board_addr]
-  connect_bd_net -net vga_drawer_o_axi_addr1 [get_bd_pins axi_battle_bomber_info_text/addr] [get_bd_pins vga_drawer/o_axi_battle_bomber_info_text_addr]
+  connect_bd_net -net vga_drawer_o_axi_battle_board_addr [get_bd_pins axi_battle_arena/addr] [get_bd_pins vga_drawer/o_axi_battle_board_addr]
+  connect_bd_net -net vga_drawer_o_axi_battle_bomber_info_text_addr [get_bd_pins axi_battle_bomber_info_text/addr] [get_bd_pins vga_drawer/o_axi_battle_bomber_info_text_addr]
   connect_bd_net -net vga_drawer_r [get_bd_ports r] [get_bd_pins vga_drawer/r]
   connect_bd_net -net vga_drawer_vs [get_bd_ports vs] [get_bd_pins vga_drawer/vs]
-  connect_bd_net -net xlconstant_0_dout [get_bd_pins axi_scenes/addr] [get_bd_pins constant_addr_0/dout]
 
   # Create address segments
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A00000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_battle_arena/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_0_S00_AXI_reg
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A20000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_battle_bomber_info_text/S00_AXI/S00_AXI_reg] SEG_axi_bomberman_controller_0_S00_AXI_reg1
-  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_scenes/S00_AXI/S00_AXI_reg] SEG_axi_scenes_S00_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A20000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_battle_arena/S00_AXI/S00_AXI_reg] SEG_axi_battle_arena_S00_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A10000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_battle_bomber_info_text/S00_AXI/S00_AXI_reg] SEG_axi_battle_bomber_info_text_S00_AXI_reg
+  create_bd_addr_seg -range 0x00010000 -offset 0x44A00000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_scenes/S00_AXI/S00_AXI_reg] SEG_axi_scenes_S00_AXI_reg
   create_bd_addr_seg -range 0x00010000 -offset 0x41C00000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_timer_0/S_AXI/Reg] SEG_axi_timer_0_Reg
   create_bd_addr_seg -range 0x00010000 -offset 0x40600000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] SEG_axi_uartlite_0_Reg
   create_bd_addr_seg -range 0x00020000 -offset 0x00000000 [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs microblaze_0_local_memory/dlmb_bram_if_cntlr/SLMB/Mem] SEG_dlmb_bram_if_cntlr_Mem

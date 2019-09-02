@@ -12,7 +12,6 @@ Game::Game() : state(Game::States::MENU),
                axi_scenes_data(reinterpret_cast<uint32_t*>(XPAR_AXI_SCENES_S00_AXI_BASEADDR))
 {
 	menu.Activate();
-//	xil_printf("GAME\n");
 }
 
 
@@ -40,7 +39,7 @@ void Game::HandleKeyboard()
 void Game::Update(float dt)
 {
 	current_scene->Update(dt);
-	*axi_scenes_data = current_scene->ID() << 1;
+	*axi_scenes_data = current_scene->ID();
 	if (!current_scene->IsActive())
 	{
 		SwitchScene();
