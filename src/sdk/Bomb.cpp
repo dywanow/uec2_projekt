@@ -24,11 +24,6 @@ uint8_t Bomb::GetBomberID() const
     return bomber_id;
 }
 
-void Bomb::PrepareToDetonate()
-{
-    detonated = 0;
-}
-
 void Bomb::Detonate()
 {
     detonated = 1;
@@ -61,6 +56,6 @@ void Bomb::Clear()
 {
     arena->BomberDeleteBomb(bomber_id);
     Deactivate();
-    ResetTime();
+    time = 0;
     detonated = 0;
 }

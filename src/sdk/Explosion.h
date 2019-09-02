@@ -13,11 +13,11 @@ public:
     ExplosionPart parts[PARTS_NUMBER];
 
     Explosion();
-    void Init();
     void SetBombID(uint8_t bomb_id);
     ExplosionPart GetPart(uint8_t part_number) const;
     void InitParts();
-    void Update(float dt);
+    void Init() override;
+    void Update(float dt) override;
 
 private:
     static const uint8_t ACTIVE_TIME = 1;

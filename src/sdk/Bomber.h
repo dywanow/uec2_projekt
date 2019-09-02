@@ -11,10 +11,8 @@ public:
     enum class States { PLAY, WAIT };
 
     Bomber();
-    void Init();
     void MakeMove(Movement movement);
     void Die();
-    void Revive();
     void IncrementCurrentBombsNumber();
     void DecrementBombsNumber();
     void SetCurrentBombsNumber(uint8_t current_bombs_number);
@@ -24,7 +22,8 @@ public:
     uint8_t IsAlive() const;
     uint8_t LivesNumber() const;
     uint8_t FreeBombs() const;
-    void Update(float dt);
+    void Init() override;
+    void Update(float dt) override;
 
 private:
     static const float MOVE_TIME;

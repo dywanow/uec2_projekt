@@ -61,11 +61,6 @@ void Element::Deactivate()
     active = 0;
 }
 
-void Element::ResetTime()
-{
-    time = 0;
-}
-
 Vector Element::Position() const
 {
     return position;

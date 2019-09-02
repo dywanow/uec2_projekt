@@ -8,13 +8,12 @@ class Bomb : public Element
 {
 public:
     Bomb();
-    void Init();
     void SetBomberID(uint8_t bomber_id);
     uint8_t GetBomberID() const;
     void Detonate();
-    void PrepareToDetonate();
     uint8_t IsDetonated() const;
-    void Update(float dt);
+    void Init() override;
+    void Update(float dt) override;
 
 private:
     static const uint8_t ACTIVE_TIME = 3;

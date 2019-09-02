@@ -99,15 +99,6 @@ void Bomber::Die()
     active = 0;
 }
 
-void Bomber::Revive()
-{
-    state = States::PLAY;
-    wait_time = 0;
-	lives_number = 3;
-    alive = 1;
-    active = 1;
-}
-
 void Bomber::IncrementCurrentBombsNumber()
 {
     current_bombs_number++;
