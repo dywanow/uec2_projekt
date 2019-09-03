@@ -13,10 +13,15 @@ public:
     void Update(float dt) override;
 
 private:
-    static const float STYLE_SWITCH_TIME;
+    static const float ON_TIME;
+    static const float OFF_TIME;
+
+    // enum class Option { START_GAME, SHOW_CONTROLS };
+
     uint32_t * const axi_text;
     float time;
     uint8_t text_style;
+    // Option option;
 };
 
 #endif /* SRC_MENU_H_ */
