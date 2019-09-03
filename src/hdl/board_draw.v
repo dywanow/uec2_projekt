@@ -36,23 +36,9 @@ module board_draw
     wire [9:0] xpos, ypos;
     reg [11:0] rgb_nxt;
     
-    wire [3:0] axi_data_del_2_clk;
-    
     wire hblnk_del_2_clk, hsync_del_2_clk, vblnk_del_2_clk, vsync_del_2_clk;
-    wire [11:0] hcount_del_1_clk, vcount_del_1_clk, hcount_del_2_clk, vcount_del_2_clk;
+    wire [11:0] hcount_del_2_clk, vcount_del_2_clk;
     
-    delay
-    #(
-        .WIDTH(24),
-        .CLK_DEL(1)
-    )
-    delay_1_clk
-    (
-        .clk(i_pclk),
-        .rst(i_rst),
-        .din({i_hcount, i_vcount}),
-        .dout({hcount_del_1_clk, vcount_del_1_clk})
-    );
     
     delay
     #(
@@ -107,6 +93,14 @@ module board_draw
         end
     
     
+    assign o_sel = i_axi_data;
+    assign axi_addrx = (i_hcount - H_MIN) >> 6;
+    assign axi_addry = (i_vcount - V_MIN) >> 6;
+    assign o_axi_addr = {axi_addry, axi_addrx};
+    assign rom_addrx = (i_hcount - H_MIN) % ELEMENT_SIZE;
+    assign rom_addry = (i_vcount - V_MIN) % ELEMENT_SIZE;
+    assign o_rom_addr = {rom_addry, rom_addrx};
+
     always @*
         if (vblnk_del_2_clk || hblnk_del_2_clk)
             rgb_nxt = 12'h000;
@@ -115,16 +109,5 @@ module board_draw
                 rgb_nxt = i_rom_rgb;
             else
                 rgb_nxt = i_rgb;
-    
-    
-    assign o_sel = i_axi_data;
-    
-    assign axi_addrx = (i_hcount - H_MIN) >> 6;
-    assign axi_addry = (i_vcount - V_MIN) >> 6;
-    assign o_axi_addr = {axi_addry, axi_addrx};
-    
-    assign rom_addrx = (hcount_del_1_clk - H_MIN) % ELEMENT_SIZE;
-    assign rom_addry = (vcount_del_1_clk - V_MIN) % ELEMENT_SIZE;
-    assign o_rom_addr = {rom_addry, rom_addrx};
     
 endmodule
