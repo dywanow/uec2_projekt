@@ -7,21 +7,20 @@
 class Menu : public Scene
 {
 public:
-	Menu(uint32_t axi_menu_text_base_addr, uint8_t id, Keyboard *input);
+	Menu(uint32_t axi_base_addr, Scene *game, Scene *controls, uint8_t id, Keyboard *input);
     void Init() override;
     void HandleInput() override;
     void Update(float dt) override;
 
 private:
-    static const float ON_TIME;
-    static const float OFF_TIME;
-
-    // enum class Option { START_GAME, SHOW_CONTROLS };
+    enum class Options { START_GAME, SHOW_CONTROLS };
 
     uint32_t * const axi_text;
     float time;
-    uint8_t text_style;
-    // Option option;
+    uint8_t blink_states[2];
+    Options option;
+    Scene *game;
+    Scene *controls;
 };
 
 #endif /* SRC_MENU_H_ */

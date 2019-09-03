@@ -9,7 +9,7 @@
 class Battle : public Scene
 {
 public:
-    Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input, uint32_t axi_bomber_info_base_addr);
+    Battle(uint32_t axi_arena_base_addr, Scene *endgame, uint8_t id, Keyboard *input, uint32_t axi_bomber_info_base_addr);
     void Init() override;
     void HandleInput() override;
     void Update(float dt) override;

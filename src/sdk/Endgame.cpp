@@ -1,8 +1,10 @@
 #include "Endgame.h"
 
-Endgame::Endgame(uint8_t id, Keyboard *input) : Scene(id, input)
+Endgame::Endgame(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input) : 
+    Scene(menu, id, input),
+    axi_text(reinterpret_cast<uint32_t*>(axi_base_addr))
 {
-
+    
 }
 
 void Endgame::Init()

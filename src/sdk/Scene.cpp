@@ -1,9 +1,13 @@
 #include "Scene.h"
 
-Scene::Scene(uint8_t id, Keyboard *input) : input(input),
-											active(0),
-											id(id)
+const float Scene::BLINK_ON_TIME = 0.5f;
+const float Scene::BLINK_OFF_TIME = 0.2f;
 
+Scene::Scene(Scene *next_scene, uint8_t id, Keyboard *input) : 
+    next_scene(next_scene),
+    input(input),
+	active(0),
+	id(id)
 {
 
 }
@@ -26,6 +30,11 @@ uint8_t Scene::IsActive() const
 uint8_t Scene::ID() const
 {
     return id;
+}
+
+Scene * Scene::NextScene() const
+{
+    return next_scene;
 }
 
 void Scene::Init()

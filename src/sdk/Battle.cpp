@@ -1,10 +1,11 @@
 #include "Battle.h"
 
-Battle::Battle(uint32_t axi_arena_base_addr, uint8_t id, Keyboard *input, uint32_t bomber_info_base_addr) : Scene(id, input),
-																											axi_arena_data(reinterpret_cast<uint32_t*>(axi_arena_base_addr)),
-																											bomber_info(bomber_info_base_addr)
+Battle::Battle(uint32_t axi_arena_base_addr, Scene *endgame, uint8_t id, Keyboard *input, uint32_t bomber_info_base_addr) : 
+    Scene(endgame, id, input),
+	axi_arena_data(reinterpret_cast<uint32_t*>(axi_arena_base_addr)),
+	bomber_info(bomber_info_base_addr)
 {
-
+    
 }
 
 void Battle::Init()

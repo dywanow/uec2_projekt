@@ -1,7 +1,9 @@
 #ifndef SRC_GAME_H_
 #define SRC_GAME_H_
 
+#include "Scene.h"
 #include "Menu.h"
+#include "HowToPlay.h"
 #include "Battle.h"
 #include "Endgame.h"
 #include "Keyboard.h"
@@ -17,13 +19,11 @@ public:
     void Loop();
 
 private:
-    enum class States { MENU, BATTLE, ENDGAME };
-
-    States state;
     Keyboard keyboard;
     u8 pressed_key;
     Scene *current_scene;
     Menu menu;
+    HowToPlay how_to_play;
     Battle battle;
     Endgame endgame;
     Timer timer;
@@ -32,7 +32,6 @@ private:
     void HandleKeyboard();
     void Update(float dt);
     void Draw();
-    void SwitchScene();
 };
 
 #endif /* SRC_GAME_H_ */
