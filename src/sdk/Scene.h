@@ -19,8 +19,7 @@ public:
     virtual void Draw();
 
 protected:
-    static const float BLINK_ON_TIME;
-    static const float BLINK_OFF_TIME;
+    static const float BLINK_TIME;
 
     Keyboard *input;
     uint8_t active;

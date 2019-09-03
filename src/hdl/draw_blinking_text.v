@@ -105,14 +105,20 @@ module draw_blinking_text
     assign char_line_tmp = vcount_relative[3+SCALE_COEFF:SCALE_COEFF];
     assign rom_bit_addr_tmp = hcount_relative[2+SCALE_COEFF:SCALE_COEFF];
     
-    always @* begin
-        rgb_nxt = rgb_del_2_clk;
+    always @*
         if (vblnk_del_2_clk || hblnk_del_2_clk)
             rgb_nxt = 12'h000;
         else
             if (hcount_del_2_clk >= XPOS && hcount_del_2_clk < XPOS+W &&
-                vcount_del_2_clk >= YPOS && vcount_del_2_clk < YPOS+H && 
-                i_rom_word[7-rom_bit_addr] == 1 && axi_data_del_2_clk == 0)
-                    rgb_nxt = 12'hfff;
-    end
+                vcount_del_2_clk >= YPOS && vcount_del_2_clk < YPOS+H)
+                if (i_rom_word[7-rom_bit_addr] == 1)
+                    rgb_nxt = COLOR;
+                else
+                    if (axi_data_del_2_clk == 1)
+                        rgb_nxt = {rgb_del_2_clk[11:8]-1, rgb_del_2_clk[7:4]-1, rgb_del_2_clk[3:0]-1};
+                    else
+                        rgb_nxt = rgb_del_2_clk;
+            else
+                rgb_nxt = rgb_del_2_clk;
+    
 endmodule

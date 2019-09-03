@@ -25,7 +25,7 @@ void HowToPlay::HandleInput()
 void HowToPlay::Update(float dt)
 {
 	time += dt;
-    if ((blink_status == 0 && time >= Scene::BLINK_ON_TIME) || (blink_status == 1 && time >= Scene::BLINK_OFF_TIME))
+    if (time >= Scene::BLINK_TIME)
     {
         time = 0;
         blink_status = !blink_status;

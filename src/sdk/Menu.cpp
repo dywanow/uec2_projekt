@@ -25,14 +25,15 @@ void Menu::HandleInput()
         if (option == Options::START_GAME)
         {
             option = Options::SHOW_CONTROLS;
+            blink_states[1] = blink_states[0];
+            blink_states[0] = 0;
         }
         else
         {
             option = Options::START_GAME;
+            blink_states[0] = blink_states[1];
+            blink_states[1] = 0;
         }
-        blink_states[0] = 0;
-        blink_states[1] = 0;
-        time = 0;
     }
 	if (pressed_key == 'b')
 	{
@@ -51,17 +52,18 @@ void Menu::HandleInput()
 void Menu::Update(float dt)
 {
 	time += dt;
-    // xil_printf("%u\n\r", time * 1000);
-    if (option == Options::START_GAME && ((blink_states[0] == 0 && time >= Scene::BLINK_ON_TIME) || (blink_states[0] == 1 && time >= Scene::BLINK_OFF_TIME)))
+    if (time >= Scene::BLINK_TIME)
     {
-        xil_printf("A");
-        blink_states[0] = !blink_states[0];
+        if (option == Options::START_GAME)
+        {
+            blink_states[0] = !blink_states[0];
+        }
+        else
+        {
+            blink_states[1] = !blink_states[1];
+        }
         time = 0;
-    }
-    if (option == Options::SHOW_CONTROLS && ((blink_states[1] == 0 && time >= Scene::BLINK_ON_TIME) || (blink_states[1] == 1 && time >= Scene::BLINK_OFF_TIME)))
-    {
-        blink_states[1] = !blink_states[1];
-        time = 0;
+
     }
 	*axi_text = (blink_states[1] << 1) + blink_states[0];
 }
