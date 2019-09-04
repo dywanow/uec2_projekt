@@ -1,5 +1,5 @@
 # Set the reference directory for source file relative paths (by default the value is script directory path)
-set origin_dir [file dirname [info script]]
+set origin_dir "../[file dirname [info script]]"
 
 # Set the project name
 set project_name "bomberman"
@@ -8,7 +8,7 @@ variable script_file
 set script_file "build.tcl"
 
 # Create project
-create_project ${project_name} ./vivado/${project_name} -part xc7a35tcpg236-1 -force
+create_project ${project_name} ../vivado/${project_name} -part xc7a35tcpg236-1 -force
 
 # Set the directory path for the new project
 set proj_dir [get_property directory [current_project]]
@@ -49,7 +49,7 @@ set files [list \
  "[file normalize "$origin_dir/src/hdl/rom_rgb_mux.v"]"\
  "[file normalize "$origin_dir/src/hdl/draw_static_text.v"]"\
  "[file normalize "$origin_dir/src/hdl/draw_blinking_text.v"]"\
- "[file normalize "$origin_dir/bd/design_1/hdl/design_1_wrapper.v"]"\
+ "[file normalize "$origin_dir/src/hdl/design_1/design_1_wrapper.v"]"\
  "[file normalize "$origin_dir/src/coe/path.coe"]"\
  "[file normalize "$origin_dir/src/coe/surr.coe"]"\
  "[file normalize "$origin_dir/src/coe/obs1.coe"]"\

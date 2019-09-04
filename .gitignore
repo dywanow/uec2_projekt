@@ -6,6 +6,3 @@
 !hw/*
 !ip/
 !ip/*
-!bd/
-!bd/*
-!build.tcl
