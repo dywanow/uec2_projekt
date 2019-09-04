@@ -14,6 +14,8 @@ public:
 
 private:
     uint32_t * const axi_text;
+    float time;
+    uint8_t blink_status;
 };
 
 #endif /* SRC_ENDGAME_H_ */

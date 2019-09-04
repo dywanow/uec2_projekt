@@ -3,10 +3,10 @@
 const float Scene::BLINK_TIME = 0.2f;
 
 Scene::Scene(Scene *next_scene, uint8_t id, Keyboard *input) : 
-    next_scene(next_scene),
     input(input),
 	active(0),
-	id(id)
+	id(id),
+    next_scene(next_scene)
 {
 
 }

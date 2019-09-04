@@ -6,8 +6,8 @@ Game::Game() : keyboard(XPAR_UARTLITE_0_BASEADDR),
                current_scene(&menu),
 			   menu(XPAR_AXI_MENU_TEXT_S00_AXI_BASEADDR, &battle, &how_to_play, 0, &keyboard),
                how_to_play(XPAR_AXI_HOWTOPLAY_TEXT_S00_AXI_BASEADDR, &menu, 3, &keyboard),
-               battle(XPAR_AXI_BATTLE_ARENA_S00_AXI_BASEADDR, &endgame, 1, &keyboard, XPAR_AXI_BATTLE_BOMBER_INFO_TEXT_S00_AXI_BASEADDR),
-			   endgame(0, &menu, 2, &keyboard),
+               battle(XPAR_AXI_BATTLE_ARENA_S00_AXI_BASEADDR, &endgame, 1, &keyboard, XPAR_AXI_BATTLE_BOMBER_TEXT_S00_AXI_BASEADDR),
+			   endgame(XPAR_AXI_ENDGAME_TEXT_S00_AXI_BASEADDR, &menu, 2, &keyboard),
                timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, TIMER_NUMBER),
                axi_scenes_data(reinterpret_cast<uint32_t*>(XPAR_AXI_SCENES_S00_AXI_BASEADDR))
 {
