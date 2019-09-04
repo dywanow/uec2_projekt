@@ -412,8 +412,8 @@ proc create_hier_cell_start { parentCell nameHier } {
     set_property -dict [ list \
    CONFIG.COLOR {0xDDD} \
    CONFIG.SCALE_COEFF {1} \
-   CONFIG.X_ADDR_WIDTH {5} \
-   CONFIG.X_CHAR_COUNT {20} \
+   CONFIG.X_ADDR_WIDTH {4} \
+   CONFIG.X_CHAR_COUNT {14} \
    CONFIG.X_MAX {1920} \
    CONFIG.Y_MAX {600} \
    CONFIG.Y_MIN {500} \
@@ -457,7 +457,7 @@ proc create_hier_cell_start { parentCell nameHier } {
    }
     set_property -dict [ list \
    CONFIG.PATH {../rom/menu_start_text.data} \
-   CONFIG.X_ADDR_WIDTH {5} \
+   CONFIG.X_ADDR_WIDTH {4} \
    CONFIG.Y_ADDR_WIDTH {1} \
  ] $start_text_rom
 
