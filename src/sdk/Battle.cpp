@@ -8,7 +8,7 @@ Battle::Battle(uint32_t axi_arena_base_addr, Scene *endgame, uint8_t id, Keyboar
     
 }
 
-void Battle::Init()
+void Battle::Init(uint8_t info)
 {
     arena.Init();
 }
@@ -77,4 +77,21 @@ void Battle::Update(float dt)
 void Battle::Draw()
 {
     arena.Draw(axi_arena_data);
+}
+
+uint8_t Battle::Info() const
+{
+	if (arena.AccessBomber(0).LivesNumber() && !arena.AccessBomber(1).LivesNumber())
+	{
+		return 1;
+	}
+	else if (!arena.AccessBomber(0).LivesNumber() && arena.AccessBomber(1).LivesNumber())
+	{
+		return 2;
+	}
+	else if (!arena.AccessBomber(0).LivesNumber() && !arena.AccessBomber(1).LivesNumber())
+	{
+		return 3;
+	}
+	return 0;
 }

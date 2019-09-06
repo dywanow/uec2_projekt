@@ -6,10 +6,10 @@ Menu::Menu(uint32_t axi_base_addr, Scene *game, Scene *controls, uint8_t id, Key
     game(game),
     controls(controls)
 {
-	Init();
+
 }
 
-void Menu::Init()
+void Menu::Init(uint8_t info)
 {
 	time = 0;
 	blink_states[0] = 0;

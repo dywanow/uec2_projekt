@@ -36,7 +36,7 @@ Scene * Scene::NextScene() const
     return next_scene;
 }
 
-void Scene::Init()
+void Scene::Init(uint8_t info)
 {
 
 }
@@ -49,6 +49,11 @@ void Scene::HandleInput()
 void Scene::Update(float dt)
 {
 
+}
+
+uint8_t Scene::Info() const
+{
+	return 0;
 }
 
 void Scene::Draw()

@@ -13,10 +13,11 @@ public:
     uint8_t IsActive() const;
     uint8_t ID() const;
     Scene * NextScene() const;
-    virtual void Init();
+    virtual void Init(uint8_t info=0);
     virtual void HandleInput();
     virtual void Update(float dt);
     virtual void Draw();
+    virtual uint8_t Info() const;
 
 protected:
     static const float BLINK_TIME;

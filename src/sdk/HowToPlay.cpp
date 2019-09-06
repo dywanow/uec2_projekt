@@ -4,10 +4,10 @@ HowToPlay::HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *
     Scene(menu, id, input),
 	axi_text(reinterpret_cast<uint32_t*>(axi_base_addr))
 {
-	Init();
+
 }
 
-void HowToPlay::Init()
+void HowToPlay::Init(uint8_t info)
 {
 	time = 0;
 	blink_status = 0;

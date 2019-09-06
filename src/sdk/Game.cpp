@@ -12,6 +12,7 @@ Game::Game() : keyboard(XPAR_UARTLITE_0_BASEADDR),
                axi_scenes_data(reinterpret_cast<uint32_t*>(XPAR_AXI_SCENES_S00_AXI_BASEADDR))
 {
 	menu.Activate();
+	menu.Init();
 }
 
 
@@ -42,9 +43,10 @@ void Game::Update(float dt)
 	*axi_scenes_data = current_scene->ID();
 	if (!current_scene->IsActive())
 	{
+		uint8_t info = current_scene->Info();
 		current_scene = current_scene->NextScene();
 		current_scene->Activate();
-		current_scene->Init();
+		current_scene->Init(info);
 	}
 }
 

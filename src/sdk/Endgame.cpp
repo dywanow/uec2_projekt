@@ -7,8 +7,9 @@ Endgame::Endgame(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *inpu
     
 }
 
-void Endgame::Init()
+void Endgame::Init(uint8_t info)
 {
+	winner_id = info;
     time = 0;
     blink_status = 0;
 }
@@ -30,5 +31,5 @@ void Endgame::Update(float dt)
         time = 0;
         blink_status = !blink_status;
     }
-	*axi_text = blink_status;
+	*axi_text = (winner_id << 1) + blink_status;
 }

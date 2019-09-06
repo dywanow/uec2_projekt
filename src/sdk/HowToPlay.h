@@ -8,7 +8,7 @@ class HowToPlay : public Scene
 {
 public:
 	HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input);
-    void Init() override;
+    void Init(uint8_t info) override;
     void HandleInput() override;
     void Update(float dt) override;
 
