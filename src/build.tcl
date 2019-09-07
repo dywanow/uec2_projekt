@@ -50,13 +50,13 @@ set files [list \
  "[file normalize "$origin_dir/hdl/draw_arena.v"]"\
  "[file normalize "$origin_dir/hdl/draw_bomber_text.v"]"\
  "[file normalize "$origin_dir/hdl/design_1/design_1_wrapper.v"]"\
- "[file normalize "$origin_dir/coe/path.coe"]"\
- "[file normalize "$origin_dir/coe/obs1.coe"]"\
- "[file normalize "$origin_dir/coe/obs2.coe"]"\
- "[file normalize "$origin_dir/coe/bomb.coe"]"\
- "[file normalize "$origin_dir/coe/expl.coe"]"\
- "[file normalize "$origin_dir/coe/plr1.coe"]"\
- "[file normalize "$origin_dir/coe/plr2.coe"]"\
+ "[file normalize "$origin_dir/rom/obs1.coe"]"\
+ "[file normalize "$origin_dir/rom/obs2.coe"]"\
+ "[file normalize "$origin_dir/rom/path.coe"]"\
+ "[file normalize "$origin_dir/rom/bomb.coe"]"\
+ "[file normalize "$origin_dir/rom/expl.coe"]"\
+ "[file normalize "$origin_dir/rom/plr1.coe"]"\
+ "[file normalize "$origin_dir/rom/plr2.coe"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -1662,7 +1662,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: bomb_texture, and set properties
   set bomb_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 bomb_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/bomb.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/bomb.coe} \
    CONFIG.data_width {12} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
@@ -1683,7 +1683,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: expl_texture, and set properties
   set expl_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 expl_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/expl.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/expl.coe} \
    CONFIG.data_width {12} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
@@ -1693,9 +1693,9 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: obs1_texture, and set properties
   set obs1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 obs1_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/obs1.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/obs1.coe} \
    CONFIG.data_width {12} \
-   CONFIG.default_data {a0a} \
+   CONFIG.default_data {0} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
    CONFIG.output_options {registered} \
@@ -1704,9 +1704,9 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: obs2_texture, and set properties
   set obs2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 obs2_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/obs2.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/obs2.coe} \
    CONFIG.data_width {12} \
-   CONFIG.default_data {a0a} \
+   CONFIG.default_data {0} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
    CONFIG.output_options {registered} \
@@ -1715,7 +1715,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: path_texture, and set properties
   set path_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 path_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/path.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/path.coe} \
    CONFIG.data_width {12} \
    CONFIG.depth {4096} \
    CONFIG.input_options {non_registered} \
@@ -1728,7 +1728,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: plr1_texture, and set properties
   set plr1_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 plr1_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/plr1.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/plr1.coe} \
    CONFIG.data_width {12} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
@@ -1738,7 +1738,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create instance: plr2_texture, and set properties
   set plr2_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 plr2_texture ]
   set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/coe/plr2.coe} \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/plr2.coe} \
    CONFIG.data_width {12} \
    CONFIG.depth {4096} \
    CONFIG.memory_type {rom} \
