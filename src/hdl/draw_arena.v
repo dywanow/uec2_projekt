@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module board_draw
+module draw_arena
     (
 		input wire i_pclk,
         input wire i_rst,
@@ -10,7 +10,7 @@ module board_draw
         input wire [11:0] i_hcount,
         input wire i_hsync,
         input wire i_hblnk,
-        input wire [3:0] i_axi_data,
+        input wire [2:0] i_axi_data,
         input wire [11:0] i_rgb,
         input wire [11:0] i_rom_rgb,
         output reg [11:0] o_vcount,
@@ -20,7 +20,7 @@ module board_draw
         output reg o_hsync,
         output reg o_hblnk,
         output reg [11:0] o_rgb,
-        output wire [3:0] o_sel,
+        output wire [2:0] o_sel,
         output wire [7:0] o_axi_addr,
         output wire [11:0] o_rom_addr
     );

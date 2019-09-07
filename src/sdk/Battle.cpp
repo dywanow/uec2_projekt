@@ -69,8 +69,7 @@ void Battle::HandleInput()
 void Battle::Update(float dt)
 {
     arena.Update(dt);
-    bomber_info.Update(arena.AccessBomber(0));
-    bomber_info.Update(arena.AccessBomber(1));
+    bomber_info.Update(arena.AccessBomber(0), arena.AccessBomber(1));
     active = !arena.IsAnyPlayerDead();
 }
 

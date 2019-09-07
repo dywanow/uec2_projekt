@@ -10,7 +10,7 @@ class Arena;
 class Element
 {
 public:
-    enum class Types { SURR, PATH, OBS1, OBS2, BOMB, EXPL, PLR1, PLR2 };
+    enum class Types { PATH, OBS1, OBS2, BOMB, EXPL, PLR1, PLR2 };
 
     Element();
     Element(uint16_t x, uint16_t y, Types type);

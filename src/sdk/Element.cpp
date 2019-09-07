@@ -86,13 +86,12 @@ uint8_t Element::TypeCode() const
     switch (type)
     {
         case Types::PATH: return 0;
-        case Types::SURR: return 1;
-        case Types::OBS1: return 2;
-        case Types::OBS2: return 3;
-        case Types::BOMB: return 4;
-        case Types::EXPL: return 5;
-        case Types::PLR1: return 6;
-        case Types::PLR2: return 7;
+        case Types::OBS1: return 1;
+        case Types::OBS2: return 2;
+        case Types::BOMB: return 3;
+        case Types::EXPL: return 4;
+        case Types::PLR1: return 5;
+        case Types::PLR2: return 6;
         default: return 0;
     }
 }
@@ -109,6 +108,6 @@ uint8_t Element::IsActive() const
 
 uint8_t Element::IsDestructible() const
 {
-    return type != Types::SURR && type != Types::OBS2 && type != Types::EXPL;
+    return type != Types::OBS2 && type != Types::EXPL;
 }
 
