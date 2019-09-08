@@ -1,5 +1,5 @@
-#ifndef SRC_MENU_H_
-#define SRC_MENU_H_
+#ifndef MENU_H
+#define MENU_H
 
 #include "Scene.h"
 #include "xil_types.h"
@@ -7,13 +7,13 @@
 class Menu : public Scene
 {
 public:
-	Menu(uint32_t axi_base_addr, Scene *game, Scene *controls, uint8_t id, Keyboard *input);
+	Menu(uint32_t axi_base_addr, Scene *game, Scene *controls, uint8_t id);
     void Init(uint8_t info=0) override;
-    void HandleInput() override;
+    void HandleInput(uint8_t key) override;
     void Update(float dt) override;
 
 private:
-    enum class Options { START_GAME, SHOW_CONTROLS };
+    enum class Options { StartGame, ShowIntruction };
 
     uint32_t * const axi_text;
     float time;
@@ -23,4 +23,4 @@ private:
     Scene *controls;
 };
 
-#endif /* SRC_MENU_H_ */
+#endif

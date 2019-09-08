@@ -1,5 +1,5 @@
-#ifndef SRC_TIMER_H_
-#define SRC_TIMER_H_
+#ifndef TIMER_H
+#define TIMER_H
 
 #include "xtmrctr.h"
 #include "xil_types.h"
@@ -17,9 +17,9 @@ public:
 
 private:
     XTmrCtr timer;
-    const uint8_t TIMER_NUMBER;
-    const uint32_t FREQ;
+    const uint8_t timer_number;
+    const uint32_t freq;
     uint32_t ticks;
 };
 
-#endif /* SRC_TIMER_H_ */
+#endif

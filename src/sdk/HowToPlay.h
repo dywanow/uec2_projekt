@@ -1,5 +1,5 @@
-#ifndef SRC_HOWTOPLAY_H_
-#define SRC_HOWTOPLAY_H_
+#ifndef HOWTOPLAY_H
+#define HOWTOPLAY_H
 
 #include "Scene.h"
 #include "xil_types.h"
@@ -7,9 +7,9 @@
 class HowToPlay : public Scene
 {
 public:
-	HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input);
+	HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id);
     void Init(uint8_t info) override;
-    void HandleInput() override;
+    void HandleInput(uint8_t key) override;
     void Update(float dt) override;
 
 private:
@@ -19,4 +19,4 @@ private:
     Scene *menu;
 };
 
-#endif /* SRC_HOWTOPLAY_H_ */
+#endif

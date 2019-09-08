@@ -1,8 +1,8 @@
 #include "HowToPlay.h"
 #include "Keyboard.h"
 
-HowToPlay::HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input) : 
-    Scene(menu, id, input),
+HowToPlay::HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id) : 
+    Scene(menu, id),
 	axi_text(reinterpret_cast<uint32_t*>(axi_base_addr))
 {
 
@@ -14,10 +14,9 @@ void HowToPlay::Init(uint8_t info)
 	blink_status = 0;
 }
 
-void HowToPlay::HandleInput()
+void HowToPlay::HandleInput(uint8_t key)
 {
-	uint8_t pressed_key = input->GetKey();
-	if (pressed_key == 'b')
+	if (key == ' ')
 	{
 		active = 0;
 	}
@@ -25,6 +24,7 @@ void HowToPlay::HandleInput()
 
 void HowToPlay::Update(float dt)
 {
+
 	time += dt;
     if (time >= Scene::BLINK_TIME)
     {

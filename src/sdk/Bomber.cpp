@@ -1,153 +1,108 @@
 #include "Bomber.h"
 #include "Arena.h"
 
-const float Bomber::MOVE_TIME = 0.3f;
+const float RESPAWN_TIME = 1.0f;
 
-Bomber::Bomber() : Element(0, 0, Element::Types::PLR1)
+Bomber::Bomber()
+    : Element()
 {
-    Init();
+    
 }
 
 void Bomber::Init()
 {
-    movement = Movement::NONE;
-    state = States::PLAY;
-    max_bombs_number = 3;
-    current_bombs_number = 0;
-    alive = 1;
-	lives_number = 3;
-    wait_time = 0;
-    active = 1;
+    state = States::Alive;
     time = 0;
+    bombs_count = 0;
+    max_bombs_count = 3;
+    move_delay = 0.3f;
+    lives_count = 3;
 }
 
 void Bomber::Update(float dt)
 {
-    if (state == States::PLAY)
+    time += dt;
+    if (state == States::Alive)
     {
-        for (uint16_t vis_el_nr = 0; vis_el_nr < Arena::VISIBLE_ELEMENTS_NUMBER; vis_el_nr++)
+        if (time >= move_delay)
         {
-            const auto vis_el = arena->AccessVisibleElement(vis_el_nr);
-            const auto vis_el_pos = vis_el.Position();
-            if (vis_el.IsCollidable() && vis_el.IsActive() && Collides(vis_el_pos))
+            if (*input == 1 && arena->CanMoveTo(position.x, position.y-1))
             {
-                xil_printf("COLLISION | (%u, %u) | %u\n", vis_el_pos.GetX(), vis_el_pos.GetY(), vis_el.TypeCode());
-                movement = Movement::NONE;
-            }
-        }
-
-        time += dt;
-        if (time >= MOVE_TIME)
-        {
-            if (movement != Movement::NONE)
-            {
-                switch (movement)
-                {
-                case Movement::LEFT:
-                    position.SetX(position.GetX() - 1);
-                    break;
-                case Movement::RIGHT:
-                    position.SetX(position.GetX() + 1);
-                    break;
-                case Movement::UP:
-                    position.SetY(position.GetY() - 1);
-                    break;
-                case Movement::DOWN:
-                    position.SetY(position.GetY() + 1);
-                    break;
-                default:
-                    break;
-                }
+                position.y--;
                 time = 0;
-                movement = Movement::NONE;
+            }
+            else if (*input == 2 && arena->CanMoveTo(position.x-1, position.y))
+            {
+                position.x--;
+                time = 0;
+            }
+            else if (*input == 3 && arena->CanMoveTo(position.x, position.y+1))
+            {
+                position.y++;
+                time = 0;
+            }
+            else if (*input == 4 && arena->CanMoveTo(position.x+1, position.y))
+            {
+                position.x++;
+                time = 0;
             }
             else
             {
-                time = MOVE_TIME;
+                time = move_delay;
             }
         }
-    }
-
-    else if (state == States::WAIT)
-    {
-        if (wait_time >= WAIT_TIME)
+        if (*input == 5 && bombs_count < max_bombs_count && !arena->IsBombAt(position))
         {
-            wait_time = 0;
-            state = States::PLAY;
+            arena->InitBomb(this, position);
+            bombs_count++;
+        }
+    }
+    else
+    {
+        if (time >= RESPAWN_TIME)
+        {
+            state = States::Alive;
             active = 1;
+            time = 0;
         }
-        else
-        {
-            wait_time += dt;
-        }
-    }
-
-}
-
-void Bomber::MakeMove(Bomber::Movement movement)
-{
-    if (state == States::PLAY)
-    {
-        this->movement = movement;   
     }
 }
 
-void Bomber::Die()
+void Bomber::OnFireCollision()
 {
-    state = States::WAIT;
-    alive = (--lives_number) != 0;
+    state = States::Dead;
+    position = respawn_position;
     active = 0;
+    time = 0;
+    lives_count--;
 }
 
-void Bomber::IncrementCurrentBombsNumber()
+void Bomber::SetRespawnPosition(uint8_t x, uint8_t y)
 {
-    current_bombs_number++;
+    respawn_position = Position(x, y);
 }
 
-void Bomber::DecrementBombsNumber()
+void Bomber::SetInput(uint8_t *input)
 {
-    current_bombs_number--;
+    this->input = input;
 }
 
-void Bomber::SetCurrentBombsNumber(uint8_t current_bombs_number)
+void Bomber::SetID(uint8_t id)
 {
-    this->current_bombs_number = current_bombs_number;
+    this->id = id;
 }
 
-void Bomber::SetMaxBombsNumber(uint8_t max_bombs_number)
+void Bomber::OnBombExplosion()
 {
-    this->max_bombs_number = max_bombs_number;
+	bombs_count--;
 }
 
-uint8_t Bomber::CurrentBombsNumber() const
+uint8_t Bomber::LivesCount() const
 {
-    return current_bombs_number;
-}
-
-uint8_t Bomber::MaxBombsNumber() const
-{
-    return max_bombs_number;
-}
-
-uint8_t Bomber::IsAlive() const
-{
-    return alive;
-}
-
-uint8_t Bomber::LivesNumber() const
-{
-	return lives_number;
+    return lives_count;
 }
 
 uint8_t Bomber::FreeBombs() const
 {
-	return max_bombs_number - current_bombs_number;
-}
-
-uint8_t Bomber::Collides(const Vector &element_position) const
-{
-    return ((movement == Movement::LEFT && element_position.GetX() == position.GetX() - 1 && element_position.GetY() == position.GetY()) ||
-            (movement == Movement::RIGHT && element_position.GetX() == position.GetX() + 1 && element_position.GetY() == position.GetY()) ||
-            (movement == Movement::UP && element_position.GetY() == position.GetY() - 1 && element_position.GetX() == position.GetX()) ||
-            (movement == Movement::DOWN && element_position.GetY() == position.GetY() + 1 && element_position.GetX() == position.GetX()));
+    return max_bombs_count - bombs_count;
 }

@@ -1,17 +1,13 @@
 #include "Element.h"
-#include "Arena.h"
 
-Element::Element() : position(Vector(0, 0)),
-                     type(Element::Types::PATH),
-                     active(0),
-                     time(0)
+Element::Element() : position({0, 0}),
+                     active(0)
 {
 
 }
 
-Element::Element(uint16_t x, uint16_t y, Element::Types type) : position(Vector(x, y)),
-                                                                type(type),
-                                                                active(0)
+Element::Element(uint8_t x, uint8_t y) : position({x, y}),
+                                         active(0)
 {
 
 }
@@ -31,24 +27,19 @@ void Element::SetArena(Arena *arena)
     this->arena = arena;
 }
 
-void Element::SetPosition(uint16_t x, uint16_t y)
+void Element::SetCode(uint8_t code)
 {
-    SetPosition(Vector(x, y));
+	this->code = code;
 }
 
-void Element::SetPosition(Vector position)
+void Element::SetPosition(uint8_t x, uint8_t y)
+{
+    SetPosition(Position{x, y});
+}
+
+void Element::SetPosition(Position position)
 {
     this->position = position;
-}
-
-void Element::SetType(Element::Types type)
-{
-    this->type = type;
-}
-
-void Element::SetID(uint8_t id)
-{
-    this->id = id;
 }
 
 void Element::Activate()
@@ -61,44 +52,25 @@ void Element::Deactivate()
     active = 0;
 }
 
-Vector Element::Position() const
+Position Element::GetPosition() const
 {
     return position;
 }
 
-Element::Types Element::Type() const
-{
-    return type;
-}
 
-uint8_t Element::ID() const
+uint8_t Element::GetNormalizedPosition() const
 {
-    return id;
-}
-
-uint8_t Element::NormalizedPosition() const
-{
-    return position.GetX() + (position.GetY() << 4);
-}
-
-uint8_t Element::TypeCode() const
-{
-    switch (type)
-    {
-        case Types::PATH: return 0;
-        case Types::OBS1: return 1;
-        case Types::OBS2: return 2;
-        case Types::BOMB: return 3;
-        case Types::EXPL: return 4;
-        case Types::PLR1: return 5;
-        case Types::PLR2: return 6;
-        default: return 0;
-    }
+    return position.x + (position.y << 4);
 }
 
 uint8_t Element::IsCollidable() const
 {
-    return type != Types::PATH;
+    return 1;
+}
+
+uint8_t Element::IsFireCollidable() const
+{
+    return 1;
 }
 
 uint8_t Element::IsActive() const
@@ -108,6 +80,15 @@ uint8_t Element::IsActive() const
 
 uint8_t Element::IsDestructible() const
 {
-    return type != Types::OBS2 && type != Types::EXPL;
+    return 1;
 }
 
+uint8_t Element::Code() const
+{
+    return code;
+}
+
+void Element::OnFireCollision()
+{
+
+}

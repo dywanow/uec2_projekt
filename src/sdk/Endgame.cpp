@@ -1,9 +1,9 @@
 #include "Endgame.h"
 #include "Keyboard.h"
 
-Endgame::Endgame(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input) : 
-    Scene(menu, id, input),
-    axi_text(reinterpret_cast<uint32_t*>(axi_base_addr))
+Endgame::Endgame(uint32_t axi_base_addr, Scene *menu, uint8_t id)
+    : Scene(menu, id),
+      axi_text(reinterpret_cast<uint32_t*>(axi_base_addr))
 {
     
 }
@@ -15,10 +15,9 @@ void Endgame::Init(uint8_t info)
     blink_status = 0;
 }
 
-void Endgame::HandleInput()
+void Endgame::HandleInput(uint8_t key)
 {
-	uint8_t pressed_key = input->GetKey();
-	if (pressed_key == 'v')
+	if (key == ' ')
 	{
 		active = 0;
 	}

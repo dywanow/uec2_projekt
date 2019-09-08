@@ -1,5 +1,5 @@
-#ifndef BOMBERMAN_H_
-#define BOMBERMAN_H_
+#ifndef BOMBER_H
+#define BOMBER_H
 
 #include "Element.h"
 #include "xil_types.h"
@@ -7,37 +7,29 @@
 class Bomber : public Element
 {
 public:
-    enum class Movement { NONE, UP, DOWN, LEFT, RIGHT };
-    enum class States { PLAY, WAIT };
-
     Bomber();
-    void MakeMove(Movement movement);
-    void Die();
-    void IncrementCurrentBombsNumber();
-    void DecrementBombsNumber();
-    void SetCurrentBombsNumber(uint8_t current_bombs_number);
-    void SetMaxBombsNumber(uint8_t max_bombs_number);
-    uint8_t CurrentBombsNumber() const;
-    uint8_t MaxBombsNumber() const;
-    uint8_t IsAlive() const;
-    uint8_t LivesNumber() const;
-    uint8_t FreeBombs() const;
     void Init() override;
     void Update(float dt) override;
+    void OnFireCollision() override;
+    void SetRespawnPosition(uint8_t x, uint8_t y);
+    void SetInput(uint8_t *input);
+    void SetID(uint8_t id);
+    void OnBombExplosion();
+    uint8_t LivesCount() const;
+    uint8_t FreeBombs() const;
 
 private:
-    static const float MOVE_TIME;
-    static const uint8_t WAIT_TIME = 1;
+    enum class States { Alive, Dead };
 
-    Movement movement;
     States state;
-    uint8_t max_bombs_number;
-    uint8_t current_bombs_number;
-    uint8_t alive;
-    uint8_t lives_number;
-    float wait_time;
-
-    uint8_t Collides(const Vector &element_position) const;
+    Position respawn_position;
+    uint8_t *input;
+    uint8_t id;
+    uint8_t bombs_count;
+    uint8_t max_bombs_count;
+    uint8_t lives_count;
+    float time;
+    float move_delay;
 };
 
-#endif /* BOMBERMAN_H_ */
+#endif

@@ -1,7 +1,8 @@
 #include "Keyboard.h"
 #include "xuartlite_l.h"
 
-Keyboard::Keyboard(uint32_t baseaddr) : baseaddr(baseaddr)
+Keyboard::Keyboard(uint32_t baseaddr)
+    : baseaddr(baseaddr)
 {
 
 
@@ -17,7 +18,7 @@ uint8_t Keyboard::IsKeyPressed()
     return 0;
 }
 
-uint8_t Keyboard::GetKey()
+uint8_t Keyboard::GetKey() const
 {
     return key;
 }
