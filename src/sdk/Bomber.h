@@ -11,7 +11,7 @@ public:
     void Init() override;
     void Update(float dt) override;
     void OnFireCollision() override;
-    void SetRespawnPosition(uint8_t x, uint8_t y);
+    void SetRespawnPosition(Position respawn_position);
     void SetInput(uint8_t *input);
     void SetID(uint8_t id);
     void OnBombExplosion();

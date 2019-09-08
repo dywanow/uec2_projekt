@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Scene.h"
 #include "xparameters.h"
+#include "PRNG.h"
 
 Game::Game()
     : timer(XPAR_TMRCTR_0_BASEADDR, XPAR_TMRCTR_0_DEVICE_ID, XPAR_TMRCTR_0_CLOCK_FREQ_HZ, 0),
@@ -29,6 +30,7 @@ void Game::Start()
 
 void Game::Update(float dt)
 {
+	PRNG::UpdateSeed();
 	uint8_t key;
     if (keyboard.IsKeyPressed())
     {

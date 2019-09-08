@@ -77,9 +77,9 @@ void Bomber::OnFireCollision()
     lives_count--;
 }
 
-void Bomber::SetRespawnPosition(uint8_t x, uint8_t y)
+void Bomber::SetRespawnPosition(Position respawn_position)
 {
-    respawn_position = Position(x, y);
+    this->respawn_position = respawn_position;
 }
 
 void Bomber::SetInput(uint8_t *input)

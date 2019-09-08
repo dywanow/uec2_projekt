@@ -7,6 +7,7 @@ class Box : public Element
 {
 public:
     Box();
+    void Init() override;
     void OnFireCollision() override;
 };
 

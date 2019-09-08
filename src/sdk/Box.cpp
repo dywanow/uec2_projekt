@@ -6,6 +6,11 @@ Box::Box()
 
 }
 
+void Box::Init()
+{
+    active = 0;
+}
+
 void Box::OnFireCollision()
 {
     active = 0;

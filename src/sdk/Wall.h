@@ -7,6 +7,7 @@ class Wall : public Element
 {
 public:
     Wall();
+    void Init() override;
     uint8_t IsDestructible() const override;
 };
 

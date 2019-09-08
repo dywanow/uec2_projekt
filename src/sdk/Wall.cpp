@@ -6,6 +6,11 @@ Wall::Wall()
 
 }
 
+void Wall::Init()
+{
+    active = 0;
+}
+
 uint8_t Wall::IsDestructible() const
 {
     return 0;
