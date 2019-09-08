@@ -2,7 +2,8 @@
 #define SRC_SCENE_H_
 
 #include "xil_types.h"
-#include "Keyboard.h"
+
+class Keyboard;
 
 class Scene
 {

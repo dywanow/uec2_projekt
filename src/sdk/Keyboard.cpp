@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include "xuartlite_l.h"
 
 Keyboard::Keyboard(uint32_t baseaddr) : baseaddr(baseaddr)
 {

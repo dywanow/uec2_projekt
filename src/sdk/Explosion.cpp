@@ -1,6 +1,4 @@
 #include "Explosion.h"
-#include "Bomber.h"
-#include "Bomb.h"
 #include "Arena.h"
 
 Explosion::Explosion() : Element(0, 0, Types::EXPL)

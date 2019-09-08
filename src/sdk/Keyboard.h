@@ -1,7 +1,7 @@
 #ifndef SRC_KEYBOARD_H_
 #define SRC_KEYBOARD_H_
 
-#include "xuartlite_l.h"
+#include "xil_types.h"
 
 class Keyboard
 {

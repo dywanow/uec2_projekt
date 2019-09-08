@@ -1,4 +1,5 @@
 #include "HowToPlay.h"
+#include "Keyboard.h"
 
 HowToPlay::HowToPlay(uint32_t axi_base_addr, Scene *menu, uint8_t id, Keyboard *input) : 
     Scene(menu, id, input),

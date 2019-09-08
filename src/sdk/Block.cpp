@@ -1,5 +1,7 @@
 #include "Block.h"
 #include "Arena.h"
+#include "xil_types.h"
+
 
 Block::Block() : Element(0, 0, Element::Types::PATH)
 {
@@ -22,14 +24,9 @@ void Block::Update(float dt)
                 const auto expl_part = arena->AccessExplosionPart(expl_nr, part_nr);
                 if (expl_part.Position() == this->Position() && expl_part.IsActive())
                 {
-                    Destroy();
+                	SetType(Element::Types::PATH);
                 }
             }
         }
     }
-}
-
-void Block::Destroy()
-{
-    SetType(Element::Types::PATH);
 }

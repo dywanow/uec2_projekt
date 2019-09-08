@@ -7,10 +7,10 @@
 #include "Explosion.h"
 #include "xil_types.h"
 
-class Element;
-class Block;
-class Bomber;
-class Bomb;
+//class Element;
+//class Block;
+//class Bomber;
+//class Bomb;
 
 class Arena
 {

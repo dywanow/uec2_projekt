@@ -1,8 +1,8 @@
 #include "Arena.h"
-#include "Element.h"
-#include "Block.h"
-#include "Bomber.h"
-#include "Bomb.h"
+//#include "Element.h"
+//#include "Block.h"
+//#include "Bomber.h"
+//#include "Bomb.h"
 
 Arena::Arena()
 {

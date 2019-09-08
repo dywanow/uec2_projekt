@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "xparameters.h"
+#include "xil_printf.h"
 
 #define TIMER_NUMBER 0
 

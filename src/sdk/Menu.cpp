@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "Keyboard.h"
 
 Menu::Menu(uint32_t axi_base_addr, Scene *game, Scene *controls, uint8_t id, Keyboard *input) : 
     Scene(game, id, input),

@@ -1,16 +1,15 @@
 #ifndef SRC_GAME_H_
 #define SRC_GAME_H_
 
-#include "Scene.h"
 #include "Menu.h"
 #include "HowToPlay.h"
 #include "Battle.h"
 #include "Endgame.h"
 #include "Keyboard.h"
 #include "Timer.h"
-#include "xparameters.h"
 #include "xil_types.h"
-#include "xil_printf.h"
+
+class Scene;
 
 class Game
 {

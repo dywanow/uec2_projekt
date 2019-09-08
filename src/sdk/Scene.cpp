@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Keyboard.h"
 
 const float Scene::BLINK_TIME = 0.2f;
 
