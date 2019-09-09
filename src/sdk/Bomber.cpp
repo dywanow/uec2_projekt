@@ -15,7 +15,7 @@ void Bomber::Init()
     time = 0;
     bombs_count = 0;
     max_bombs_count = 3;
-    move_delay = 0.3f;
+    move_delay = 0.2f;
     lives_count = 3;
 }
 
