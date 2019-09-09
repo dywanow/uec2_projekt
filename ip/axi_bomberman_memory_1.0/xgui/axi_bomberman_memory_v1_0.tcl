@@ -4,10 +4,8 @@ proc init_gui { IPINST } {
   #Adding Page
   ipgui::add_page $IPINST -name "Page 0"
 
-  set ADDR_WIDTH [ipgui::add_param $IPINST -name "ADDR_WIDTH"]
-  set_property tooltip {ADDR_WIDTH} ${ADDR_WIDTH}
-  set DATA_WIDTH [ipgui::add_param $IPINST -name "DATA_WIDTH"]
-  set_property tooltip {DATA_WIDTH} ${DATA_WIDTH}
+  ipgui::add_param $IPINST -name "ADDR_WIDTH"
+  ipgui::add_param $IPINST -name "DATA_WIDTH"
 
 }
 
