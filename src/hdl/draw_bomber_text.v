@@ -176,7 +176,7 @@ module draw_bomber_text
                 if (i_rom_word[7-rom_bit_addr] == 1)
                     rgb_nxt = 12'hfff;
                 else
-                    rgb_nxt = 12'h66e;
+                    rgb_nxt = rgb_del_2_clk;
             else
                 rgb_nxt = rgb_del_2_clk;
     end
