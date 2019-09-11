@@ -1,18 +1,21 @@
 # Bomberman using Xilinx Microblaze for UEC2 project
 
-## Essential software
 
-1. Git: https://git-scm.com/downloads
+## Software
+
+1. [Git](https://git-scm.com/downloads) (Optional)
+2. [Basys 3 board files](https://reference.digilentinc.com/reference/software/vivado/board-files)
 
 
-## Download instruction
+
+## Download and programming instruction
 
 1. Open cmd
 2. Navigate to your working directory:
     ```
     cd <working_directory>
     ```
-3. Download the repository:
+3. Download the ZIP file and extract in `<working_directory>` or use git command:
     ```
     git clone git://github.com/dywanow/uec2_projekt.git
     ```
@@ -28,8 +31,22 @@
     ```
     The project will be created under `<working_directory>/vivado`
 8. Run synthesis, implementation and generate bitstream
-9. Export hardware (just in case) by choosing `File -> Export -> Export Hardware...`  
-   Choose `<working_directory>/hw` as the destination path, tick `Include bitstream` option
+9. Export hardware by choosing `File -> Export -> Export Hardware...`  
+  - Tick `Include bitstream` option
 10. Launch SDK environment by choosing `File -> Launch SDK`  
-    Set `Exported location` to `<working_directory>/hw`
-11. Create New C++ App, import sources, set stack size to 0x3000 in lscript.ld...
+11. Create New C++ Application Project
+  - Set name to bomberman
+12. Configure SDK project  
+  - Delete default main.cc file
+  - Import C++ sources from `<working_directory>/src/sdk`
+    - `Project Explorer -> bomberman -> RMB -> Import...`
+    - `General -> File System`
+    - Click `Browse...` and choose `<working_directory>/src/sdk`
+    - Tick sdk folder on the left side
+    - Click `Advanced >>` and tick all 3 options, set PROJECT_LOC
+    - Click `Finish`
+  - Set stack size to 0x3000 and heap size to 0x1000 in lscript.ld
+13. Program device
+  - `Xilinx -> Program FPGA`
+  - `Project Explorer -> bomberman -> RMB -> Run As -> Launch on Hardware (System Debugger)`
+14. Open UART terminal for keyboard input

@@ -63,6 +63,15 @@ set files [list \
  "[file normalize "$origin_dir/rom/bomber_status_background.coe"]"\
  "[file normalize "$origin_dir/rom/bobo.coe"]"\
  "[file normalize "$origin_dir/rom/boli.coe"]"\
+ "[file normalize "$origin_dir/rom/howto_instr_text.mem"]"\
+ "[file normalize "$origin_dir/rom/menu_howto_text.mem"]"\
+ "[file normalize "$origin_dir/rom/bomber_info_text.mem"]"\
+ "[file normalize "$origin_dir/rom/howto_menu_text.mem"]"\
+ "[file normalize "$origin_dir/rom/endgame_menu_text.mem"]"\
+ "[file normalize "$origin_dir/rom/endgame_winner_text.mem"]"\
+ "[file normalize "$origin_dir/rom/menu_title_text.mem"]"\
+ "[file normalize "$origin_dir/rom/endgame_over_text.mem"]"\
+ "[file normalize "$origin_dir/rom/menu_start_text.mem"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -367,7 +376,7 @@ proc create_hier_cell_title { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/menu_title_text.data} \
+   CONFIG.PATH {../rom/menu_title_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
    CONFIG.Y_ADDR_WIDTH {1} \
  ] $title_text_rom
@@ -383,7 +392,7 @@ proc create_hier_cell_title { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/menu_title_text.data} \
+   CONFIG.PATH {../rom/menu_title_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
    CONFIG.Y_ADDR_WIDTH {1} \
  ] $title_text_rom1
@@ -552,7 +561,7 @@ proc create_hier_cell_start { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/menu_start_text.data} \
+   CONFIG.PATH {../rom/menu_start_text.mem} \
    CONFIG.X_ADDR_WIDTH {4} \
    CONFIG.Y_ADDR_WIDTH {1} \
  ] $start_text_rom
@@ -688,7 +697,7 @@ proc create_hier_cell_howto { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/menu_howto_text.data} \
+   CONFIG.PATH {../rom/menu_howto_text.mem} \
    CONFIG.X_ADDR_WIDTH {4} \
  ] $howto_text_rom
 
@@ -817,7 +826,7 @@ proc create_hier_cell_menu_1 { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/howto_menu_text.data} \
+   CONFIG.PATH {../rom/howto_menu_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
  ] $menu_text_rom
 
@@ -948,7 +957,7 @@ proc create_hier_cell_instr { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/howto_instr_text.data} \
+   CONFIG.PATH {../rom/howto_instr_text.mem} \
    CONFIG.X_ADDR_WIDTH {6} \
    CONFIG.Y_ADDR_WIDTH {4} \
  ] $instr_text_rom
@@ -1100,7 +1109,7 @@ proc create_hier_cell_winner { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/endgame_winner_text.data} \
+   CONFIG.PATH {../rom/endgame_winner_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
    CONFIG.Y_ADDR_WIDTH {2} \
  ] $winner_text_rom
@@ -1228,7 +1237,7 @@ proc create_hier_cell_over { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/endgame_over_text.data} \
+   CONFIG.PATH {../rom/endgame_over_text.mem} \
    CONFIG.X_ADDR_WIDTH {4} \
  ] $over_text_rom
 
@@ -1367,7 +1376,7 @@ proc create_hier_cell_menu { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/endgame_menu_text.data} \
+   CONFIG.PATH {../rom/endgame_menu_text.mem} \
    CONFIG.X_ADDR_WIDTH {4} \
  ] $menu_text_rom
 
@@ -1478,7 +1487,7 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/bomber_info_text.data} \
+   CONFIG.PATH {../rom/bomber_info_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
    CONFIG.Y_ADDR_WIDTH {3} \
  ] $bomber_text_rom
@@ -1664,7 +1673,7 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.PATH {../rom/bomber_info_text.data} \
+   CONFIG.PATH {../rom/bomber_info_text.mem} \
    CONFIG.X_ADDR_WIDTH {5} \
    CONFIG.Y_ADDR_WIDTH {3} \
  ] $bomber_text_rom
@@ -2390,7 +2399,7 @@ proc create_hier_cell_battle_scene { parentCell nameHier } {
 
   # Create pins
   create_bd_pin -dir I -from 3 -to 0 i_axi_arena_data
-  create_bd_pin -dir I -from 29 -to 0 i_axi_battle_bombers_data
+  create_bd_pin -dir I -from 29 -to 0 i_axi_bombers_data
   create_bd_pin -dir I i_hblnk
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
@@ -2415,7 +2424,7 @@ proc create_hier_cell_battle_scene { parentCell nameHier } {
   create_hier_cell_bomber1 $hier_obj bomber1
 
   # Create port connections
-  connect_bd_net -net Din_1 [get_bd_pins i_axi_battle_bombers_data] [get_bd_pins bomber0/i_axi_bombers_data] [get_bd_pins bomber1/i_axi_bombers_data]
+  connect_bd_net -net Din_1 [get_bd_pins i_axi_bombers_data] [get_bd_pins bomber0/i_axi_bombers_data] [get_bd_pins bomber1/i_axi_bombers_data]
   connect_bd_net -net arena_o_hsync [get_bd_pins o_hsync] [get_bd_pins arena/o_hsync]
   connect_bd_net -net arena_o_rgb [get_bd_pins o_rgb] [get_bd_pins arena/o_rgb]
   connect_bd_net -net arena_o_vsync [get_bd_pins o_vsync] [get_bd_pins arena/o_vsync]
@@ -2486,11 +2495,11 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
-  create_bd_pin -dir I -from 29 -to 0 Din
   create_bd_pin -dir O -from 3 -to 0 b
   create_bd_pin -dir O -from 3 -to 0 g
   create_bd_pin -dir O hs
   create_bd_pin -dir I -from 3 -to 0 i_axi_battle_arena_data
+  create_bd_pin -dir I -from 29 -to 0 i_axi_battle_bombers_data
   create_bd_pin -dir I -from 2 -to 0 i_axi_endgame_text_data
   create_bd_pin -dir I i_axi_howto_text_data
   create_bd_pin -dir I -from 1 -to 0 i_axi_menu_text_data
@@ -2568,7 +2577,7 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   # Create port connections
   connect_bd_net -net Din_1 [get_bd_pins i_axi_menu_text_data] [get_bd_pins menu_scene/axi_text_data]
   connect_bd_net -net Din_2 [get_bd_pins i_axi_endgame_text_data] [get_bd_pins endgame_scene/i_axi_text_data]
-  connect_bd_net -net Din_3 [get_bd_pins Din] [get_bd_pins battle_scene/i_axi_battle_bombers_data]
+  connect_bd_net -net Din_3 [get_bd_pins i_axi_battle_bombers_data] [get_bd_pins battle_scene/i_axi_bombers_data]
   connect_bd_net -net battle_draw_o_hsync [get_bd_pins battle_scene/o_hsync] [get_bd_pins scene_mux/i_battle_hs]
   connect_bd_net -net battle_draw_o_rgb [get_bd_pins battle_scene/o_rgb] [get_bd_pins scene_mux/i_battle_rgb]
   connect_bd_net -net battle_draw_o_vsync [get_bd_pins battle_scene/o_vsync] [get_bd_pins scene_mux/i_battle_vs]
@@ -2857,7 +2866,7 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
 
   # Create port connections
   connect_bd_net -net axi_battle_arena_data [get_bd_pins axi_battle_arena/data] [get_bd_pins vga_drawer/i_axi_battle_arena_data]
-  connect_bd_net -net axi_battle_bombers_text_data [get_bd_pins axi_battle_bombers_text/data] [get_bd_pins vga_drawer/Din]
+  connect_bd_net -net axi_battle_bombers_text_data [get_bd_pins axi_battle_bombers_text/data] [get_bd_pins vga_drawer/i_axi_battle_bombers_data]
   connect_bd_net -net axi_endgame_text_data [get_bd_pins axi_endgame_text/data] [get_bd_pins vga_drawer/i_axi_endgame_text_data]
   connect_bd_net -net axi_howtoplay_text_data [get_bd_pins axi_howtoplay_text/data] [get_bd_pins vga_drawer/i_axi_howto_text_data]
   connect_bd_net -net axi_menu_text_data [get_bd_pins axi_menu_text/data] [get_bd_pins vga_drawer/i_axi_menu_text_data]
