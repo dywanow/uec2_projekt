@@ -14,6 +14,11 @@ void Bomb::Init()
     time = 0;
 }
 
+uint8_t Bomb::Code() const
+{
+    return 3;
+}
+
 void Bomb::Update(float dt)
 {
     if (active)

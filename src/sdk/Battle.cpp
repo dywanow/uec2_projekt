@@ -89,6 +89,6 @@ void Battle::UpdateBombersText()
 			lives_2 = bomber2.LivesCount(),
 			bombs_2 = bomber2.FreeBombs();
 
-	*axi_bombers_text = (bombs_1 << 12) + (lives_1 << 10) + (pos_y_dig0_1 << 6) + (pos_y_dig1_1 << 5) + (pos_x_dig0_1 << 1) + (pos_x_dig1_1) +
-				        (bombs_2 << 26) + (lives_2 << 24) + (pos_y_dig0_2 << 20) + (pos_y_dig1_2 << 19) + (pos_x_dig0_2 << 15) + (pos_x_dig1_2 << 14);
+	*axi_bombers_text = (bombs_1 << 13) + (lives_1 << 10) + (pos_y_dig0_1 << 6) + (pos_y_dig1_1 << 5) + (pos_x_dig0_1 << 1) + (pos_x_dig1_1) +
+				        (bombs_2 << 28) + (lives_2 << 25) + (pos_y_dig0_2 << 21) + (pos_y_dig1_2 << 20) + (pos_x_dig0_2 << 16) + (pos_x_dig1_2 << 15);
 }

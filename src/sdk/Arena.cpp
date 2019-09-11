@@ -1,12 +1,8 @@
 #include "Arena.h"
-#include "PRNG.h"
 
-const uint8_t PATH_CODE = 0,
-              BOX_CODE  = 1,
-              WALL_CODE = 2,
-              BOMB_CODE = 3,
-              FIRE_CODE = 4,
-              PLR1_CODE = 5,
+uint8_t Arena::select = 0;
+
+const uint8_t PLR1_CODE = 5,
               PLR2_CODE = 6;
 
 Arena::Arena(uint8_t *input0, uint8_t *input1)
@@ -14,32 +10,35 @@ Arena::Arena(uint8_t *input0, uint8_t *input1)
     uint16_t i;
     for (i = 0; i < PATHS_NUMBER; i++)
     {
-        paths[i].SetCode(PATH_CODE);
         elements[i] = &paths[i];
     }
     for (i = 0; i < WALLS_NUMBER; i++)
     {
-        walls[i].SetCode(WALL_CODE);
         elements[PATHS_NUMBER+i] = &walls[i];
+    }
+    for (i = 0; i < BONUS_BOMBS_NUMBER; i++)
+    {
+        elements[PATHS_NUMBER+WALLS_NUMBER+i] = &bonus_bombs[i];
+    }
+    for (i = 0; i < BONUS_LIVES_NUMBER; i++)
+    {
+        elements[PATHS_NUMBER+WALLS_NUMBER+BONUS_BOMBS_NUMBER+i] = &bonus_lives[i];
     }
     for (i = 0; i < BOXES_NUMBER; i++)
     {
-        boxes[i].SetCode(BOX_CODE);
-        elements[PATHS_NUMBER+WALLS_NUMBER+i] = &boxes[i];
+        elements[PATHS_NUMBER+WALLS_NUMBER+BONUS_BOMBS_NUMBER+BONUS_LIVES_NUMBER+i] = &boxes[i];
     }
     for (i = 0; i < BOMBS_NUMBER; i++)
     {
-        bombs[i].SetCode(BOMB_CODE);
-        elements[PATHS_NUMBER+WALLS_NUMBER+BOXES_NUMBER+i] = &bombs[i];
+        elements[PATHS_NUMBER+WALLS_NUMBER+BONUS_BOMBS_NUMBER+BONUS_LIVES_NUMBER+BOXES_NUMBER+i] = &bombs[i];
     }
     for (i = 0; i < BOMBERS_NUMBER; i++)
     {
-        elements[PATHS_NUMBER+WALLS_NUMBER+BOXES_NUMBER+BOMBS_NUMBER+i] = &bombers[i];
+        elements[PATHS_NUMBER+WALLS_NUMBER+BONUS_BOMBS_NUMBER+BONUS_LIVES_NUMBER+BOXES_NUMBER+BOMBS_NUMBER+i] = &bombers[i];
     }
     for (i = 0; i < FIRES_NUMBER; i++)
     {
-        fires[i].SetCode(FIRE_CODE);
-        elements[PATHS_NUMBER+WALLS_NUMBER+BOXES_NUMBER+BOMBS_NUMBER+BOMBERS_NUMBER+i] = &fires[i];
+        elements[PATHS_NUMBER+WALLS_NUMBER+BONUS_BOMBS_NUMBER+BONUS_LIVES_NUMBER+BOXES_NUMBER+BOMBS_NUMBER+BOMBERS_NUMBER+i] = &fires[i];
     }
     for (auto &e : elements)
     {
@@ -55,14 +54,28 @@ Arena::Arena(uint8_t *input0, uint8_t *input1)
 
 void Arena::Init()
 {
+    time = 0;
     for (auto &e : elements)
     {
         e->Init();
     }
-    const Position respawns[][BOMBERS_NUMBER] =
+    const Position bonus_bombs_respawns[][BONUS_BOMBS_NUMBER] = 
+    {
+        { Position(6, 6), Position(9, 9) },
+        { Position(6, 9), Position(9, 6) },
+        { Position(7, 6), Position(8, 9) }
+    };
+    const Position bonus_lives_respawns[][BONUS_BOMBS_NUMBER] = 
+    {
+        { Position(1, 14), Position(14, 1) },
+        { Position(7, 7), Position(8, 8) },
+        { Position(7, 8), Position(8, 7) }
+    };
+    const Position bomber_respawns[][BOMBERS_NUMBER] =
     {
         { Position(1, 1), Position(14, 14) },
-        { Position(5, 3), Position(10, 12) }
+        { Position(5, 3), Position(10, 12) },
+        { Position(1, 14), Position(14, 1) }
     };
     const uint8_t maps[][HEIGHT][WIDTH] =
     {
@@ -101,9 +114,26 @@ void Arena::Init()
             {2, 0, 0, 0, 2, 0, 0, 2, 0, 2, 2, 1, 2, 0, 2, 2},
             {2, 2, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2},
             {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
+        },
+        {
+            {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+            {2, 2, 2, 0, 1, 0, 0, 0, 1, 1, 2, 2, 0, 0, 0, 2},
+            {2, 2, 2, 0, 2, 2, 2, 2, 1, 0, 0, 1, 1, 2, 0, 2},
+            {2, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 0, 2, 1, 1, 2},
+            {2, 0, 2, 2, 2, 1, 2, 0, 2, 2, 2, 0, 0, 0, 2, 2},
+            {2, 0, 1, 1, 0, 1, 2, 1, 0, 1, 1, 1, 0, 1, 2, 2},
+            {2, 2, 1, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2, 0, 0, 2},
+            {2, 2, 2, 0, 0, 1, 0, 1, 1, 1, 2, 1, 1, 0, 2, 2},
+            {2, 2, 0, 1, 1, 2, 1, 1, 1, 0, 1, 0, 0, 2, 2, 2},
+            {2, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2, 0, 1, 2, 2},
+            {2, 2, 1, 0, 1, 1, 1, 0, 1, 2, 1, 0, 1, 1, 0, 2},
+            {2, 2, 0, 0, 0, 2, 2, 2, 0, 2, 1, 2, 2, 2, 0, 2},
+            {2, 1, 1, 2, 0, 2, 1, 1, 0, 0, 0, 1, 1, 0, 0, 2},
+            {2, 0, 2, 1, 1, 0, 0, 1, 2, 2, 2, 2, 0, 2, 2, 2},
+            {2, 0, 0, 0, 2, 2, 1, 1, 0, 0, 0, 1, 0, 2, 2, 2},
+            {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
         }
     };
-    uint8_t select = PRNG::PRN(0, 1);
     const auto *map = maps[select];
     uint16_t paths_nr, walls_nr, boxes_nr;
     paths_nr = walls_nr = boxes_nr = 0;
@@ -127,17 +157,45 @@ void Arena::Init()
             paths_nr++;
         }
     }
-    const auto *respawn = respawns[select];
-    bombers[0].SetPosition(respawn[0]);
-    bombers[0].SetRespawnPosition(respawn[0]);
+    const auto *respawn_position = bomber_respawns[select];
+    bombers[0].SetPosition(respawn_position[0]);
+    bombers[0].SetRespawnPosition(respawn_position[0]);
     bombers[0].Activate();
-    bombers[1].SetPosition(respawn[1]);
-    bombers[1].SetRespawnPosition(respawn[1]);
+    bombers[1].SetPosition(respawn_position[1]);
+    bombers[1].SetRespawnPosition(respawn_position[1]);
     bombers[1].Activate();
+
+    const auto *bonus_bomb_positions = bonus_bombs_respawns[select];
+    bonus_bombs[0].SetPosition(bonus_bomb_positions[0]);
+    bonus_bombs[1].SetPosition(bonus_bomb_positions[1]);
+
+    const auto *bonus_life_positions = bonus_lives_respawns[select];
+    bonus_lives[0].SetPosition(bonus_life_positions[0]);
+    bonus_lives[1].SetPosition(bonus_life_positions[1]);
+    select = (select + 1) % 3;
 }
 
 void Arena::Update(float dt)
 {
+    for (auto &bomber : bombers)
+    {
+        for (auto &bonus_bomb : bonus_bombs)
+        {
+            if (bonus_bomb.IsActive() && bonus_bomb.GetPosition() == bomber.GetPosition())
+            {
+                bomber.OnBonusBombCollision();
+                bonus_bomb.Deactivate();
+            }
+        }
+        for (auto &bonus_life : bonus_lives)
+        {
+            if (bonus_life.IsActive() && bonus_life.GetPosition() == bomber.GetPosition())
+            {
+                bomber.OnBonusLifeCollision();
+                bonus_life.Deactivate();
+            }
+        }
+    }
 	for (auto &e : elements)
 	{
         e->Update(dt);
@@ -147,14 +205,14 @@ void Arena::Update(float dt)
 void Arena::Draw(uint32_t *drawer)
 {
 	Element *visible[WIDTH*HEIGHT];
-	for (auto &e : elements)
+	for (const auto &e : elements)
 	{
 		if (e->IsActive())
 		{
 			visible[e->GetNormalizedPosition()] = e;
 		}
 	}
-	for (auto &ve : visible)
+	for (const auto &ve : visible)
 	{
 		*drawer = (ve->Code() << 8) + ve->GetNormalizedPosition();
 	}
@@ -189,21 +247,14 @@ void Arena::InitBomb(Bomber *bomber, Position position)
 
 void Arena::InitExplosion(Position position)
 {
-    uint8_t finish_checking = 0;
     for (auto &e : elements)
     {
         if (e->IsActive() && e->GetPosition() == position && e->IsFireCollidable())
         {
             e->OnFireCollision();
-            finish_checking = 1;
         }
     }
     InitFire(position);
-    if (finish_checking)
-    {
-        return;
-    }
-
     uint8_t x = position.x, y = position.y;
     Position pos_to_check[][2] = 
     {

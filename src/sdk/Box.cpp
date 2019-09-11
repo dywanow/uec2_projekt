@@ -15,3 +15,8 @@ void Box::OnFireCollision()
 {
     active = 0;
 }
+
+uint8_t Box::Code() const
+{
+    return 1;
+}

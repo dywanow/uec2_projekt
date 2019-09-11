@@ -1,5 +1,7 @@
 #include "Bomber.h"
 #include "Arena.h"
+#include "BonusBomb.h"
+#include "BonusLife.h"
 
 const float RESPAWN_TIME = 1.0f;
 
@@ -14,9 +16,9 @@ void Bomber::Init()
     state = States::Alive;
     time = 0;
     bombs_count = 0;
-    max_bombs_count = 3;
-    move_delay = 0.2f;
-    lives_count = 3;
+    max_bombs_count = 1;
+    move_delay = 0.1f;
+    lives_count = 2;
 }
 
 void Bomber::Update(float dt)
@@ -77,6 +79,21 @@ void Bomber::OnFireCollision()
     lives_count--;
 }
 
+void Bomber::OnBonusBombCollision()
+{
+    max_bombs_count++;
+}
+
+void Bomber::OnBonusLifeCollision()
+{
+    lives_count++;
+}
+
+void Bomber::SetCode(uint8_t code)
+{
+    this->code = code;
+}
+
 void Bomber::SetRespawnPosition(Position respawn_position)
 {
     this->respawn_position = respawn_position;
@@ -105,4 +122,9 @@ uint8_t Bomber::LivesCount() const
 uint8_t Bomber::FreeBombs() const
 {
     return max_bombs_count - bombs_count;
+}
+
+uint8_t Bomber::Code() const
+{
+    return code;
 }

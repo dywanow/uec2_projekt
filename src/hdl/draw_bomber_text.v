@@ -24,7 +24,7 @@ module draw_bomber_text
         input wire i_hblnk,
         input wire [11:0] i_rgb,
         input wire [7:0] i_rom_word,
-        input wire [13:0] i_axi_data,
+        input wire [14:0] i_axi_data,
         output reg [11:0] o_vcount,
         output reg o_vsync,
         output reg o_vblnk,
@@ -68,7 +68,8 @@ module draw_bomber_text
     
     wire pos_x_dig1, pos_y_dig1;
     wire [3:0] pos_x_dig0, pos_y_dig0;
-    wire [1:0] lives, bombs;
+    wire [2:0] lives;
+    wire [1:0] bombs;
     
     delay 
     #(
@@ -127,8 +128,8 @@ module draw_bomber_text
     assign pos_x_dig0 = i_axi_data[4:1];
     assign pos_y_dig1 = i_axi_data[5];
     assign pos_y_dig0 = i_axi_data[9:6];
-    assign lives = i_axi_data[11:10];
-    assign bombs = i_axi_data[13:12];
+    assign lives = i_axi_data[12:10];
+    assign bombs = i_axi_data[14:13];
     assign hcount_rel = i_hcount - XPOS;
     assign vcount_rel = i_vcount - YPOS;
     

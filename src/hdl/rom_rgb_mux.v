@@ -4,7 +4,7 @@ module rom_rgb_mux
     (
         input wire i_pclk,
         input wire i_rst,
-        input wire [2:0] i_sel,
+        input wire [3:0] i_sel,
         input wire [11:0] i_path_rom_rgb,
         input wire [11:0] i_obs1_rom_rgb,
         input wire [11:0] i_obs2_rom_rgb,
@@ -12,16 +12,20 @@ module rom_rgb_mux
         input wire [11:0] i_expl_rom_rgb,
         input wire [11:0] i_plr1_rom_rgb,
         input wire [11:0] i_plr2_rom_rgb,
+        input wire [11:0] i_bobo_rom_rgb,
+        input wire [11:0] i_boli_rom_rgb,
         output reg [11:0] o_rom_rgb
     );
     
-    localparam T_PATH = 3'b000,
-               T_OBS1 = 3'b001,
-               T_OBS2 = 3'b010,
-               T_BOMB = 3'b011,
-               T_EXPL = 3'b100,
-               T_PLR1 = 3'b101,
-               T_PLR2 = 3'b110;
+    localparam T_PATH = 4'b0000,
+               T_OBS1 = 4'b0001,
+               T_OBS2 = 4'b0010,
+               T_BOMB = 4'b0011,
+               T_EXPL = 4'b0100,
+               T_PLR1 = 4'b0101,
+               T_PLR2 = 4'b0110,
+               T_BOBO = 4'b0111,
+               T_BOLI = 4'b1000;
 
     reg [11:0] rom_rgb_nxt;
     
@@ -40,6 +44,8 @@ module rom_rgb_mux
             T_EXPL: rom_rgb_nxt = i_expl_rom_rgb;
             T_PLR1: rom_rgb_nxt = i_plr1_rom_rgb;
             T_PLR2: rom_rgb_nxt = i_plr2_rom_rgb;
+            T_BOBO: rom_rgb_nxt = i_bobo_rom_rgb;
+            T_BOLI: rom_rgb_nxt = i_boli_rom_rgb;
             default: rom_rgb_nxt = 0;
         endcase
 endmodule

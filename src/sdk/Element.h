@@ -13,7 +13,6 @@ public:
     Element();
     Element(uint8_t x, uint8_t y);
     void SetArena(Arena *arena);
-    void SetCode(uint8_t code);
     void SetPosition(uint8_t x, uint8_t y);
     void SetPosition(Position position);
     void Activate();
@@ -31,7 +30,6 @@ public:
 
 protected:
     Arena *arena;
-    uint8_t code;
     Position position;
     uint8_t active;
 };

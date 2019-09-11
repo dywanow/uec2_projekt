@@ -9,6 +9,7 @@ public:
     Box();
     void Init() override;
     void OnFireCollision() override;
+    uint8_t Code() const override;
 };
 
 #endif

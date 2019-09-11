@@ -10,7 +10,7 @@ module draw_arena
         input wire [11:0] i_hcount,
         input wire i_hsync,
         input wire i_hblnk,
-        input wire [2:0] i_axi_data,
+        input wire [3:0] i_axi_data,
         input wire [11:0] i_rgb,
         input wire [11:0] i_rom_rgb,
         output reg [11:0] o_vcount,
@@ -20,7 +20,7 @@ module draw_arena
         output reg o_hsync,
         output reg o_hblnk,
         output reg [11:0] o_rgb,
-        output wire [2:0] o_sel,
+        output wire [3:0] o_sel,
         output wire [7:0] o_axi_addr,
         output wire [11:0] o_rom_addr
     );
@@ -38,11 +38,11 @@ module draw_arena
     
     wire hblnk_del_2_clk, hsync_del_2_clk, vblnk_del_2_clk, vsync_del_2_clk;
     wire [11:0] hcount_del_2_clk, vcount_del_2_clk;
-    
+    wire [11:0] rgb_del_2_clk;
     
     delay
     #(
-        .WIDTH(28),
+        .WIDTH(40),
         .CLK_DEL(2)
     )
     delay_2_clk
@@ -56,7 +56,8 @@ module draw_arena
                     i_vblnk,
                     i_vsync,
                     i_hcount,
-                    i_vcount
+                    i_vcount,
+                    i_rgb
                 }
             ),
         .dout(
@@ -66,7 +67,8 @@ module draw_arena
                      vblnk_del_2_clk,
                      vsync_del_2_clk,
                      hcount_del_2_clk,
-                     vcount_del_2_clk
+                     vcount_del_2_clk,
+                     rgb_del_2_clk
                  }
              )
     );
@@ -108,6 +110,6 @@ module draw_arena
             if (hcount_del_2_clk >= H_MIN && hcount_del_2_clk < H_MAX && vcount_del_2_clk >= V_MIN && vcount_del_2_clk < V_MAX)
                 rgb_nxt = i_rom_rgb;
             else
-                rgb_nxt = i_rgb;
+                rgb_nxt = rgb_del_2_clk;
     
 endmodule

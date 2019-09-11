@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module draw_blinking_text
+module draw_img_text
     # ( parameter
         X_ADDR_WIDTH = 1,
         Y_ADDR_WIDTH = 1,
@@ -10,8 +10,7 @@ module draw_blinking_text
         X_MIN = 0,
         X_MAX = 0,
         Y_MIN = 0,
-        Y_MAX = 0,
-        COLOR = 12'hfff
+        Y_MAX = 0
     )
     (
 		input wire i_pclk,
@@ -23,8 +22,8 @@ module draw_blinking_text
         input wire i_hsync,
         input wire i_hblnk,
         input wire [11:0] i_rgb,
+        input wire [11:0] i_rom_rgb,
         input wire [7:0] i_rom_word,
-        input wire i_axi_data,
         output reg [11:0] o_vcount,
         output reg o_vsync,
         output reg o_vblnk,
@@ -33,7 +32,8 @@ module draw_blinking_text
         output reg o_hblnk,
         output reg [11:0] o_rgb,
         output wire [X_ADDR_WIDTH+Y_ADDR_WIDTH-1:0] o_char_addr,
-        output wire [3:0] o_char_line
+        output wire [3:0] o_char_line,
+        output wire [11:0] o_rom_addr
     );
 
     localparam CHAR_W = 8 << SCALE_COEFF,
@@ -51,32 +51,33 @@ module draw_blinking_text
     wire [11:0] rgb_del_2_clk;
     wire [2:0] rom_bit_addr, rom_bit_addr_tmp;
     wire [3:0] char_line_tmp;
-    wire axi_data_del_2_clk;
-    
+    wire [11:0] rom_addr_tmp;
+    wire [5:0] rom_addrx, rom_addry;
+
     delay 
     #(
-        .WIDTH(4),
+        .WIDTH(16),
         .CLK_DEL(1)
     ) 
     delay_1_clk
     (
         .clk(i_pclk),
         .rst(i_rst),
-        .din({char_line_tmp}),
-        .dout({o_char_line})
+        .din({char_line_tmp, rom_addr_tmp}),
+        .dout({o_char_line, o_rom_addr})
     ); 
     
     delay 
     #(
-        .WIDTH(44),
+        .WIDTH(43),
         .CLK_DEL(2)
     ) 
     delay_2_clk
     (
         .clk(i_pclk),
         .rst(i_rst),
-        .din({i_hsync, i_hblnk, i_vsync, i_vblnk, i_rgb, i_hcount, i_vcount, rom_bit_addr_tmp, i_axi_data}),
-        .dout({hsync_del_2_clk, hblnk_del_2_clk, vsync_del_2_clk, vblnk_del_2_clk, rgb_del_2_clk, hcount_del_2_clk, vcount_del_2_clk, rom_bit_addr, axi_data_del_2_clk})
+        .din({i_hsync, i_hblnk, i_vsync, i_vblnk, i_rgb, i_hcount, i_vcount, rom_bit_addr_tmp}),
+        .dout({hsync_del_2_clk, hblnk_del_2_clk, vsync_del_2_clk, vblnk_del_2_clk, rgb_del_2_clk, hcount_del_2_clk, vcount_del_2_clk, rom_bit_addr})
     ); 
     
     always @(posedge i_pclk)
@@ -104,24 +105,18 @@ module draw_blinking_text
     assign o_char_addr = {vcount_relative[Y_ADDR_WIDTH+3+SCALE_COEFF:4+SCALE_COEFF], hcount_relative[X_ADDR_WIDTH+2+SCALE_COEFF:3+SCALE_COEFF]};
     assign char_line_tmp = vcount_relative[3+SCALE_COEFF:SCALE_COEFF];
     assign rom_bit_addr_tmp = hcount_relative[2+SCALE_COEFF:SCALE_COEFF];
+    assign rom_addrx = hcount_relative[5:0];
+    assign rom_addry = vcount_relative[5:0];
+    assign rom_addr_tmp = {rom_addry, rom_addrx};
     
-    always @*
+    always @* begin
+        rgb_nxt = rgb_del_2_clk;
         if (vblnk_del_2_clk || hblnk_del_2_clk)
             rgb_nxt = 12'h000;
         else
             if (hcount_del_2_clk >= XPOS && hcount_del_2_clk < XPOS+W &&
-                vcount_del_2_clk >= YPOS && vcount_del_2_clk < YPOS+H)
-                if (i_rom_word[7-rom_bit_addr] == 1)
-                    rgb_nxt = COLOR;
-                else
-                    if (axi_data_del_2_clk == 1) begin
-                        rgb_nxt[11:8] = rgb_del_2_clk[11:8] + 6;
-                        rgb_nxt[7:4] = rgb_del_2_clk[7:4] + 1;
-                        rgb_nxt[3:0] = rgb_del_2_clk[3:0] + 1;
-                    end
-                    else
-                        rgb_nxt = rgb_del_2_clk;
-            else
-                rgb_nxt = rgb_del_2_clk;
-    
+                vcount_del_2_clk >= YPOS && vcount_del_2_clk < YPOS+H && 
+                i_rom_word[7-rom_bit_addr] == 1)
+                    rgb_nxt = i_rom_rgb;
+    end
 endmodule

@@ -13,6 +13,7 @@ public:
     void Init() override;
     void Update(float dt) override;
     void OnFireCollision() override;
+    uint8_t Code() const override;
     void SetOwner(Bomber *owner);
 
 private:

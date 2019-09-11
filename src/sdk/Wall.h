@@ -9,6 +9,7 @@ public:
     Wall();
     void Init() override;
     uint8_t IsDestructible() const override;
+    uint8_t Code() const override;
 };
 
 #endif

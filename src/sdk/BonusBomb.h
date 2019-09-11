@@ -1,20 +1,17 @@
-#ifndef FIRE_H
-#define FIRE_H
+#ifndef BONUSBOMB_H
+#define BONUSBOMB_H
 
 #include "Element.h"
 #include "xil_types.h"
 
-class Fire : public Element
+class BonusBomb : public Element
 {
 public:
-    Fire();
+    BonusBomb();
     void Init() override;
-    void Update(float dt) override;
+    uint8_t IsCollidable() const override;
     uint8_t IsFireCollidable() const override;
     uint8_t Code() const override;
-
-private:
-    float time;
 };
 
 #endif

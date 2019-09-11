@@ -27,11 +27,6 @@ void Element::SetArena(Arena *arena)
     this->arena = arena;
 }
 
-void Element::SetCode(uint8_t code)
-{
-	this->code = code;
-}
-
 void Element::SetPosition(uint8_t x, uint8_t y)
 {
     SetPosition(Position{x, y});
@@ -85,7 +80,7 @@ uint8_t Element::IsDestructible() const
 
 uint8_t Element::Code() const
 {
-    return code;
+    return 0;
 }
 
 void Element::OnFireCollision()

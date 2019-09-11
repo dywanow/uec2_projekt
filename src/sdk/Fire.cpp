@@ -31,3 +31,8 @@ uint8_t Fire::IsFireCollidable() const
 {
     return 0;
 }
+
+uint8_t Fire::Code() const
+{
+    return 4;
+}

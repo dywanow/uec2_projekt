@@ -42,14 +42,15 @@ set files [list \
  "[file normalize "$origin_dir/hdl/draw_background.v"]"\
  "[file normalize "$origin_dir/hdl/scene_mux.v"]"\
  "[file normalize "$origin_dir/hdl/vga_timing.v"]"\
- "[file normalize "$origin_dir/hdl/draw_static_text.v"]"\
  "[file normalize "$origin_dir/hdl/font_rom.v"]"\
  "[file normalize "$origin_dir/hdl/text_rom.v"]"\
  "[file normalize "$origin_dir/hdl/draw_blinking_text.v"]"\
+ "[file normalize "$origin_dir/hdl/draw_static_text.v"]"\
  "[file normalize "$origin_dir/hdl/draw_winner_text.v"]"\
  "[file normalize "$origin_dir/hdl/draw_bomber_text.v"]"\
  "[file normalize "$origin_dir/hdl/draw_arena.v"]"\
  "[file normalize "$origin_dir/hdl/rom_rgb_mux.v"]"\
+ "[file normalize "$origin_dir/hdl/draw_img_text.v"]"\
  "[file normalize "$origin_dir/hdl/design_1/design_1_wrapper.v"]"\
  "[file normalize "$origin_dir/rom/obs1.coe"]"\
  "[file normalize "$origin_dir/rom/obs2.coe"]"\
@@ -60,6 +61,8 @@ set files [list \
  "[file normalize "$origin_dir/rom/plr2.coe"]"\
  "[file normalize "$origin_dir/rom/main_background.coe"]"\
  "[file normalize "$origin_dir/rom/bomber_status_background.coe"]"\
+ "[file normalize "$origin_dir/rom/bobo.coe"]"\
+ "[file normalize "$origin_dir/rom/boli.coe"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -102,7 +105,7 @@ set obj [get_filesets sim_1]
 proc cr_bd_design_1 { parentCell } {
 # The design that will be created by this Tcl proc contains the following 
 # module references:
-# draw_background, scene_mux, vga_timing, draw_arena, rom_rgb_mux, text_rom, draw_background, draw_bomber_text, font_rom, text_rom, draw_background, draw_bomber_text, font_rom, draw_blinking_text, font_rom, text_rom, draw_static_text, font_rom, text_rom, draw_winner_text, font_rom, text_rom, draw_static_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_static_text, font_rom, text_rom
+# scene_mux, vga_timing, draw_background, draw_arena, rom_rgb_mux, text_rom, draw_background, draw_bomber_text, font_rom, text_rom, draw_background, draw_bomber_text, font_rom, draw_blinking_text, font_rom, text_rom, draw_static_text, font_rom, text_rom, draw_winner_text, font_rom, text_rom, draw_static_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_blinking_text, font_rom, text_rom, draw_static_text, draw_img_text, font_rom, font_rom, text_rom, text_rom
 
 
 
@@ -131,8 +134,8 @@ proc cr_bd_design_1 { parentCell } {
   xilinx.com:ip:lmb_bram_if_cntlr:4.0\
   xilinx.com:ip:lmb_v10:3.0\
   xilinx.com:ip:blk_mem_gen:8.4\
-  xilinx.com:ip:xlconstant:1.1\
   xilinx.com:ip:xlslice:1.0\
+  xilinx.com:ip:xlconstant:1.1\
   xilinx.com:ip:dist_mem_gen:8.0\
   xilinx.com:ip:xlconcat:2.1\
   "
@@ -160,9 +163,9 @@ proc cr_bd_design_1 { parentCell } {
   set bCheckModules 1
   if { $bCheckModules == 1 } {
      set list_check_mods "\ 
-  draw_background\
   scene_mux\
   vga_timing\
+  draw_background\
   draw_arena\
   rom_rgb_mux\
   text_rom\
@@ -195,7 +198,10 @@ proc cr_bd_design_1 { parentCell } {
   font_rom\
   text_rom\
   draw_static_text\
+  draw_img_text\
   font_rom\
+  font_rom\
+  text_rom\
   text_rom\
   "
 
@@ -275,8 +281,28 @@ proc create_hier_cell_title { parentCell nameHier } {
   create_bd_pin -dir O o_vsync
   create_bd_pin -dir I -type rst reset
 
-  # Create instance: draw_title, and set properties
+  # Create instance: draw_shadow, and set properties
   set block_name draw_static_text
+  set block_cell_name draw_shadow
+  if { [catch {set draw_shadow [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $draw_shadow eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.SCALE_COEFF {3} \
+   CONFIG.X_ADDR_WIDTH {5} \
+   CONFIG.X_CHAR_COUNT {17} \
+   CONFIG.X_MAX {1920} \
+   CONFIG.X_MIN {10} \
+   CONFIG.Y_MAX {505} \
+   CONFIG.Y_MIN {205} \
+ ] $draw_shadow
+
+  # Create instance: draw_title, and set properties
+  set block_name draw_img_text
   set block_cell_name draw_title
   if { [catch {set draw_title [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
@@ -286,12 +312,11 @@ proc create_hier_cell_title { parentCell nameHier } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.X_ADDR_WIDTH {7} \
-   CONFIG.X_CHAR_COUNT {72} \
+   CONFIG.SCALE_COEFF {3} \
+   CONFIG.X_ADDR_WIDTH {5} \
+   CONFIG.X_CHAR_COUNT {17} \
    CONFIG.X_MAX {1920} \
-   CONFIG.Y_ADDR_WIDTH {3} \
-   CONFIG.Y_CHAR_COUNT {6} \
-   CONFIG.Y_MAX {400} \
+   CONFIG.Y_MAX {500} \
    CONFIG.Y_MIN {200} \
  ] $draw_title
 
@@ -306,12 +331,30 @@ proc create_hier_cell_title { parentCell nameHier } {
      return 1
    }
   
+  # Create instance: font_rom1, and set properties
+  set block_name font_rom
+  set block_cell_name font_rom1
+  if { [catch {set font_rom1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $font_rom1 eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: rom_addr, and set properties
   set rom_addr [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 rom_addr ]
   set_property -dict [ list \
    CONFIG.IN0_WIDTH {4} \
    CONFIG.IN1_WIDTH {7} \
  ] $rom_addr
+
+  # Create instance: rom_addr1, and set properties
+  set rom_addr1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 rom_addr1 ]
+  set_property -dict [ list \
+   CONFIG.IN0_WIDTH {4} \
+   CONFIG.IN1_WIDTH {7} \
+ ] $rom_addr1
 
   # Create instance: title_text_rom, and set properties
   set block_name text_rom
@@ -325,32 +368,73 @@ proc create_hier_cell_title { parentCell nameHier } {
    }
     set_property -dict [ list \
    CONFIG.PATH {../rom/menu_title_text.data} \
-   CONFIG.X_ADDR_WIDTH {7} \
-   CONFIG.Y_ADDR_WIDTH {3} \
+   CONFIG.X_ADDR_WIDTH {5} \
+   CONFIG.Y_ADDR_WIDTH {1} \
  ] $title_text_rom
 
+  # Create instance: title_text_rom1, and set properties
+  set block_name text_rom
+  set block_cell_name title_text_rom1
+  if { [catch {set title_text_rom1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $title_text_rom1 eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.PATH {../rom/menu_title_text.data} \
+   CONFIG.X_ADDR_WIDTH {5} \
+   CONFIG.Y_ADDR_WIDTH {1} \
+ ] $title_text_rom1
+
+  # Create instance: wall_texture, and set properties
+  set wall_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 wall_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/obs2.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.default_data {0} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $wall_texture
+
   # Create port connections
-  connect_bd_net -net draw_title_o_char_addr [get_bd_pins draw_title/o_char_addr] [get_bd_pins title_text_rom/i_char_addr]
-  connect_bd_net -net draw_title_o_char_line [get_bd_pins draw_title/o_char_line] [get_bd_pins rom_addr/In0]
-  connect_bd_net -net draw_title_o_hblnk [get_bd_pins o_hblnk] [get_bd_pins draw_title/o_hblnk]
-  connect_bd_net -net draw_title_o_hcount [get_bd_pins o_hcount] [get_bd_pins draw_title/o_hcount]
-  connect_bd_net -net draw_title_o_hsync [get_bd_pins o_hsync] [get_bd_pins draw_title/o_hsync]
-  connect_bd_net -net draw_title_o_rgb [get_bd_pins o_rgb] [get_bd_pins draw_title/o_rgb]
-  connect_bd_net -net draw_title_o_vblnk [get_bd_pins o_vblnk] [get_bd_pins draw_title/o_vblnk]
-  connect_bd_net -net draw_title_o_vcount [get_bd_pins o_vcount] [get_bd_pins draw_title/o_vcount]
-  connect_bd_net -net draw_title_o_vsync [get_bd_pins o_vsync] [get_bd_pins draw_title/o_vsync]
-  connect_bd_net -net font_rom0_rom_word [get_bd_pins draw_title/i_rom_word] [get_bd_pins font_rom/rom_word]
-  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_title/i_hblnk]
-  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_title/i_hcount]
-  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_title/i_hsync]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins draw_title/i_pclk] [get_bd_pins font_rom/clk] [get_bd_pins title_text_rom/i_clk]
-  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_title/i_rgb]
-  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_title/i_vblnk]
-  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_title/i_vcount]
-  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_title/i_vsync]
-  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_title/i_rst]
+  connect_bd_net -net draw_img_text_0_o_char_addr [get_bd_pins draw_title/o_char_addr] [get_bd_pins title_text_rom/i_char_addr]
+  connect_bd_net -net draw_img_text_0_o_char_line [get_bd_pins draw_title/o_char_line] [get_bd_pins rom_addr/In0]
+  connect_bd_net -net draw_img_text_0_o_hblnk [get_bd_pins o_hblnk] [get_bd_pins draw_title/o_hblnk]
+  connect_bd_net -net draw_img_text_0_o_hcount [get_bd_pins o_hcount] [get_bd_pins draw_title/o_hcount]
+  connect_bd_net -net draw_img_text_0_o_hsync [get_bd_pins o_hsync] [get_bd_pins draw_title/o_hsync]
+  connect_bd_net -net draw_img_text_0_o_rgb [get_bd_pins o_rgb] [get_bd_pins draw_title/o_rgb]
+  connect_bd_net -net draw_img_text_0_o_rom_addr [get_bd_pins draw_title/o_rom_addr] [get_bd_pins wall_texture/a]
+  connect_bd_net -net draw_img_text_0_o_vblnk [get_bd_pins o_vblnk] [get_bd_pins draw_title/o_vblnk]
+  connect_bd_net -net draw_img_text_0_o_vcount [get_bd_pins o_vcount] [get_bd_pins draw_title/o_vcount]
+  connect_bd_net -net draw_img_text_0_o_vsync [get_bd_pins o_vsync] [get_bd_pins draw_title/o_vsync]
+  connect_bd_net -net draw_static_text_0_o_char_addr [get_bd_pins draw_shadow/o_char_addr] [get_bd_pins title_text_rom1/i_char_addr]
+  connect_bd_net -net draw_static_text_0_o_char_line [get_bd_pins draw_shadow/o_char_line] [get_bd_pins rom_addr1/In0]
+  connect_bd_net -net draw_static_text_0_o_hblnk [get_bd_pins draw_shadow/o_hblnk] [get_bd_pins draw_title/i_hblnk]
+  connect_bd_net -net draw_static_text_0_o_hcount [get_bd_pins draw_shadow/o_hcount] [get_bd_pins draw_title/i_hcount]
+  connect_bd_net -net draw_static_text_0_o_hsync [get_bd_pins draw_shadow/o_hsync] [get_bd_pins draw_title/i_hsync]
+  connect_bd_net -net draw_static_text_0_o_rgb [get_bd_pins draw_shadow/o_rgb] [get_bd_pins draw_title/i_rgb]
+  connect_bd_net -net draw_static_text_0_o_vblnk [get_bd_pins draw_shadow/o_vblnk] [get_bd_pins draw_title/i_vblnk]
+  connect_bd_net -net draw_static_text_0_o_vcount [get_bd_pins draw_shadow/o_vcount] [get_bd_pins draw_title/i_vcount]
+  connect_bd_net -net draw_static_text_0_o_vsync [get_bd_pins draw_shadow/o_vsync] [get_bd_pins draw_title/i_vsync]
+  connect_bd_net -net font_rom1_rom_word [get_bd_pins draw_shadow/i_rom_word] [get_bd_pins font_rom1/rom_word]
+  connect_bd_net -net font_rom_rom_word [get_bd_pins draw_title/i_rom_word] [get_bd_pins font_rom/rom_word]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_shadow/i_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_shadow/i_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_shadow/i_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins draw_shadow/i_pclk] [get_bd_pins draw_title/i_pclk] [get_bd_pins font_rom/clk] [get_bd_pins font_rom1/clk] [get_bd_pins title_text_rom/i_clk] [get_bd_pins title_text_rom1/i_clk] [get_bd_pins wall_texture/clk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_shadow/i_rgb]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_shadow/i_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_shadow/i_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_shadow/i_vsync]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_shadow/i_rst] [get_bd_pins draw_title/i_rst]
+  connect_bd_net -net rom_addr1_dout [get_bd_pins font_rom1/addr] [get_bd_pins rom_addr1/dout]
   connect_bd_net -net title_text_addr_dout [get_bd_pins font_rom/addr] [get_bd_pins rom_addr/dout]
+  connect_bd_net -net title_text_rom1_o_char_code [get_bd_pins rom_addr1/In1] [get_bd_pins title_text_rom1/o_char_code]
   connect_bd_net -net title_text_rom_o_char_code [get_bd_pins rom_addr/In1] [get_bd_pins title_text_rom/o_char_code]
+  connect_bd_net -net wall_texture_qspo [get_bd_pins draw_title/i_rom_rgb] [get_bd_pins wall_texture/qspo]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -427,8 +511,8 @@ proc create_hier_cell_start { parentCell nameHier } {
    CONFIG.X_ADDR_WIDTH {4} \
    CONFIG.X_CHAR_COUNT {14} \
    CONFIG.X_MAX {1920} \
-   CONFIG.Y_MAX {600} \
-   CONFIG.Y_MIN {500} \
+   CONFIG.Y_MAX {700} \
+   CONFIG.Y_MIN {600} \
  ] $draw_start
 
   # Create instance: font_rom, and set properties
@@ -569,8 +653,8 @@ proc create_hier_cell_howto { parentCell nameHier } {
    CONFIG.X_ADDR_WIDTH {4} \
    CONFIG.X_CHAR_COUNT {11} \
    CONFIG.X_MAX {1920} \
-   CONFIG.Y_MAX {700} \
-   CONFIG.Y_MIN {600} \
+   CONFIG.Y_MAX {800} \
+   CONFIG.Y_MIN {700} \
  ] $draw_howto
 
   # Create instance: font_rom, and set properties
@@ -1356,7 +1440,7 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
-  create_bd_pin -dir I -from 27 -to 0 i_axi_bombers_data
+  create_bd_pin -dir I -from 29 -to 0 i_axi_bombers_data
   create_bd_pin -dir I i_hblnk
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
@@ -1365,18 +1449,22 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
   create_bd_pin -dir I i_vblnk
   create_bd_pin -dir I -from 11 -to 0 i_vcount
   create_bd_pin -dir I i_vsync
+  create_bd_pin -dir O o_hblnk
+  create_bd_pin -dir O -from 11 -to 0 o_hcount
   create_bd_pin -dir O o_hsync
   create_bd_pin -dir O -from 11 -to 0 o_rgb
+  create_bd_pin -dir O o_vblnk
+  create_bd_pin -dir O -from 11 -to 0 o_vcount
   create_bd_pin -dir O o_vsync
   create_bd_pin -dir I -type rst reset
 
   # Create instance: bomber_info, and set properties
   set bomber_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 bomber_info ]
   set_property -dict [ list \
-   CONFIG.DIN_FROM {27} \
-   CONFIG.DIN_TO {14} \
-   CONFIG.DIN_WIDTH {28} \
-   CONFIG.DOUT_WIDTH {14} \
+   CONFIG.DIN_FROM {29} \
+   CONFIG.DIN_TO {15} \
+   CONFIG.DIN_WIDTH {30} \
+   CONFIG.DOUT_WIDTH {15} \
  ] $bomber_info
 
   # Create instance: bomber_text_rom, and set properties
@@ -1395,23 +1483,13 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
    CONFIG.Y_ADDR_WIDTH {3} \
  ] $bomber_text_rom
 
-  # Create instance: dist_mem_gen_0, and set properties
-  set dist_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 dist_mem_gen_0 ]
-  set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/rom/bomber_status_background.coe} \
-   CONFIG.data_width {12} \
-   CONFIG.depth {4096} \
-   CONFIG.input_options {registered} \
-   CONFIG.memory_type {rom} \
- ] $dist_mem_gen_0
-
-  # Create instance: draw_background_0, and set properties
+  # Create instance: draw_background, and set properties
   set block_name draw_background
-  set block_cell_name draw_background_0
-  if { [catch {set draw_background_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name draw_background
+  if { [catch {set draw_background [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $draw_background_0 eq "" } {
+   } elseif { $draw_background eq "" } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
@@ -1420,7 +1498,7 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
    CONFIG.H_MIN {1547} \
    CONFIG.V_MAX {355} \
    CONFIG.V_MIN {185} \
- ] $draw_background_0
+ ] $draw_background
 
   # Create instance: draw_bomber_text, and set properties
   set block_name draw_bomber_text
@@ -1462,33 +1540,48 @@ proc create_hier_cell_bomber1 { parentCell nameHier } {
    CONFIG.IN1_WIDTH {7} \
  ] $rom_addr
 
+  # Create instance: status_texture, and set properties
+  set status_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 status_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/bomber_status_background.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.input_options {non_registered} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $status_texture
+
   # Create port connections
   connect_bd_net -net Din_1 [get_bd_pins i_axi_bombers_data] [get_bd_pins bomber_info/Din]
   connect_bd_net -net bomber_info_Dout [get_bd_pins bomber_info/Dout] [get_bd_pins draw_bomber_text/i_axi_data]
-  connect_bd_net -net dist_mem_gen_0_spo [get_bd_pins dist_mem_gen_0/spo] [get_bd_pins draw_background_0/i_rom_rgb]
-  connect_bd_net -net draw_background_0_o_hblnk [get_bd_pins draw_background_0/o_hblnk] [get_bd_pins draw_bomber_text/i_hblnk]
-  connect_bd_net -net draw_background_0_o_hcount [get_bd_pins draw_background_0/o_hcount] [get_bd_pins draw_bomber_text/i_hcount]
-  connect_bd_net -net draw_background_0_o_hsync [get_bd_pins draw_background_0/o_hsync] [get_bd_pins draw_bomber_text/i_hsync]
-  connect_bd_net -net draw_background_0_o_rgb [get_bd_pins draw_background_0/o_rgb] [get_bd_pins draw_bomber_text/i_rgb]
-  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins dist_mem_gen_0/a] [get_bd_pins draw_background_0/o_rom_addr]
-  connect_bd_net -net draw_background_0_o_vblnk [get_bd_pins draw_background_0/o_vblnk] [get_bd_pins draw_bomber_text/i_vblnk]
-  connect_bd_net -net draw_background_0_o_vcount [get_bd_pins draw_background_0/o_vcount] [get_bd_pins draw_bomber_text/i_vcount]
-  connect_bd_net -net draw_background_0_o_vsync [get_bd_pins draw_background_0/o_vsync] [get_bd_pins draw_bomber_text/i_vsync]
+  connect_bd_net -net draw_background_0_o_hblnk [get_bd_pins draw_background/o_hblnk] [get_bd_pins draw_bomber_text/i_hblnk]
+  connect_bd_net -net draw_background_0_o_hcount [get_bd_pins draw_background/o_hcount] [get_bd_pins draw_bomber_text/i_hcount]
+  connect_bd_net -net draw_background_0_o_hsync [get_bd_pins draw_background/o_hsync] [get_bd_pins draw_bomber_text/i_hsync]
+  connect_bd_net -net draw_background_0_o_rgb [get_bd_pins draw_background/o_rgb] [get_bd_pins draw_bomber_text/i_rgb]
+  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins draw_background/o_rom_addr] [get_bd_pins status_texture/a]
+  connect_bd_net -net draw_background_0_o_vblnk [get_bd_pins draw_background/o_vblnk] [get_bd_pins draw_bomber_text/i_vblnk]
+  connect_bd_net -net draw_background_0_o_vcount [get_bd_pins draw_background/o_vcount] [get_bd_pins draw_bomber_text/i_vcount]
+  connect_bd_net -net draw_background_0_o_vsync [get_bd_pins draw_background/o_vsync] [get_bd_pins draw_bomber_text/i_vsync]
   connect_bd_net -net draw_bomber_text_o_char_addr [get_bd_pins bomber_text_rom/i_char_addr] [get_bd_pins draw_bomber_text/o_char_addr]
   connect_bd_net -net draw_bomber_text_o_char_line [get_bd_pins draw_bomber_text/o_char_line] [get_bd_pins rom_addr/In0]
+  connect_bd_net -net draw_bomber_text_o_hblnk [get_bd_pins o_hblnk] [get_bd_pins draw_bomber_text/o_hblnk]
+  connect_bd_net -net draw_bomber_text_o_hcount [get_bd_pins o_hcount] [get_bd_pins draw_bomber_text/o_hcount]
   connect_bd_net -net draw_bomber_text_o_hsync [get_bd_pins o_hsync] [get_bd_pins draw_bomber_text/o_hsync]
   connect_bd_net -net draw_bomber_text_o_rgb [get_bd_pins o_rgb] [get_bd_pins draw_bomber_text/o_rgb]
+  connect_bd_net -net draw_bomber_text_o_vblnk [get_bd_pins o_vblnk] [get_bd_pins draw_bomber_text/o_vblnk]
+  connect_bd_net -net draw_bomber_text_o_vcount [get_bd_pins o_vcount] [get_bd_pins draw_bomber_text/o_vcount]
   connect_bd_net -net draw_bomber_text_o_vsync [get_bd_pins o_vsync] [get_bd_pins draw_bomber_text/o_vsync]
   connect_bd_net -net font_rom_rom_word [get_bd_pins draw_bomber_text/i_rom_word] [get_bd_pins font_rom/rom_word]
-  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_background_0/i_hblnk]
-  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_background_0/i_hcount]
-  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_background_0/i_hsync]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bomber_text_rom/i_clk] [get_bd_pins dist_mem_gen_0/clk] [get_bd_pins draw_background_0/i_pclk] [get_bd_pins draw_bomber_text/i_pclk] [get_bd_pins font_rom/clk]
-  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_background_0/i_rgb]
-  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_background_0/i_vblnk]
-  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_background_0/i_vcount]
-  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_background_0/i_vsync]
-  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_background_0/i_rst] [get_bd_pins draw_bomber_text/i_rst]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_background/i_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_background/i_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_background/i_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bomber_text_rom/i_clk] [get_bd_pins draw_background/i_pclk] [get_bd_pins draw_bomber_text/i_pclk] [get_bd_pins font_rom/clk] [get_bd_pins status_texture/clk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_background/i_rgb]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_background/i_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_background/i_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_background/i_vsync]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_background/i_rst] [get_bd_pins draw_bomber_text/i_rst]
+  connect_bd_net -net status_texture_qspo [get_bd_pins draw_background/i_rom_rgb] [get_bd_pins status_texture/qspo]
   connect_bd_net -net text_rom_0_o_char_code [get_bd_pins bomber_text_rom/o_char_code] [get_bd_pins rom_addr/In1]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins font_rom/addr] [get_bd_pins rom_addr/dout]
 
@@ -1533,7 +1626,7 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
-  create_bd_pin -dir I -from 27 -to 0 i_axi_bombers_data
+  create_bd_pin -dir I -from 29 -to 0 i_axi_bombers_data
   create_bd_pin -dir I i_hblnk
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
@@ -1554,10 +1647,10 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
   # Create instance: bomber_info, and set properties
   set bomber_info [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 bomber_info ]
   set_property -dict [ list \
-   CONFIG.DIN_FROM {13} \
+   CONFIG.DIN_FROM {14} \
    CONFIG.DIN_TO {0} \
-   CONFIG.DIN_WIDTH {28} \
-   CONFIG.DOUT_WIDTH {14} \
+   CONFIG.DIN_WIDTH {30} \
+   CONFIG.DOUT_WIDTH {15} \
  ] $bomber_info
 
   # Create instance: bomber_text_rom, and set properties
@@ -1576,23 +1669,13 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
    CONFIG.Y_ADDR_WIDTH {3} \
  ] $bomber_text_rom
 
-  # Create instance: dist_mem_gen_0, and set properties
-  set dist_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 dist_mem_gen_0 ]
-  set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/rom/bomber_status_background.coe} \
-   CONFIG.data_width {12} \
-   CONFIG.depth {4096} \
-   CONFIG.input_options {registered} \
-   CONFIG.memory_type {rom} \
- ] $dist_mem_gen_0
-
-  # Create instance: draw_background_0, and set properties
+  # Create instance: draw_background, and set properties
   set block_name draw_background
-  set block_cell_name draw_background_0
-  if { [catch {set draw_background_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name draw_background
+  if { [catch {set draw_background [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $draw_background_0 eq "" } {
+   } elseif { $draw_background eq "" } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
@@ -1601,7 +1684,7 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
    CONFIG.H_MIN {75} \
    CONFIG.V_MAX {355} \
    CONFIG.V_MIN {185} \
- ] $draw_background_0
+ ] $draw_background
 
   # Create instance: draw_bomber_text, and set properties
   set block_name draw_bomber_text
@@ -1643,18 +1726,28 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
    CONFIG.IN1_WIDTH {7} \
  ] $rom_addr
 
+  # Create instance: status_texture, and set properties
+  set status_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 status_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/bomber_status_background.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.input_options {non_registered} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $status_texture
+
   # Create port connections
   connect_bd_net -net Din_1 [get_bd_pins i_axi_bombers_data] [get_bd_pins bomber_info/Din]
   connect_bd_net -net bomber_info_Dout [get_bd_pins bomber_info/Dout] [get_bd_pins draw_bomber_text/i_axi_data]
-  connect_bd_net -net dist_mem_gen_0_spo [get_bd_pins dist_mem_gen_0/spo] [get_bd_pins draw_background_0/i_rom_rgb]
-  connect_bd_net -net draw_background_0_o_hblnk [get_bd_pins draw_background_0/o_hblnk] [get_bd_pins draw_bomber_text/i_hblnk]
-  connect_bd_net -net draw_background_0_o_hcount [get_bd_pins draw_background_0/o_hcount] [get_bd_pins draw_bomber_text/i_hcount]
-  connect_bd_net -net draw_background_0_o_hsync [get_bd_pins draw_background_0/o_hsync] [get_bd_pins draw_bomber_text/i_hsync]
-  connect_bd_net -net draw_background_0_o_rgb [get_bd_pins draw_background_0/o_rgb] [get_bd_pins draw_bomber_text/i_rgb]
-  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins dist_mem_gen_0/a] [get_bd_pins draw_background_0/o_rom_addr]
-  connect_bd_net -net draw_background_0_o_vblnk [get_bd_pins draw_background_0/o_vblnk] [get_bd_pins draw_bomber_text/i_vblnk]
-  connect_bd_net -net draw_background_0_o_vcount [get_bd_pins draw_background_0/o_vcount] [get_bd_pins draw_bomber_text/i_vcount]
-  connect_bd_net -net draw_background_0_o_vsync [get_bd_pins draw_background_0/o_vsync] [get_bd_pins draw_bomber_text/i_vsync]
+  connect_bd_net -net draw_background_0_o_hblnk [get_bd_pins draw_background/o_hblnk] [get_bd_pins draw_bomber_text/i_hblnk]
+  connect_bd_net -net draw_background_0_o_hcount [get_bd_pins draw_background/o_hcount] [get_bd_pins draw_bomber_text/i_hcount]
+  connect_bd_net -net draw_background_0_o_hsync [get_bd_pins draw_background/o_hsync] [get_bd_pins draw_bomber_text/i_hsync]
+  connect_bd_net -net draw_background_0_o_rgb [get_bd_pins draw_background/o_rgb] [get_bd_pins draw_bomber_text/i_rgb]
+  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins draw_background/o_rom_addr] [get_bd_pins status_texture/a]
+  connect_bd_net -net draw_background_0_o_vblnk [get_bd_pins draw_background/o_vblnk] [get_bd_pins draw_bomber_text/i_vblnk]
+  connect_bd_net -net draw_background_0_o_vcount [get_bd_pins draw_background/o_vcount] [get_bd_pins draw_bomber_text/i_vcount]
+  connect_bd_net -net draw_background_0_o_vsync [get_bd_pins draw_background/o_vsync] [get_bd_pins draw_bomber_text/i_vsync]
   connect_bd_net -net draw_bomber_text_o_char_addr [get_bd_pins bomber_text_rom/i_char_addr] [get_bd_pins draw_bomber_text/o_char_addr]
   connect_bd_net -net draw_bomber_text_o_char_line [get_bd_pins draw_bomber_text/o_char_line] [get_bd_pins rom_addr/In0]
   connect_bd_net -net draw_bomber_text_o_hblnk [get_bd_pins o_hblnk] [get_bd_pins draw_bomber_text/o_hblnk]
@@ -1665,15 +1758,16 @@ proc create_hier_cell_bomber0 { parentCell nameHier } {
   connect_bd_net -net draw_bomber_text_o_vcount [get_bd_pins o_vcount] [get_bd_pins draw_bomber_text/o_vcount]
   connect_bd_net -net draw_bomber_text_o_vsync [get_bd_pins o_vsync] [get_bd_pins draw_bomber_text/o_vsync]
   connect_bd_net -net font_rom_rom_word [get_bd_pins draw_bomber_text/i_rom_word] [get_bd_pins font_rom/rom_word]
-  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_background_0/i_hblnk]
-  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_background_0/i_hcount]
-  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_background_0/i_hsync]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bomber_text_rom/i_clk] [get_bd_pins dist_mem_gen_0/clk] [get_bd_pins draw_background_0/i_pclk] [get_bd_pins draw_bomber_text/i_pclk] [get_bd_pins font_rom/clk]
-  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_background_0/i_rgb]
-  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_background_0/i_vblnk]
-  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_background_0/i_vcount]
-  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_background_0/i_vsync]
-  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_background_0/i_rst] [get_bd_pins draw_bomber_text/i_rst]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_background/i_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_background/i_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_background/i_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bomber_text_rom/i_clk] [get_bd_pins draw_background/i_pclk] [get_bd_pins draw_bomber_text/i_pclk] [get_bd_pins font_rom/clk] [get_bd_pins status_texture/clk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_background/i_rgb]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_background/i_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_background/i_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins draw_background/i_vsync]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_background/i_rst] [get_bd_pins draw_bomber_text/i_rst]
+  connect_bd_net -net status_texture_qspo [get_bd_pins draw_background/i_rom_rgb] [get_bd_pins status_texture/qspo]
   connect_bd_net -net text_rom_0_o_char_code [get_bd_pins bomber_text_rom/o_char_code] [get_bd_pins rom_addr/In1]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins font_rom/addr] [get_bd_pins rom_addr/dout]
 
@@ -1718,7 +1812,7 @@ proc create_hier_cell_arena { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
-  create_bd_pin -dir I -from 2 -to 0 i_axi_arena_data
+  create_bd_pin -dir I -from 3 -to 0 i_axi_data
   create_bd_pin -dir I i_hblnk
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
@@ -1728,14 +1822,31 @@ proc create_hier_cell_arena { parentCell nameHier } {
   create_bd_pin -dir I -from 11 -to 0 i_vcount
   create_bd_pin -dir I i_vsync
   create_bd_pin -dir O -from 7 -to 0 o_axi_arena_addr
-  create_bd_pin -dir O o_hblnk
-  create_bd_pin -dir O -from 11 -to 0 o_hcount
   create_bd_pin -dir O o_hsync
   create_bd_pin -dir O -from 11 -to 0 o_rgb
-  create_bd_pin -dir O o_vblnk
-  create_bd_pin -dir O -from 11 -to 0 o_vcount
   create_bd_pin -dir O o_vsync
   create_bd_pin -dir I -type rst reset
+
+  # Create instance: bobo_texture, and set properties
+  set bobo_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 bobo_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/bobo.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.default_data {0} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $bobo_texture
+
+  # Create instance: boli_texture, and set properties
+  set boli_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 boli_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/boli.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $boli_texture
 
   # Create instance: bomb_texture, and set properties
   set bomb_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 bomb_texture ]
@@ -1835,24 +1946,22 @@ proc create_hier_cell_arena { parentCell nameHier } {
    }
   
   # Create port connections
-  connect_bd_net -net board_draw_0_o_rom_addr [get_bd_pins bomb_texture/a] [get_bd_pins draw_arena/o_rom_addr] [get_bd_pins expl_texture/a] [get_bd_pins obs1_texture/a] [get_bd_pins obs2_texture/a] [get_bd_pins path_texture/a] [get_bd_pins plr1_texture/a] [get_bd_pins plr2_texture/a]
+  connect_bd_net -net board_draw_0_o_rom_addr [get_bd_pins bobo_texture/a] [get_bd_pins boli_texture/a] [get_bd_pins bomb_texture/a] [get_bd_pins draw_arena/o_rom_addr] [get_bd_pins expl_texture/a] [get_bd_pins obs1_texture/a] [get_bd_pins obs2_texture/a] [get_bd_pins path_texture/a] [get_bd_pins plr1_texture/a] [get_bd_pins plr2_texture/a]
+  connect_bd_net -net bobo_texture_qspo [get_bd_pins bobo_texture/qspo] [get_bd_pins rom_rgb_mux/i_bobo_rom_rgb]
+  connect_bd_net -net boli_texture_qspo [get_bd_pins boli_texture/qspo] [get_bd_pins rom_rgb_mux/i_boli_rom_rgb]
   connect_bd_net -net bomb_texture_qspo [get_bd_pins bomb_texture/qspo] [get_bd_pins rom_rgb_mux/i_bomb_rom_rgb]
   connect_bd_net -net dist_mem_gen_0_qspo [get_bd_pins path_texture/qspo] [get_bd_pins rom_rgb_mux/i_path_rom_rgb]
   connect_bd_net -net draw_arena_o_axi_addr [get_bd_pins o_axi_arena_addr] [get_bd_pins draw_arena/o_axi_addr]
-  connect_bd_net -net draw_arena_o_hblnk [get_bd_pins o_hblnk] [get_bd_pins draw_arena/o_hblnk]
-  connect_bd_net -net draw_arena_o_hcount [get_bd_pins o_hcount] [get_bd_pins draw_arena/o_hcount]
   connect_bd_net -net draw_arena_o_hsync [get_bd_pins o_hsync] [get_bd_pins draw_arena/o_hsync]
   connect_bd_net -net draw_arena_o_rgb [get_bd_pins o_rgb] [get_bd_pins draw_arena/o_rgb]
   connect_bd_net -net draw_arena_o_sel [get_bd_pins draw_arena/o_sel] [get_bd_pins rom_rgb_mux/i_sel]
-  connect_bd_net -net draw_arena_o_vblnk [get_bd_pins o_vblnk] [get_bd_pins draw_arena/o_vblnk]
-  connect_bd_net -net draw_arena_o_vcount [get_bd_pins o_vcount] [get_bd_pins draw_arena/o_vcount]
   connect_bd_net -net draw_arena_o_vsync [get_bd_pins o_vsync] [get_bd_pins draw_arena/o_vsync]
   connect_bd_net -net expl_texture_qspo [get_bd_pins expl_texture/qspo] [get_bd_pins rom_rgb_mux/i_expl_rom_rgb]
-  connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_arena_data] [get_bd_pins draw_arena/i_axi_data]
+  connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_data] [get_bd_pins draw_arena/i_axi_data]
   connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins draw_arena/i_hblnk]
   connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins draw_arena/i_hcount]
   connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins draw_arena/i_hsync]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bomb_texture/clk] [get_bd_pins draw_arena/i_pclk] [get_bd_pins expl_texture/clk] [get_bd_pins obs1_texture/clk] [get_bd_pins obs2_texture/clk] [get_bd_pins path_texture/clk] [get_bd_pins plr1_texture/clk] [get_bd_pins plr2_texture/clk] [get_bd_pins rom_rgb_mux/i_pclk]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins bobo_texture/clk] [get_bd_pins boli_texture/clk] [get_bd_pins bomb_texture/clk] [get_bd_pins draw_arena/i_pclk] [get_bd_pins expl_texture/clk] [get_bd_pins obs1_texture/clk] [get_bd_pins obs2_texture/clk] [get_bd_pins path_texture/clk] [get_bd_pins plr1_texture/clk] [get_bd_pins plr2_texture/clk] [get_bd_pins rom_rgb_mux/i_pclk]
   connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins draw_arena/i_rgb]
   connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins draw_arena/i_vblnk]
   connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins draw_arena/i_vcount]
@@ -1956,6 +2065,112 @@ proc create_hier_cell_menu_scene { parentCell nameHier } {
   connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins title/i_vcount]
   connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins title/i_vsync]
   connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins howto/reset] [get_bd_pins start/reset] [get_bd_pins title/reset]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+  
+# Hierarchical cell: main_bg
+proc create_hier_cell_main_bg { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_msg_id "BD_TCL-102" "ERROR" "create_hier_cell_main_bg() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+
+  # Create pins
+  create_bd_pin -dir I i_hblnk
+  create_bd_pin -dir I -from 11 -to 0 i_hcount
+  create_bd_pin -dir I i_hsync
+  create_bd_pin -dir I i_pclk
+  create_bd_pin -dir I i_vblnk
+  create_bd_pin -dir I -from 11 -to 0 i_vcount
+  create_bd_pin -dir I i_vsync
+  create_bd_pin -dir O o_hblnk
+  create_bd_pin -dir O -from 11 -to 0 o_hcount
+  create_bd_pin -dir O o_hsync
+  create_bd_pin -dir O -from 11 -to 0 o_rgb
+  create_bd_pin -dir O o_vblnk
+  create_bd_pin -dir O -from 11 -to 0 o_vcount
+  create_bd_pin -dir O o_vsync
+  create_bd_pin -dir I -type rst reset
+
+  # Create instance: default_bg_color, and set properties
+  set default_bg_color [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 default_bg_color ]
+  set_property -dict [ list \
+   CONFIG.CONST_VAL {0x69e} \
+   CONFIG.CONST_WIDTH {12} \
+ ] $default_bg_color
+
+  # Create instance: draw_main_background, and set properties
+  set block_name draw_background
+  set block_cell_name draw_main_background
+  if { [catch {set draw_main_background [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $draw_main_background eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
+  # Create instance: main_bg_texture, and set properties
+  set main_bg_texture [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 main_bg_texture ]
+  set_property -dict [ list \
+   CONFIG.coefficient_file {../../../../../../../../src/rom/main_background.coe} \
+   CONFIG.data_width {12} \
+   CONFIG.depth {4096} \
+   CONFIG.input_options {non_registered} \
+   CONFIG.memory_type {rom} \
+   CONFIG.output_options {registered} \
+ ] $main_bg_texture
+
+  # Create port connections
+  connect_bd_net -net bg_color_dout [get_bd_pins default_bg_color/dout] [get_bd_pins draw_main_background/i_rgb]
+  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins draw_main_background/o_rom_addr] [get_bd_pins main_bg_texture/a]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins o_hblnk] [get_bd_pins draw_main_background/o_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins o_hcount] [get_bd_pins draw_main_background/o_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins o_hsync] [get_bd_pins draw_main_background/o_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins draw_main_background/i_pclk] [get_bd_pins main_bg_texture/clk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins o_rgb] [get_bd_pins draw_main_background/o_rgb]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins o_vblnk] [get_bd_pins draw_main_background/o_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins o_vcount] [get_bd_pins draw_main_background/o_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins o_vsync] [get_bd_pins draw_main_background/o_vsync]
+  connect_bd_net -net main_bg_texture_qspo [get_bd_pins draw_main_background/i_rom_rgb] [get_bd_pins main_bg_texture/qspo]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins draw_main_background/i_rst]
+  connect_bd_net -net vga_timing_0_o_hblnk [get_bd_pins i_hblnk] [get_bd_pins draw_main_background/i_hblnk]
+  connect_bd_net -net vga_timing_0_o_hcount [get_bd_pins i_hcount] [get_bd_pins draw_main_background/i_hcount]
+  connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins i_hsync] [get_bd_pins draw_main_background/i_hsync]
+  connect_bd_net -net vga_timing_0_o_vblnk [get_bd_pins i_vblnk] [get_bd_pins draw_main_background/i_vblnk]
+  connect_bd_net -net vga_timing_0_o_vcount [get_bd_pins i_vcount] [get_bd_pins draw_main_background/i_vcount]
+  connect_bd_net -net vga_timing_0_o_vsync [get_bd_pins i_vsync] [get_bd_pins draw_main_background/i_vsync]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -2174,8 +2389,8 @@ proc create_hier_cell_battle_scene { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
-  create_bd_pin -dir I -from 2 -to 0 i_axi_arena_data
-  create_bd_pin -dir I -from 27 -to 0 i_axi_bombers_data
+  create_bd_pin -dir I -from 3 -to 0 i_axi_arena_data
+  create_bd_pin -dir I -from 29 -to 0 i_axi_battle_bombers_data
   create_bd_pin -dir I i_hblnk
   create_bd_pin -dir I -from 11 -to 0 i_hcount
   create_bd_pin -dir I i_hsync
@@ -2200,33 +2415,33 @@ proc create_hier_cell_battle_scene { parentCell nameHier } {
   create_hier_cell_bomber1 $hier_obj bomber1
 
   # Create port connections
-  connect_bd_net -net Din_1 [get_bd_pins i_axi_bombers_data] [get_bd_pins bomber0/i_axi_bombers_data] [get_bd_pins bomber1/i_axi_bombers_data]
-  connect_bd_net -net arena_o_hblnk [get_bd_pins arena/o_hblnk] [get_bd_pins bomber0/i_hblnk]
-  connect_bd_net -net arena_o_hcount [get_bd_pins arena/o_hcount] [get_bd_pins bomber0/i_hcount]
-  connect_bd_net -net arena_o_hsync [get_bd_pins arena/o_hsync] [get_bd_pins bomber0/i_hsync]
-  connect_bd_net -net arena_o_rgb [get_bd_pins arena/o_rgb] [get_bd_pins bomber0/i_rgb]
-  connect_bd_net -net arena_o_vblnk [get_bd_pins arena/o_vblnk] [get_bd_pins bomber0/i_vblnk]
-  connect_bd_net -net arena_o_vcount [get_bd_pins arena/o_vcount] [get_bd_pins bomber0/i_vcount]
-  connect_bd_net -net arena_o_vsync [get_bd_pins arena/o_vsync] [get_bd_pins bomber0/i_vsync]
-  connect_bd_net -net bomber1_o_hsync [get_bd_pins o_hsync] [get_bd_pins bomber1/o_hsync]
-  connect_bd_net -net bomber1_o_rgb [get_bd_pins o_rgb] [get_bd_pins bomber1/o_rgb]
-  connect_bd_net -net bomber1_o_vsync [get_bd_pins o_vsync] [get_bd_pins bomber1/o_vsync]
+  connect_bd_net -net Din_1 [get_bd_pins i_axi_battle_bombers_data] [get_bd_pins bomber0/i_axi_bombers_data] [get_bd_pins bomber1/i_axi_bombers_data]
+  connect_bd_net -net arena_o_hsync [get_bd_pins o_hsync] [get_bd_pins arena/o_hsync]
+  connect_bd_net -net arena_o_rgb [get_bd_pins o_rgb] [get_bd_pins arena/o_rgb]
+  connect_bd_net -net arena_o_vsync [get_bd_pins o_vsync] [get_bd_pins arena/o_vsync]
+  connect_bd_net -net bomber1_o_hblnk [get_bd_pins arena/i_hblnk] [get_bd_pins bomber1/o_hblnk]
+  connect_bd_net -net bomber1_o_hcount [get_bd_pins arena/i_hcount] [get_bd_pins bomber1/o_hcount]
+  connect_bd_net -net bomber1_o_hsync [get_bd_pins arena/i_hsync] [get_bd_pins bomber1/o_hsync]
+  connect_bd_net -net bomber1_o_rgb [get_bd_pins arena/i_rgb] [get_bd_pins bomber1/o_rgb]
+  connect_bd_net -net bomber1_o_vblnk [get_bd_pins arena/i_vblnk] [get_bd_pins bomber1/o_vblnk]
+  connect_bd_net -net bomber1_o_vcount [get_bd_pins arena/i_vcount] [get_bd_pins bomber1/o_vcount]
+  connect_bd_net -net bomber1_o_vsync [get_bd_pins arena/i_vsync] [get_bd_pins bomber1/o_vsync]
   connect_bd_net -net draw_arena_o_axi_addr [get_bd_pins o_axi_arena_addr] [get_bd_pins arena/o_axi_arena_addr]
-  connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_arena_data] [get_bd_pins arena/i_axi_arena_data]
-  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins arena/i_hblnk]
+  connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_arena_data] [get_bd_pins arena/i_axi_data]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins i_hblnk] [get_bd_pins bomber0/i_hblnk]
   connect_bd_net -net i_hblnk_2 [get_bd_pins bomber0/o_hblnk] [get_bd_pins bomber1/i_hblnk]
-  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins arena/i_hcount]
+  connect_bd_net -net i_hcount_1 [get_bd_pins i_hcount] [get_bd_pins bomber0/i_hcount]
   connect_bd_net -net i_hcount_2 [get_bd_pins bomber0/o_hcount] [get_bd_pins bomber1/i_hcount]
-  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins arena/i_hsync]
+  connect_bd_net -net i_hsync_1 [get_bd_pins i_hsync] [get_bd_pins bomber0/i_hsync]
   connect_bd_net -net i_hsync_2 [get_bd_pins bomber0/o_hsync] [get_bd_pins bomber1/i_hsync]
   connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins arena/i_pclk] [get_bd_pins bomber0/i_pclk] [get_bd_pins bomber1/i_pclk]
-  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins arena/i_rgb]
+  connect_bd_net -net i_rgb_1 [get_bd_pins i_rgb] [get_bd_pins bomber0/i_rgb]
   connect_bd_net -net i_rgb_2 [get_bd_pins bomber0/o_rgb] [get_bd_pins bomber1/i_rgb]
-  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins arena/i_vblnk]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins i_vblnk] [get_bd_pins bomber0/i_vblnk]
   connect_bd_net -net i_vblnk_2 [get_bd_pins bomber0/o_vblnk] [get_bd_pins bomber1/i_vblnk]
-  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins arena/i_vcount]
+  connect_bd_net -net i_vcount_1 [get_bd_pins i_vcount] [get_bd_pins bomber0/i_vcount]
   connect_bd_net -net i_vcount_2 [get_bd_pins bomber0/o_vcount] [get_bd_pins bomber1/i_vcount]
-  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins arena/i_vsync]
+  connect_bd_net -net i_vsync_1 [get_bd_pins i_vsync] [get_bd_pins bomber0/i_vsync]
   connect_bd_net -net i_vsync_2 [get_bd_pins bomber0/o_vsync] [get_bd_pins bomber1/i_vsync]
   connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins arena/reset] [get_bd_pins bomber0/reset] [get_bd_pins bomber1/reset]
 
@@ -2271,11 +2486,11 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   # Create interface pins
 
   # Create pins
+  create_bd_pin -dir I -from 29 -to 0 Din
   create_bd_pin -dir O -from 3 -to 0 b
   create_bd_pin -dir O -from 3 -to 0 g
   create_bd_pin -dir O hs
-  create_bd_pin -dir I -from 2 -to 0 i_axi_battle_arena_data
-  create_bd_pin -dir I -from 27 -to 0 i_axi_battle_bombers_data
+  create_bd_pin -dir I -from 3 -to 0 i_axi_battle_arena_data
   create_bd_pin -dir I -from 2 -to 0 i_axi_endgame_text_data
   create_bd_pin -dir I i_axi_howto_text_data
   create_bd_pin -dir I -from 1 -to 0 i_axi_menu_text_data
@@ -2289,13 +2504,6 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   # Create instance: battle_scene
   create_hier_cell_battle_scene $hier_obj battle_scene
 
-  # Create instance: bg_color, and set properties
-  set bg_color [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 bg_color ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0x69e} \
-   CONFIG.CONST_WIDTH {12} \
- ] $bg_color
-
   # Create instance: blue_value, and set properties
   set blue_value [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 blue_value ]
   set_property -dict [ list \
@@ -2305,27 +2513,6 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
    CONFIG.DOUT_WIDTH {4} \
  ] $blue_value
 
-  # Create instance: dist_mem_gen_0, and set properties
-  set dist_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:dist_mem_gen:8.0 dist_mem_gen_0 ]
-  set_property -dict [ list \
-   CONFIG.coefficient_file {../../../../../../../../src/rom/main_background.coe} \
-   CONFIG.data_width {12} \
-   CONFIG.depth {4096} \
-   CONFIG.input_options {registered} \
-   CONFIG.memory_type {rom} \
- ] $dist_mem_gen_0
-
-  # Create instance: draw_background_0, and set properties
-  set block_name draw_background
-  set block_cell_name draw_background_0
-  if { [catch {set draw_background_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   } elseif { $draw_background_0 eq "" } {
-     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
-     return 1
-   }
-  
   # Create instance: endgame_scene
   create_hier_cell_endgame_scene $hier_obj endgame_scene
 
@@ -2340,6 +2527,9 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
 
   # Create instance: howtoplay_scene
   create_hier_cell_howtoplay_scene $hier_obj howtoplay_scene
+
+  # Create instance: main_bg
+  create_hier_cell_main_bg $hier_obj main_bg
 
   # Create instance: menu_scene
   create_hier_cell_menu_scene $hier_obj menu_scene
@@ -2378,15 +2568,12 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   # Create port connections
   connect_bd_net -net Din_1 [get_bd_pins i_axi_menu_text_data] [get_bd_pins menu_scene/axi_text_data]
   connect_bd_net -net Din_2 [get_bd_pins i_axi_endgame_text_data] [get_bd_pins endgame_scene/i_axi_text_data]
-  connect_bd_net -net Din_3 [get_bd_pins i_axi_battle_bombers_data] [get_bd_pins battle_scene/i_axi_bombers_data]
+  connect_bd_net -net Din_3 [get_bd_pins Din] [get_bd_pins battle_scene/i_axi_battle_bombers_data]
   connect_bd_net -net battle_draw_o_hsync [get_bd_pins battle_scene/o_hsync] [get_bd_pins scene_mux/i_battle_hs]
   connect_bd_net -net battle_draw_o_rgb [get_bd_pins battle_scene/o_rgb] [get_bd_pins scene_mux/i_battle_rgb]
   connect_bd_net -net battle_draw_o_vsync [get_bd_pins battle_scene/o_vsync] [get_bd_pins scene_mux/i_battle_vs]
-  connect_bd_net -net bg_color_dout [get_bd_pins bg_color/dout] [get_bd_pins draw_background_0/i_rgb]
   connect_bd_net -net blue_value_Dout [get_bd_pins b] [get_bd_pins blue_value/Dout]
   connect_bd_net -net board_draw_0_o_axi_addr [get_bd_pins o_axi_battle_board_addr] [get_bd_pins battle_scene/o_axi_arena_addr]
-  connect_bd_net -net dist_mem_gen_0_spo [get_bd_pins dist_mem_gen_0/spo] [get_bd_pins draw_background_0/i_rom_rgb]
-  connect_bd_net -net draw_background_0_o_rom_addr [get_bd_pins dist_mem_gen_0/a] [get_bd_pins draw_background_0/o_rom_addr]
   connect_bd_net -net endgame_draw_o_hsync [get_bd_pins endgame_scene/o_hsync] [get_bd_pins scene_mux/i_endgame_hs]
   connect_bd_net -net endgame_draw_o_rgb [get_bd_pins endgame_scene/o_rgb] [get_bd_pins scene_mux/i_endgame_rgb]
   connect_bd_net -net endgame_draw_o_vsync [get_bd_pins endgame_scene/o_vsync] [get_bd_pins scene_mux/i_endgame_vs]
@@ -2396,29 +2583,29 @@ proc create_hier_cell_vga_drawer { parentCell nameHier } {
   connect_bd_net -net howto_draw_o_vsync [get_bd_pins howtoplay_scene/o_vsync] [get_bd_pins scene_mux/i_howtoplay_vs]
   connect_bd_net -net i_axi_data_1 [get_bd_pins i_axi_battle_arena_data] [get_bd_pins battle_scene/i_axi_arena_data]
   connect_bd_net -net i_axi_data_3 [get_bd_pins i_axi_howto_text_data] [get_bd_pins howtoplay_scene/i_axi_text_data]
-  connect_bd_net -net i_hblnk_1 [get_bd_pins battle_scene/i_hblnk] [get_bd_pins draw_background_0/o_hblnk] [get_bd_pins endgame_scene/i_hblnk] [get_bd_pins howtoplay_scene/i_hblnk] [get_bd_pins menu_scene/i_hblnk]
-  connect_bd_net -net i_hcount_1 [get_bd_pins battle_scene/i_hcount] [get_bd_pins draw_background_0/o_hcount] [get_bd_pins endgame_scene/i_hcount] [get_bd_pins howtoplay_scene/i_hcount] [get_bd_pins menu_scene/i_hcount]
-  connect_bd_net -net i_hsync_1 [get_bd_pins battle_scene/i_hsync] [get_bd_pins draw_background_0/o_hsync] [get_bd_pins endgame_scene/i_hsync] [get_bd_pins howtoplay_scene/i_hsync] [get_bd_pins menu_scene/i_hsync]
-  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins battle_scene/i_pclk] [get_bd_pins dist_mem_gen_0/clk] [get_bd_pins draw_background_0/i_pclk] [get_bd_pins endgame_scene/i_pclk] [get_bd_pins howtoplay_scene/i_pclk] [get_bd_pins menu_scene/i_pclk] [get_bd_pins scene_mux/i_pclk]
-  connect_bd_net -net i_rgb_1 [get_bd_pins battle_scene/i_rgb] [get_bd_pins draw_background_0/o_rgb] [get_bd_pins endgame_scene/i_rgb] [get_bd_pins howtoplay_scene/i_rgb] [get_bd_pins menu_scene/i_rgb]
+  connect_bd_net -net i_hblnk_1 [get_bd_pins battle_scene/i_hblnk] [get_bd_pins endgame_scene/i_hblnk] [get_bd_pins howtoplay_scene/i_hblnk] [get_bd_pins main_bg/o_hblnk] [get_bd_pins menu_scene/i_hblnk]
+  connect_bd_net -net i_hcount_1 [get_bd_pins battle_scene/i_hcount] [get_bd_pins endgame_scene/i_hcount] [get_bd_pins howtoplay_scene/i_hcount] [get_bd_pins main_bg/o_hcount] [get_bd_pins menu_scene/i_hcount]
+  connect_bd_net -net i_hsync_1 [get_bd_pins battle_scene/i_hsync] [get_bd_pins endgame_scene/i_hsync] [get_bd_pins howtoplay_scene/i_hsync] [get_bd_pins main_bg/o_hsync] [get_bd_pins menu_scene/i_hsync]
+  connect_bd_net -net i_pclk_1 [get_bd_pins i_pclk] [get_bd_pins battle_scene/i_pclk] [get_bd_pins endgame_scene/i_pclk] [get_bd_pins howtoplay_scene/i_pclk] [get_bd_pins main_bg/i_pclk] [get_bd_pins menu_scene/i_pclk] [get_bd_pins scene_mux/i_pclk] [get_bd_pins vga_timing_0/i_pclk]
+  connect_bd_net -net i_rgb_1 [get_bd_pins battle_scene/i_rgb] [get_bd_pins endgame_scene/i_rgb] [get_bd_pins howtoplay_scene/i_rgb] [get_bd_pins main_bg/o_rgb] [get_bd_pins menu_scene/i_rgb]
   connect_bd_net -net i_scene_sel_1 [get_bd_pins i_axi_scene_sel] [get_bd_pins scene_mux/i_sel]
-  connect_bd_net -net i_vblnk_1 [get_bd_pins battle_scene/i_vblnk] [get_bd_pins draw_background_0/o_vblnk] [get_bd_pins endgame_scene/i_vblnk] [get_bd_pins howtoplay_scene/i_vblnk] [get_bd_pins menu_scene/i_vblnk]
-  connect_bd_net -net i_vcount_1 [get_bd_pins battle_scene/i_vcount] [get_bd_pins draw_background_0/o_vcount] [get_bd_pins endgame_scene/i_vcount] [get_bd_pins howtoplay_scene/i_vcount] [get_bd_pins menu_scene/i_vcount]
-  connect_bd_net -net i_vsync_1 [get_bd_pins battle_scene/i_vsync] [get_bd_pins draw_background_0/o_vsync] [get_bd_pins endgame_scene/i_vsync] [get_bd_pins howtoplay_scene/i_vsync] [get_bd_pins menu_scene/i_vsync]
+  connect_bd_net -net i_vblnk_1 [get_bd_pins battle_scene/i_vblnk] [get_bd_pins endgame_scene/i_vblnk] [get_bd_pins howtoplay_scene/i_vblnk] [get_bd_pins main_bg/o_vblnk] [get_bd_pins menu_scene/i_vblnk]
+  connect_bd_net -net i_vcount_1 [get_bd_pins battle_scene/i_vcount] [get_bd_pins endgame_scene/i_vcount] [get_bd_pins howtoplay_scene/i_vcount] [get_bd_pins main_bg/o_vcount] [get_bd_pins menu_scene/i_vcount]
+  connect_bd_net -net i_vsync_1 [get_bd_pins battle_scene/i_vsync] [get_bd_pins endgame_scene/i_vsync] [get_bd_pins howtoplay_scene/i_vsync] [get_bd_pins main_bg/o_vsync] [get_bd_pins menu_scene/i_vsync]
   connect_bd_net -net menu_draw_o_hsync [get_bd_pins menu_scene/o_hsync] [get_bd_pins scene_mux/i_menu_hs]
   connect_bd_net -net menu_draw_o_rgb [get_bd_pins menu_scene/o_rgb] [get_bd_pins scene_mux/i_menu_rgb]
   connect_bd_net -net menu_draw_o_vsync [get_bd_pins menu_scene/o_vsync] [get_bd_pins scene_mux/i_menu_vs]
   connect_bd_net -net red_value_Dout [get_bd_pins r] [get_bd_pins red_value/Dout]
-  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins battle_scene/reset] [get_bd_pins draw_background_0/i_rst] [get_bd_pins endgame_scene/reset] [get_bd_pins howtoplay_scene/reset] [get_bd_pins menu_scene/reset] [get_bd_pins scene_mux/i_rst] [get_bd_pins vga_timing_0/i_rst]
+  connect_bd_net -net reset_1 [get_bd_pins reset] [get_bd_pins battle_scene/reset] [get_bd_pins endgame_scene/reset] [get_bd_pins howtoplay_scene/reset] [get_bd_pins main_bg/reset] [get_bd_pins menu_scene/reset] [get_bd_pins scene_mux/i_rst] [get_bd_pins vga_timing_0/i_rst]
   connect_bd_net -net scene_mux_0_o_scene_hs [get_bd_pins hs] [get_bd_pins scene_mux/o_scene_hs]
   connect_bd_net -net scene_mux_0_o_scene_vs [get_bd_pins vs] [get_bd_pins scene_mux/o_scene_vs]
   connect_bd_net -net scene_rgb_mux_0_o_scene_rgb [get_bd_pins blue_value/Din] [get_bd_pins green_value/Din] [get_bd_pins red_value/Din] [get_bd_pins scene_mux/o_scene_rgb]
-  connect_bd_net -net vga_timing_0_o_hblnk [get_bd_pins draw_background_0/i_hblnk] [get_bd_pins vga_timing_0/o_hblnk]
-  connect_bd_net -net vga_timing_0_o_hcount [get_bd_pins draw_background_0/i_hcount] [get_bd_pins vga_timing_0/o_hcount]
-  connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins draw_background_0/i_hsync] [get_bd_pins vga_timing_0/o_hsync]
-  connect_bd_net -net vga_timing_0_o_vblnk [get_bd_pins draw_background_0/i_vblnk] [get_bd_pins vga_timing_0/o_vblnk]
-  connect_bd_net -net vga_timing_0_o_vcount [get_bd_pins draw_background_0/i_vcount] [get_bd_pins vga_timing_0/o_vcount]
-  connect_bd_net -net vga_timing_0_o_vsync [get_bd_pins draw_background_0/i_vsync] [get_bd_pins vga_timing_0/o_vsync]
+  connect_bd_net -net vga_timing_0_o_hblnk [get_bd_pins main_bg/i_hblnk] [get_bd_pins vga_timing_0/o_hblnk]
+  connect_bd_net -net vga_timing_0_o_hcount [get_bd_pins main_bg/i_hcount] [get_bd_pins vga_timing_0/o_hcount]
+  connect_bd_net -net vga_timing_0_o_hsync [get_bd_pins main_bg/i_hsync] [get_bd_pins vga_timing_0/o_hsync]
+  connect_bd_net -net vga_timing_0_o_vblnk [get_bd_pins main_bg/i_vblnk] [get_bd_pins vga_timing_0/o_vblnk]
+  connect_bd_net -net vga_timing_0_o_vcount [get_bd_pins main_bg/i_vcount] [get_bd_pins vga_timing_0/o_vcount]
+  connect_bd_net -net vga_timing_0_o_vsync [get_bd_pins main_bg/i_vsync] [get_bd_pins vga_timing_0/o_vsync]
 
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -2556,13 +2743,13 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   set axi_battle_arena [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_memory:1.0 axi_battle_arena ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {8} \
-   CONFIG.DATA_WIDTH {3} \
+   CONFIG.DATA_WIDTH {4} \
  ] $axi_battle_arena
 
   # Create instance: axi_battle_bombers_text, and set properties
   set axi_battle_bombers_text [ create_bd_cell -type ip -vlnv xilinx.com:user:axi_bomberman_single_memory:1.0 axi_battle_bombers_text ]
   set_property -dict [ list \
-   CONFIG.DATA_WIDTH {28} \
+   CONFIG.DATA_WIDTH {30} \
  ] $axi_battle_bombers_text
 
   # Create instance: axi_endgame_text, and set properties
@@ -2670,7 +2857,7 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
 
   # Create port connections
   connect_bd_net -net axi_battle_arena_data [get_bd_pins axi_battle_arena/data] [get_bd_pins vga_drawer/i_axi_battle_arena_data]
-  connect_bd_net -net axi_battle_bomber_text_data [get_bd_pins axi_battle_bombers_text/data] [get_bd_pins vga_drawer/i_axi_battle_bombers_data]
+  connect_bd_net -net axi_battle_bombers_text_data [get_bd_pins axi_battle_bombers_text/data] [get_bd_pins vga_drawer/Din]
   connect_bd_net -net axi_endgame_text_data [get_bd_pins axi_endgame_text/data] [get_bd_pins vga_drawer/i_axi_endgame_text_data]
   connect_bd_net -net axi_howtoplay_text_data [get_bd_pins axi_howtoplay_text/data] [get_bd_pins vga_drawer/i_axi_howto_text_data]
   connect_bd_net -net axi_menu_text_data [get_bd_pins axi_menu_text/data] [get_bd_pins vga_drawer/i_axi_menu_text_data]
@@ -2708,8 +2895,6 @@ proc create_hier_cell_microblaze_0_local_memory { parentCell nameHier } {
   current_bd_instance $oldCurInst
 
   save_bd_design
-common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
-
   close_bd_design $design_name 
 }
 # End of cr_bd_design_1()
