@@ -17,7 +17,7 @@
     ```
 3. Download the ZIP file and extract in `<working_directory>` or use git command:
     ```
-    git clone git://github.com/dywanow/uec2_projekt.git
+    git clone git://github.com/micholek/uec2_projekt.git
     ```
 4. Open Vivado
 5. Open Tcl Console by choosing `Window -> Tcl Console` or using `Ctrl+Shift+T` combination
