@@ -50,3 +50,7 @@
   - `Xilinx -> Program FPGA`
   - `Project Explorer -> bomberman -> RMB -> Run As -> Launch on Hardware (System Debugger)`
 14. Open UART terminal for keyboard input
+
+## Video presentation
+
+You can watch a short video presenting the game [here](https://drive.google.com/open?id=18dinKnmbFVfMRYR385YRHtESh4WQq4uN)
