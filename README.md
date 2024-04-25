@@ -54,3 +54,7 @@
 ## Video presentation
 
 You can watch a short video presenting the game [here](https://drive.google.com/open?id=18dinKnmbFVfMRYR385YRHtESh4WQq4uN)
+
+## Project report
+
+A detailed description of the project (in Polish) can be found in the attached PDF file.
